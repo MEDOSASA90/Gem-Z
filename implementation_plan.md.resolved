@@ -1,0 +1,166 @@
+# GEM Z — Phase 1: PostgreSQL Database Schema
+
+The schema is written to [f:/Gem Z/database/schema.sql](file:///f:/Gem%20Z/database/schema.sql).  
+It covers **7 modules**, **~50 tables**, and is designed for strict financial accuracy, scalability, and AI-readiness.
+
+---
+
+## Module Breakdown
+
+### 1 · Users & Roles
+
+| Table | Purpose |
+|---|---|
+| `users` | Single source of truth for all roles. `role` enum: `trainee`, `trainer`, `gym_admin`, `store_admin`, `super_admin` |
+| `trainee_profiles` | Extended stats: height, weight, body fat, QR token, streak, points |
+| `trainer_profiles` | Bio, specializations, certifications, rating, commission % |
+
+> [!NOTE]
+> The referral system is built directly into `users.referral_code` (auto-generated 8-char hash) and `users.referred_by_user_id`.
+
+---
+
+### 2 · Business Entities
+
+| Table | Purpose |
+|---|---|
+| `gyms` | Gym entity with configurable `platform_fee_pct` (default 15%) |
+| `gym_branches` | Multi-branch with PostGIS `GEOGRAPHY(POINT)` for geolocation/geofencing |
+| `gym_pricing_rules` | Off-peak / flash sale discounts by day-of-week + time range |
+| `stores` | Store entity with configurable fee (default 17.5%) |
+| `store_products` | Product catalog with SKU, stock, category, and discount |
+
+---
+
+### 3 · Financial Ledger ⚠️
+
+> [!IMPORTANT]
+> **Double-Entry Design** — Every payment creates exactly two `ledger_entries` rows: one `debit` (from buyer's wallet) and one `credit` (to seller's wallet), plus a platform fee split entry. The `available_bal` column has a `CHECK (>= 0)` constraint making overdrafts impossible at the DB level.
+
+| Table | Purpose |
+|---|---|
+| `wallets` | Polymorphic — owned by `user`, `gym`, `store`, or `platform` |
+| `transactions` | One row per business event. Stores gateway ref, type, status |
+| `ledger_entries` | The immutable double-entry lines. Includes `running_balance` snapshot |
+| `withdrawal_requests` | Payout requests to Fawry / Instapay / Vodafone Cash / bank |
+
+**Revenue split example** (1,000 EGP gym sub, 15% fee):
+
+```
+DEBIT  trainee_wallet     1,000 EGP
+CREDIT gym_wallet           850 EGP  (pending → available after settlement window)
+CREDIT platform_wallet       150 EGP
+```
+
+---
+
+### 4 · Subscriptions & Orders
+
+| Table | Purpose |
+|---|---|
+| `gym_subscription_plans` | Can be gym-wide or branch-specific, with freeze allowance |
+| `gym_subscriptions` | Trainee ↔ plan link, stores `discount_applied` for off-peak pricing |
+| `trainer_subscription_plans` | Trainer packages (sessions count, online/offline) |
+| `trainer_subscriptions` | Trainee ↔ trainer link |
+| `attendance_logs` | QR / NFC check-in/out per branch |
+| `orders` | Store purchase header |
+| `order_items` | Line-items with quantity, unit price, subtotal |
+
+---
+
+### 5 · Fitness & AI
+
+| Table | Purpose |
+|---|---|
+| `muscle_groups` | Lookup: chest, back, legs, etc. |
+| `exercises` | Full library with video URL, difficulty, calories/min |
+| `workout_plans` / `workout_days` / `workout_exercises` | Hierarchical plan structure |
+| `medical_reports` | OCR upload → parsed JSONB for AI input |
+| `ai_diet_plans` | AI-generated plan with macro targets and allergen flags |
+| `meals` | Day-by-day meals with `alternatives` JSONB (smart swaps) |
+| `daily_logs` | Trainee self-tracking: calories, water, steps, sleep, weight |
+| `wearable_sync_logs` | Apple Watch, Garmin, Google Fit raw sync data |
+| `form_correction_sessions` | MediaPipe analysis results: joint angles, score, issues |
+
+---
+
+### 6 · Social & Gamification
+
+| Table | Purpose |
+|---|---|
+| `posts` | Timeline posts (update, progress photo, achievement, Q&A, video) |
+| `post_comments` | Threaded replies via `parent_id` self-reference |
+| `post_likes` / `comment_likes` | Composite PK prevents duplicate likes |
+| `follows` | Follower graph with self-loop guard |
+| `badges` | Configurable via `trigger_rule` JSONB (`streak_days`, `milestone_kg`, …) |
+| `user_badges` | Unique constraint prevents duplicate awards |
+| `leaderboard_snapshots` | Scoped (global / city / gym) + period snapshots |
+| `referral_rewards` | Discount codes with expiry and use-count cap |
+| `notifications` | Typed push/in-app notifications |
+
+---
+
+### 7 · Support & Admin
+
+| Table | Purpose |
+|---|---|
+| `support_tickets` | Priority + status workflow with admin assignment |
+| `ticket_replies` | Internal/external thread, supports agent notes |
+
+---
+
+## Entity Relationship Overview
+
+```mermaid
+erDiagram
+    users ||--o{ trainee_profiles : "has"
+    users ||--o{ trainer_profiles : "has"
+    users ||--o{ wallets : "owns"
+    users ||--o{ posts : "writes"
+    users ||--o{ gym_subscriptions : "buys"
+    users ||--o{ orders : "places"
+
+    gyms ||--|{ gym_branches : "has"
+    gyms ||--o{ gym_subscription_plans : "offers"
+    gym_branches ||--o{ attendance_logs : "records"
+
+    stores ||--|{ store_products : "lists"
+    orders ||--|{ order_items : "contains"
+
+    transactions ||--|{ ledger_entries : "splits into"
+    wallets ||--o{ ledger_entries : "receives"
+
+    users ||--o{ ai_diet_plans : "gets"
+    ai_diet_plans ||--|{ meals : "contains"
+    medical_reports }o--|| ai_diet_plans : "informs"
+
+    posts ||--o{ post_comments : "has"
+    posts ||--o{ post_likes : "receives"
+    users ||--o{ follows : "initiates"
+    users ||--o{ user_badges : "earns"
+```
+
+---
+
+## Key Design Decisions
+
+| Decision | Rationale |
+|---|---|
+| `NUMERIC(19,4)` for all money | Avoids floating-point rounding errors completely |
+| `uuid_generate_v4()` as PKs | Prevents enumeration attacks; safe for distributed systems |
+| PostGIS `GEOGRAPHY(POINT)` | Enables radius queries for nearby gym search natively in SQL |
+| Polymorphic `wallets.owner_type` | Single wallet table for users, gyms, stores, and platform |
+| Immutable `ledger_entries` | Never UPDATE/DELETE — only INSERT new correction entries |
+| `CHECK (available_bal >= 0)` | DB-level overdraft protection, cannot be bypassed by code |
+| `trigger_rule JSONB` on badges | New badge types added without schema migrations |
+
+---
+
+## Next Step: Phase 2 — Backend API Structure
+
+Once you approve this schema I will design:
+- **Node.js/Express** route + controller architecture
+- Auth middleware (JWT + refresh tokens + role guards)
+- Financial engine service (double-entry writer, split calculator)
+- AI service wrappers (OpenAI diet, MediaPipe form correction)
+- Payment gateway adapter layer (Fawry, Instapay, Paymob, Vodafone Cash)

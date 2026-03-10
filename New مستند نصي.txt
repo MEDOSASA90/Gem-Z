@@ -1,0 +1,82 @@
+Role: You are an elite Senior Full-Stack Developer, AI Architect, and Database Engineer.
+Task: Act as the lead developer to build a massive, comprehensive fitness ecosystem named "GEM Z". This is an all-in-one SaaS, B2B/B2C Marketplace, and Social Network for fitness enthusiasts, gyms, stores, and personal trainers.
+
+1. Project Overview & Tech Stack Requirements:
+
+Platform: Progressive Web App (PWA) installable on mobile, fully responsive.
+
+Frontend: React.js or Next.js with Tailwind CSS (Glassmorphism UI, Dark mode default with Neon Green/Blue accents).
+
+Backend: Node.js/Express or Python/Django (suitable for heavy AI and financial ledger tasks).
+
+Database: PostgreSQL (Strict Relational schema for financial accuracy) + Redis for caching.
+
+AI Integration: OpenAI API or equivalent for diet generation, TensorFlow/MediaPipe for real-time form correction.
+
+2. Multi-Role Authentication & Dashboards:
+
+Trainee Dashboard: Body stats, daily workout/diet plans, active subscriptions, badges/achievements, GEM Z Wallet balance, and a dynamic QR Code for smart gym check-ins.
+
+Trainer Dashboard: Client management, online program creation, progress tracking, live stream capabilities, and automated commission tracking (20% platform fee).
+
+Gym Dashboard: Branch management, QR scanner for attendance, flash sales/off-peak discount creation, and financial settlements (10-15% platform fee).
+
+Store Dashboard: Inventory management for supplements/gear, order processing, and dynamic discount configuration (15-20% platform fee).
+
+Super Admin Dashboard: Master control for user management, support tickets, overall revenue tracking, and global settings.
+
+3. Financial & Ledger Engine (Strict Precision):
+
+Implement a strict double-entry ledger system for the "GEM Z Wallet".
+
+Support integrations with Egyptian payment gateways (Instapay, Fawry, Vodafone Cash, Paymob).
+
+Automated transaction splitting: When a trainee buys a 1000 EGP gym subscription, immediately route 850 EGP to the Gym's pending balance and 150 EGP to the Platform's revenue balance.
+
+Support "Off-peak Pricing" where gyms can set automated discounts during specific hours.
+
+4. AI & Fitness Core:
+
+AI Nutritionist: OCR integration allowing trainees to upload medical test results. The AI analyzes the data (allergies, deficiencies) and generates highly customized macro-calculated diet plans.
+
+Smart Alternatives: Real-time AI suggestions for food substitutes maintaining the exact calorie/macro count.
+
+AI Form Correction: Real-time camera analysis using computer vision to track joint angles during exercises and prevent injuries.
+
+Exercise Library: Categorized database of all muscle groups with video/3D demonstrations.
+
+5. Social Network & Gamification:
+
+Full social timeline (post updates, photos, seek advice) mimicking Facebook's core social features but strictly for the fitness community.
+
+Gamification: Leaderboards, streaks, and digital badges for hitting milestones.
+
+Referral System: Automated discount codes for users inviting new members.
+
+6. Geolocation & Hardware Integration:
+
+Interactive Map: Locate nearby partner gyms, view ratings, active discounts, and direct subscription links.
+
+Geofencing: Push notifications triggered when a user is near their gym.
+
+Wearables: Sync with Apple Watch, Garmin, and Google Fit (steps, heart rate, sleep).
+
+Offline Mode: Cache today's workout and diet plan for access without internet.
+
+7. Database Architecture Setup (Phase 1):
+Please initialize the PostgreSQL database schema based on these core modules:
+
+Users & Roles (Trainee, Trainer, Gym Admin, Store Admin).
+
+Business Entities (Gyms, Stores).
+
+Financial Ledger (Wallets, Strict Transactions Log).
+
+Subscriptions & Orders.
+
+Fitness & AI (Exercises, AI_Diet_Plans, Meals).
+
+Social (Posts, Interactions, Leaderboards).
+
+Output Request:
+Do not write the entire application at once. Start by providing the exact PostgreSQL Database Schema (SQL commands) for all the modules mentioned above. Ensure the financial ledger tables are strictly designed to prevent any balance discrepancies. Once I approve the schema, we will move to the Backend API structure.
