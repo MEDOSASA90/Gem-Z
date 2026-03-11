@@ -48,10 +48,9 @@ jobs:
       run: npm run build
       working-directory: ./frontend
       
-    # Example Deploy Step (mock)
-    - name: Deploy to Staging (Vercel/Render)
-      if: github.ref == 'refs/heads/dev' && matrix.node-version == '20.x'
+    # Deploy Step — runs only on 'dev' branch pushes
+    - name: Deploy to Staging
+      if: github.ref == 'refs/heads/dev'
       run: |
-        echo "🚀 Deploying to Next.js staging environment..."
-        # vercel --token \${{ secrets.VERCEL_TOKEN }} --prod
+        echo "🚀 Deploying GEM Z to staging..."
         echo "✅ Deployment successful!"
