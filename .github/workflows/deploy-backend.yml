@@ -48,4 +48,4 @@ jobs:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
         run: |
           sudo apt-get update && sudo apt-get install -y lftp
-          lftp -c "set ftp:ssl-allow yes; set ssl:verify-certificate no; open -u $FTP_USERNAME,'$FTP_PASSWORD' $FTP_SERVER; mirror -R -v -P 5 dist/ public_html/api/"
+          lftp -c "set ftp:ssl-allow yes; set ssl:verify-certificate no; open -u $FTP_USERNAME,'$FTP_PASSWORD' $FTP_SERVER; mirror -R -v -P 5 dist/ domains/gem-z.shop/public_html/api/"
