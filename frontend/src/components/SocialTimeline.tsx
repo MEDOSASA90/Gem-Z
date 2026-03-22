@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { GemZApi } from '../lib/api';
 import { formatDistanceToNow } from 'date-fns';
+import { ar, enUS } from 'date-fns/locale';
 
 export default function SocialTimeline() {
     const { isArabic, toggleLanguage } = useLanguage();
@@ -120,11 +121,13 @@ export default function SocialTimeline() {
                                         </div>
                                         <div>
                                             <h4 className="font-bold flex items-center gap-2">
-                                                {post.author_name || 'Gem Z User'} 
-                                                <span className="text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold" style={{ background: 'rgba(0,184,255,0.1)', color: '#00B8FF' }}>{post.author_role || 'Trainee'}</span>
+                                                {post.author_name || (isArabic ? 'مستخدم GEM Z' : 'Gem Z User')} 
+                                                <span className="text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold" style={{ background: 'rgba(0,184,255,0.1)', color: '#00B8FF' }}>
+                                                    {post.author_role || (isArabic ? 'متدرب' : 'Trainee')}
+                                                </span>
                                             </h4>
                                             <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-                                                {post.created_at ? formatDistanceToNow(new Date(post.created_at), { addSuffix: true }) : 'Just now'}
+                                                {post.created_at ? formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: isArabic ? ar : enUS }) : (isArabic ? 'الآن' : 'Just now')}
                                             </p>
                                         </div>
                                     </div>

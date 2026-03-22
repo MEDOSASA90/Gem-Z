@@ -12,7 +12,7 @@ db.on('connect', () => {
     console.log('✅ Postgres Core Database Connected Successfully');
 });
 
-db.on('error', (err) => {
+db.on('error', (err: any) => {
     console.error('❌ Unexpected error on idle client', err);
     process.exit(-1);
 });

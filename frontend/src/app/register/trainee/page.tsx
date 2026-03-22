@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme } from '../../../context/ThemeContext';
-import { CheckCircle, ChevronRight, Loader2 } from 'lucide-react';
+import { CheckCircle, ChevronRight, Loader2, UploadCloud } from 'lucide-react';
 import { GemZApi } from '../../../lib/api';
 import { useRouter } from 'next/navigation';
 
@@ -11,28 +11,36 @@ const T = {
     en: {
         back: '← Back to role selection',
         title: 'Create Trainee Account', subtitle: 'Start your fitness journey today',
-        step1: 'Personal Info', step2: 'Goals & Level', step3: 'Medical',
+        step1: 'Personal Info', step2: 'Goals & Level', step3: 'Identity & Medical',
         name: 'Full Name', email: 'Email', phone: 'Phone Number', password: 'Password', confirm: 'Confirm Password',
+        countryCode: 'Code',
         gender: 'Gender', male: 'Male', female: 'Female', dob: 'Date of Birth',
         level: 'Fitness Level', beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced',
         goals: 'My Goals', weightLoss: 'Weight Loss', muscle: 'Muscle Gain', endurance: 'Endurance', wellness: 'General Wellness',
+        idFront: 'ID Card (Front)', idBack: 'ID Card (Back)', dropzone: 'Click or drag file here',
+        referral: 'Invitation Code (Optional)',
         medical: 'Medical Conditions (Optional)', medicalPlaceholder: 'e.g. Diabetes, Knee injury...',
         next: 'Next', back2: 'Back', finish: 'Create Account',
         loginLink: 'Already have an account?', login: 'Sign In',
         agree: 'I agree to the Terms & Privacy Policy',
+        errRequired: 'Please fill all required fields before proceeding.',
     },
     ar: {
         back: '→ العودة لاختيار الدور',
         title: 'إنشاء حساب متدرب', subtitle: 'ابدأ رحلتك في اللياقة البدنية اليوم',
-        step1: 'البيانات الشخصية', step2: 'الأهداف والمستوى', step3: 'المعلومات الطبية',
+        step1: 'البيانات الشخصية', step2: 'الأهداف والمستوى', step3: 'الهوية والطبي',
         name: 'الاسم الكامل', email: 'البريد الإلكتروني', phone: 'رقم الهاتف', password: 'كلمة المرور', confirm: 'تأكيد كلمة المرور',
+        countryCode: 'الكود',
         gender: 'الجنس', male: 'ذكر', female: 'أنثى', dob: 'تاريخ الميلاد',
         level: 'مستوى اللياقة', beginner: 'مبتدئ', intermediate: 'متوسط', advanced: 'متقدم',
         goals: 'أهدافي', weightLoss: 'إنقاص الوزن', muscle: 'بناء العضلات', endurance: 'تحسين التحمل', wellness: 'صحة عامة',
+        idFront: 'صورة البطاقة (الوجه)', idBack: 'صورة البطاقة (الظهر)', dropzone: 'انقر أو اسحب الملف هنا',
+        referral: 'كود الدعوة (اختياري)',
         medical: 'الحالات الطبية (اختياري)', medicalPlaceholder: 'مثال: سكري، إصابة في الركبة...',
         next: 'التالي', back2: 'السابق', finish: 'إنشاء الحساب',
         loginLink: 'لديك حساب؟', login: 'تسجيل الدخول',
         agree: 'أوافق على الشروط وسياسة الخصوصية',
+        errRequired: 'يرجى ملء جميع الحقول المطلوبة قبل الاستمرار.',
     }
 };
 
@@ -43,35 +51,92 @@ export default function TraineeRegisterPage() {
     const { theme } = useTheme();
     const t = isArabic ? T.ar : T.en;
     const [step, setStep] = useState(0);
+
+    // Auth & Identity State
+    const [formData, setFormData] = useState({
+        fullName: '', email: '', countryCode: '+20', phone: '', password: '', confirm: '', dob: '', referralCode: ''
+    });
+    const [gender, setGender] = useState<'male'|'female'|''>('');
+    const [fitnessLevel, setFitnessLevel] = useState('');
     const [goals, setGoals] = useState<string[]>([]);
     
-    // Auth State
-    const [formData, setFormData] = useState({ fullName: '', email: '', phone: '', password: '', confirm: '' });
+    // Base64 Images
+    const [idFrontBase64, setIdFrontBase64] = useState('');
+    const [idBackBase64, setIdBackBase64] = useState('');
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleRegister = async () => {
-        if (formData.password !== formData.confirm) {
-            setError(isArabic ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
-            return;
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            if (side === 'front') setIdFrontBase64(reader.result as string);
+            else setIdBackBase64(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const validateStep = (currentStep: number) => {
+        setError('');
+        if (currentStep === 0) {
+            if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirm || !gender || !formData.dob) {
+                setError(t.errRequired);
+                return false;
+            }
+            if (formData.password !== formData.confirm) {
+                setError(isArabic ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
+                return false;
+            }
         }
+        if (currentStep === 1) {
+            if (!fitnessLevel) {
+                setError(t.errRequired);
+                return false;
+            }
+        }
+        if (currentStep === 2) {
+            if (!idFrontBase64 || !idBackBase64) {
+                 setError(t.errRequired);
+                 return false;
+            }
+        }
+        return true;
+    };
+
+    const nextStep = () => {
+        if (validateStep(step)) setStep(s => s + 1);
+    };
+
+    const handleRegister = async () => {
+        if (!validateStep(2)) return;
         
         setLoading(true);
         setError('');
         
         try {
-            const res = await GemZApi.Auth.register({
+            const payload = {
                 email: formData.email,
                 password: formData.password,
                 fullName: formData.fullName,
                 phone: formData.phone,
-                role: 'trainee'
-            });
+                countryCode: formData.countryCode,
+                role: 'trainee',
+                gender,
+                dob: formData.dob,
+                referralCode: formData.referralCode,
+                fitnessLevel,
+                idFrontBase64,
+                idBackBase64
+            };
+
+            const res: any = await GemZApi.Auth.register(payload);
             
             // Persist Session
             localStorage.setItem('gemz_access_token', res.accessToken);
@@ -88,6 +153,8 @@ export default function TraineeRegisterPage() {
 
     const steps = [t.step1, t.step2, t.step3];
     const goalList = [t.weightLoss, t.muscle, t.endurance, t.wellness];
+    const levelList = [{k: 'beginner', v: t.beginner}, {k: 'intermediate', v: t.intermediate}, {k: 'advanced', v: t.advanced}];
+    const genderList = [{k: 'male', v: t.male}, {k: 'female', v: t.female}];
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col items-center justify-center p-6" style={{ backgroundColor: 'var(--bg-primary)' }}>
@@ -123,39 +190,73 @@ export default function TraineeRegisterPage() {
                     )}
                     
                     {step === 0 && (
-                        <div className="space-y-4">
-                            {[{ name: 'fullName', label: t.name, type: 'text', ph: isArabic ? 'محمد أحمد' : 'John Doe' },
-                            { name: 'email', label: t.email, type: 'email', ph: 'you@example.com' },
-                            { name: 'phone', label: t.phone, type: 'tel', ph: isArabic ? '+20 1XX XXX XXXX' : '+1 XXX XXX XXXX' },
-                            { name: 'password', label: t.password, type: 'password', ph: '••••••••' },
-                            { name: 'confirm', label: t.confirm, type: 'password', ph: '••••••••' }].map((f, i) => (
-                                <div key={i}>
-                                    <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{f.label}</label>
-                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} placeholder={f.ph} className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
+                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.name}</label>
+                                <input name="fullName" value={formData.fullName} onChange={handleChange} type="text" placeholder={isArabic ? 'محمد أحمد' : 'John Doe'} className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.email}</label>
+                                <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="you@example.com" className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
+                            </div>
+                            
+                            {/* Phone with Country Code */}
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.phone}</label>
+                                <div className="flex gap-2 w-full">
+                                    <select name="countryCode" value={formData.countryCode} onChange={handleChange} className="px-3 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" dir="ltr">
+                                        <option value="+20">+20</option>
+                                        <option value="+966">+966</option>
+                                        <option value="+971">+971</option>
+                                        <option value="+1">+1</option>
+                                    </select>
+                                    <input name="phone" value={formData.phone} onChange={handleChange} type="tel" placeholder={isArabic ? '100 000 0000' : '555 555 5555'} className="flex-1 px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" dir="ltr" />
                                 </div>
-                            ))}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.password}</label>
+                                    <input name="password" value={formData.password} onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.confirm}</label>
+                                    <input name="confirm" value={formData.confirm} onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
+                                </div>
+                            </div>
+                            
                             <div>
                                 <label className="text-sm font-medium block mb-2" style={{ color: 'var(--text-secondary)' }}>{t.gender}</label>
                                 <div className="grid grid-cols-2 gap-3">
-                                    {[t.male, t.female].map((g, i) => (
-                                        <button key={i} className="py-3 rounded-xl text-sm font-medium transition-all" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>{g}</button>
-                                    ))}
+                                    {genderList.map((g) => {
+                                        const active = gender === g.k;
+                                        return (
+                                        <button key={g.k} onClick={() => setGender(g.k as any)} 
+                                            className="py-3 rounded-xl text-sm font-medium transition-all" 
+                                            style={{ background: active ? `${ACCENT}15` : 'var(--bg-input)', border: `1px solid ${active ? ACCENT : 'var(--border-medium)'}`, color: active ? ACCENT : 'var(--text-primary)' }}>
+                                            {g.v}
+                                        </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.dob}</label>
-                                <input type="date" className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
+                                <input name="dob" value={formData.dob} onChange={handleChange} type="date" className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
                             </div>
                         </div>
                     )}
                     {step === 1 && (
-                        <div className="space-y-6">
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
                             <div>
                                 <label className="text-sm font-medium block mb-3" style={{ color: 'var(--text-secondary)' }}>{t.level}</label>
                                 <div className="grid grid-cols-3 gap-3">
-                                    {[t.beginner, t.intermediate, t.advanced].map((l, i) => (
-                                        <button key={i} className="py-3 rounded-xl text-sm font-medium transition-all" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>{l}</button>
-                                    ))}
+                                    {levelList.map((l) => {
+                                        const active = fitnessLevel === l.k;
+                                        return (
+                                        <button key={l.k} onClick={() => setFitnessLevel(l.k)} className="py-3 rounded-xl text-sm font-medium transition-all" style={{ background: active ? `${ACCENT}15` : 'var(--bg-input)', border: `1px solid ${active ? ACCENT : 'var(--border-medium)'}`, color: active ? ACCENT : 'var(--text-primary)' }}>{l.v}</button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                             <div>
@@ -173,24 +274,42 @@ export default function TraineeRegisterPage() {
                                     })}
                                 </div>
                             </div>
+                            
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.referral}</label>
+                                <input name="referralCode" value={formData.referralCode} onChange={handleChange} type="text" placeholder="GEMZ-XXX" className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
+                                <p className="text-xs mt-2" style={{color: 'var(--text-muted)'}}>{isArabic ? 'اربح كوينز مجانية لك ولصديقك!' : 'Earn free coins for you and your friend!'}</p>
+                            </div>
                         </div>
                     )}
                     {step === 2 && (
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.medical}</label>
-                                <textarea className="w-full px-4 py-3 rounded-xl text-sm input-base resize-none h-32" placeholder={t.medicalPlaceholder} />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                                    {isArabic ? 'رفع التقرير الطبي (اختياري)' : 'Upload Medical Report (Optional)'}
-                                </label>
-                                <div className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors" style={{ borderColor: 'var(--border-medium)', background: 'var(--bg-input)' }}>
-                                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'اسحب ملفك هنا أو انقر للاختيار' : 'Drag file here or click to upload'}</p>
-                                    <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>PDF, JPG, PNG — Max 5MB</p>
+                        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2">
+                            {/* ID Uploads */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm font-medium block mb-2" style={{ color: 'var(--text-secondary)' }}>{t.idFront}</label>
+                                    <label className="border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-colors relative h-32 overflow-hidden" style={{ borderColor: idFrontBase64 ? ACCENT : 'var(--border-medium)', background: 'var(--bg-input)' }}>
+                                        {idFrontBase64 ? <img src={idFrontBase64} className="absolute inset-0 w-full h-full object-cover opacity-60" /> : <UploadCloud size={24} className="mb-2 text-gray-400" />}
+                                        <span className="text-xs relative z-10 font-bold" style={{ color: idFrontBase64 ? '#fff' : 'var(--text-muted)' }}>{idFrontBase64 ? (isArabic ? 'تم الرفع' : 'Uploaded') : t.dropzone}</span>
+                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'front')} />
+                                    </label>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium block mb-2" style={{ color: 'var(--text-secondary)' }}>{t.idBack}</label>
+                                    <label className="border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-colors relative h-32 overflow-hidden" style={{ borderColor: idBackBase64 ? ACCENT : 'var(--border-medium)', background: 'var(--bg-input)' }}>
+                                        {idBackBase64 ? <img src={idBackBase64} className="absolute inset-0 w-full h-full object-cover opacity-60" /> : <UploadCloud size={24} className="mb-2 text-gray-400" />}
+                                        <span className="text-xs relative z-10 font-bold" style={{ color: idBackBase64 ? '#fff' : 'var(--text-muted)' }}>{idBackBase64 ? (isArabic ? 'تم الرفع' : 'Uploaded') : t.dropzone}</span>
+                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'back')} />
+                                    </label>
                                 </div>
                             </div>
-                            <label className="flex items-center gap-3 cursor-pointer mt-2">
+
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.medical}</label>
+                                <textarea className="w-full px-4 py-3 rounded-xl text-sm input-base resize-none h-24" placeholder={t.medicalPlaceholder} />
+                            </div>
+                            
+                            <label className="flex items-center gap-3 cursor-pointer pt-3">
                                 <input type="checkbox" className="w-4 h-4 accent-[#00FFA3]" />
                                 <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t.agree}</span>
                             </label>
@@ -199,12 +318,12 @@ export default function TraineeRegisterPage() {
 
                     <div className={`flex justify-between mt-8 gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
                         {step > 0 && (
-                            <button onClick={() => setStep(s => s - 1)} className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>
+                            <button onClick={() => { setError(''); setStep(s => s - 1); }} className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors hover:bg-white/5" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>
                                 {t.back2}
                             </button>
                         )}
                         {step < 2 ? (
-                            <button onClick={() => setStep(s => s + 1)} className="flex-1 py-3 rounded-xl text-sm font-bold text-black transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: `linear-gradient(135deg, ${ACCENT}, #00B8FF)`, boxShadow: `0 0 20px ${ACCENT}40` }}>
+                            <button onClick={nextStep} className="flex-1 py-3 rounded-xl text-sm font-bold text-black transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: `linear-gradient(135deg, ${ACCENT}, #00B8FF)`, boxShadow: `0 0 20px ${ACCENT}40` }}>
                                 {t.next} <ChevronRight size={16} className={isArabic ? 'rotate-180' : ''} />
                             </button>
                         ) : (

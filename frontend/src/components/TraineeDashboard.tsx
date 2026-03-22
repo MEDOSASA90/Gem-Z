@@ -61,7 +61,7 @@ export default function TraineeDashboard() {
     const { wearableData, connectDevice, disconnectDevice } = useWearables();
     
     // Live Database State
-    const [user, setUser] = useState<{ id: string, full_name: string, email: string } | null>(null);
+    const [user, setUser] = useState<{ id: string, full_name: string, email: string, referral_code?: string } | null>(null);
     const [dashData, setDashData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
@@ -81,24 +81,6 @@ export default function TraineeDashboard() {
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [router]);
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (qrVisible) {
-            setQrToken(`QR-AHM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
-            setQrTimer(30);
-            interval = setInterval(() => {
-                setQrTimer((prev) => {
-                    if (prev <= 1) {
-                        setQrToken(`QR-AHM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
-                        return 30;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [qrVisible]);
 
     const totalKcal = MEALS.reduce((a, m) => a + m.kcal, 0);
     const consumedKcal = MEALS.filter(m => m.done).reduce((a, m) => a + m.kcal, 0);
@@ -120,6 +102,8 @@ export default function TraineeDashboard() {
         { id: 'wallet', icon: Wallet, labelEn: 'Wallet', labelAr: 'المحفظة' },
         { id: 'badges', icon: Trophy, labelEn: 'Badges', labelAr: 'الأوسمة' },
     ];
+
+    const displayBarcode = user?.referral_code || user?.id?.substring(0, 8).toUpperCase() || 'SCAN-ME';
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen p-4 md:p-8 font-sans pb-28" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
@@ -165,7 +149,7 @@ export default function TraineeDashboard() {
                         </div>
                         {/* Stylized QR Code */}
                         <div className="relative p-4 rounded-2xl" style={{ background: '#fff' }}>
-                            <div className="w-48 h-48 grid grid-cols-7 gap-0.5 p-2">
+                            <div className="w-48 h-48 grid grid-cols-7 gap-0.5 p-2" title={displayBarcode}>
                                 {Array.from({ length: 49 }).map((_, i) => {
                                     const pattern = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0];
                                     const shouldFill = Math.random() > 0.45 || pattern[i] === 0;
@@ -177,13 +161,22 @@ export default function TraineeDashboard() {
                             </div>
                         </div>
                         <div className="text-center">
-                            <p className="font-mono text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                                {qrToken} <span className="ml-2 text-[#FF6B35]">{qrTimer}s</span>
+                            <p className="font-mono text-xl font-bold tracking-widest uppercase mb-1" style={{ color: 'var(--text-primary)' }}>
+                                {displayBarcode}
                             </p>
-                            <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'صالح: Gold Gym — جميع الفروع' : 'Valid: Gold Gym — All Branches'}</p>
-                            <div className="flex items-center justify-center gap-2 mt-2">
-                                <div className="w-2 h-2 rounded-full bg-[#00FFA3] animate-pulse" />
-                                <span className="text-xs text-[#00FFA3] font-bold">{isArabic ? 'الاشتراك نشط ✓' : 'Subscription Active ✓'}</span>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'صالح: جميع الفروع المشترك بها' : 'Valid: All Enrolled Branches'}</p>
+                            <div className="flex items-center justify-center gap-2 mt-3">
+                                {activeSub ? (
+                                    <>
+                                        <div className="w-2 h-2 rounded-full bg-[#00FFA3] animate-pulse" />
+                                        <span className="text-xs text-[#00FFA3] font-bold">{isArabic ? 'الاشتراك نشط ✓' : 'Subscription Active ✓'}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                                        <span className="text-xs text-yellow-500 font-bold">{isArabic ? 'ادفع لكل زيارة' : 'Pay-Per-Visit / Trial'}</span>
+                                    </>
+                                )}
                             </div>
                         </div>
                         <button onClick={() => setQrVisible(false)} className="w-full py-3 rounded-xl text-sm font-bold" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>

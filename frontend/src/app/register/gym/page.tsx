@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme } from '../../../context/ThemeContext';
-import { CheckCircle, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronRight, Loader2, MapPin, Clock } from 'lucide-react';
+import { GemZApi } from '../../../lib/api';
+import { useRouter } from 'next/navigation';
 
 const T = {
     en: {
@@ -12,11 +14,13 @@ const T = {
         step1: 'Account Admin', step2: 'Facility Details', step3: 'Business Info',
         name: 'Admin Name', email: 'Admin Email', phone: 'Admin Phone', password: 'Password', confirm: 'Confirm Password',
         gymName: 'Gym/Brand Name', location: 'Main Location (City, Area)', branches: 'Number of Branches',
-        amenities: 'Key Amenities', amOps: ['Pool', 'Sauna', 'CrossFit Rig', 'Cardio Zone', 'Women Only Area'],
+        googleMaps: 'Google Maps Link', femaleHours: 'Dedicated Female Hours',
+        amenities: 'Key Amenities', amOps: ['Pool', 'Sauna', 'Jacuzzi', 'CrossFit Rig', 'Cardio Zone', 'Women Only Area', 'Drinks Bar'],
         tax: 'Tax ID Number', cr: 'Commercial Register No.', dropin: 'Standard Drop-in Price (EGP)',
         next: 'Next', back2: 'Back', finish: 'Create Gym Account',
         loginLink: 'Already managing a gym?', login: 'Sign In',
         agree: 'I confirm authorization to create this business account',
+        errRequired: 'Please fill all required fields.',
     },
     ar: {
         back: '→ العودة لاختيار الدور',
@@ -24,11 +28,13 @@ const T = {
         step1: 'مدير الحساب', step2: 'تفاصيل المنشأة', step3: 'معلومات التجارة',
         name: 'اسم المدير', email: 'البريد الإلكتروني', phone: 'رقم الهاتف', password: 'كلمة المرور', confirm: 'تأكيد كلمة المرور',
         gymName: 'اسم الجيم / العلامة', location: 'الموقع الرئيسي (المدينة، المنطقة)', branches: 'عدد الفروع',
-        amenities: 'المرافق الأساسية', amOps: ['مسبح', 'ساونا', 'تجهيزات كروس فيت', 'منطقة كارديو', 'قسم خاص للسيدات'],
+        googleMaps: 'رابط خرائط جوجل', femaleHours: 'مواعيد خاصة للسيدات',
+        amenities: 'المرافق الأساسية', amOps: ['مسبح', 'ساونا', 'جاكوزي', 'تجهيزات كروس فيت', 'منطقة كارديو', 'قسم خاص للسيدات', 'بار مشروبات'],
         tax: 'رقم البطاقة الضريبية', cr: 'رقم السجل التجاري', dropin: 'سعر الزيارة الواحدة (ج.م)',
         next: 'التالي', back2: 'السابق', finish: 'إنشاء حساب الصالة',
         loginLink: 'تُدير صالة بالفعل؟', login: 'تسجيل الدخول',
         agree: 'أؤكد امتلاكي التفويض لإنشاء حساب الأعمال هذا بمنصة GEM Z',
+        errRequired: 'يرجى ملء كافة الحقول المطلوبة.',
     }
 };
 
@@ -40,6 +46,76 @@ export default function GymRegisterPage() {
     const t = isArabic ? T.ar : T.en;
     const [step, setStep] = useState(0);
     const [amens, setAmens] = useState<string[]>([]);
+    
+    const [formData, setFormData] = useState({
+        adminName: '', email: '', phone: '', password: '', confirm: '',
+        gymName: '', mainLocation: '', branches: '1', locationUrl: '', femaleHours: '',
+        cr: '', tax: '', dropinPrice: ''
+    });
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const router = useRouter();
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const validateStep = (currentStep: number) => {
+        setError('');
+        if (currentStep === 0) {
+            if (!formData.adminName || !formData.email || !formData.phone || !formData.password || !formData.confirm) {
+                setError(t.errRequired);
+                return false;
+            }
+            if (formData.password !== formData.confirm) {
+                setError(isArabic ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
+                return false;
+            }
+        }
+        if (currentStep === 1) {
+            if (!formData.gymName || !formData.locationUrl) {
+                setError(t.errRequired);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const nextStep = () => {
+        if (validateStep(step)) setStep(s => s + 1);
+    };
+
+    const handleRegister = async () => {
+        if (!validateStep(2)) return;
+        setLoading(true);
+        setError('');
+
+        try {
+            const payload = {
+                email: formData.email,
+                password: formData.password,
+                fullName: formData.adminName,
+                phone: formData.phone,
+                role: 'gym_admin',
+                gymData: {
+                    name: formData.gymName,
+                    locationUrl: formData.locationUrl,
+                    femaleHours: formData.femaleHours,
+                    amenities: amens
+                }
+            };
+            
+            const res: any = await GemZApi.Auth.register(payload);
+            localStorage.setItem('gemz_access_token', res.accessToken);
+            localStorage.setItem('gemz_user', JSON.stringify(res.user));
+            router.push('/gym');
+        } catch (err: any) {
+            setError(err.message || (isArabic ? 'فشل إنشاء الحساب' : 'Registration failed'));
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const steps = [t.step1, t.step2, t.step3];
 
@@ -70,36 +146,54 @@ export default function GymRegisterPage() {
                 </div>
 
                 <div className="p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    {error && (
+                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm font-bold text-center">
+                            {error}
+                        </div>
+                    )}
+
                     {step === 0 && (
-                        <div className="space-y-4">
-                            {[{ label: t.name, type: 'text' },
-                            { label: t.email, type: 'email' },
-                            { label: t.phone, type: 'tel' },
-                            { label: t.password, type: 'password' },
-                            { label: t.confirm, type: 'password' }].map((f, i) => (
+                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                            {[{ name: 'adminName', label: t.name, type: 'text' },
+                            { name: 'email', label: t.email, type: 'email' },
+                            { name: 'phone', label: t.phone, type: 'tel' },
+                            { name: 'password', label: t.password, type: 'password' },
+                            { name: 'confirm', label: t.confirm, type: 'password' }].map((f, i) => (
                                 <div key={i}>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{f.label}</label>
-                                    <input type={f.type} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
                                 </div>
                             ))}
                         </div>
                     )}
                     {step === 1 && (
-                        <div className="space-y-4">
+                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.gymName}</label>
-                                <input type="text" placeholder="Gold's Gym Elite" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="gymName" value={formData.gymName} onChange={handleChange} type="text" placeholder="Gold's Gym Elite" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
                             </div>
+                            
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}><MapPin size={16} /> {t.googleMaps}</label>
+                                <input name="locationUrl" value={formData.locationUrl} onChange={handleChange} type="url" placeholder="https://maps.app.goo.gl/..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="col-span-2">
+                                <div>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.location}</label>
-                                    <input type="text" placeholder="Cairo, Nasr City" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                    <input name="mainLocation" value={formData.mainLocation} onChange={handleChange} type="text" placeholder="Cairo, Nasr City" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
                                 </div>
-                                <div className="col-span-2">
+                                <div>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.branches}</label>
-                                    <input type="number" min="1" defaultValue="1" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                    <input name="branches" value={formData.branches} onChange={handleChange} type="number" min="1" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
                                 </div>
                             </div>
+                            
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}><Clock size={16} /> {t.femaleHours}</label>
+                                <input name="femaleHours" value={formData.femaleHours} onChange={handleChange} type="text" placeholder={isArabic ? 'مثال: 08:00 ص - 12:00 م' : 'e.g. 08:00 AM - 12:00 PM'} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                            </div>
+
                             <div className="pt-2">
                                 <label className="text-sm font-medium block mb-2" style={{ color: 'var(--text-secondary)' }}>{t.amenities}</label>
                                 <div className="flex flex-wrap gap-2">
@@ -109,7 +203,7 @@ export default function GymRegisterPage() {
                                             <button key={i} onClick={() => setAmens(prev => active ? prev.filter(x => x !== am) : [...prev, am])}
                                                 className="py-1.5 px-3 rounded-lg text-xs font-medium transition-all"
                                                 style={{ background: active ? `${ACCENT}20` : 'var(--bg-input)', border: `1px solid ${active ? ACCENT : 'var(--border-medium)'}`, color: active ? ACCENT : 'var(--text-primary)' }}>
-                                                {am}
+                                                {active && '✓ '} {am}
                                             </button>
                                         );
                                     })}
@@ -118,18 +212,18 @@ export default function GymRegisterPage() {
                         </div>
                     )}
                     {step === 2 && (
-                        <div className="space-y-4">
+                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.cr}</label>
-                                <input type="text" placeholder="12345-67" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="cr" value={formData.cr} onChange={handleChange} type="text" placeholder="12345-67" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.tax}</label>
-                                <input type="text" placeholder="XXX-XXX-XXX" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="tax" value={formData.tax} onChange={handleChange} type="text" placeholder="XXX-XXX-XXX" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.dropin}</label>
-                                <input type="number" placeholder="250" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="dropinPrice" value={formData.dropinPrice} onChange={handleChange} type="number" placeholder="250" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
                             </div>
 
                             <div className="mt-6">
@@ -143,18 +237,18 @@ export default function GymRegisterPage() {
 
                     <div className={`flex justify-between mt-8 gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
                         {step > 0 && (
-                            <button onClick={() => setStep(s => s - 1)} className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>
+                            <button onClick={() => { setError(''); setStep(s => s - 1); }} className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors hover:bg-white/5" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>
                                 {t.back2}
                             </button>
                         )}
                         {step < 2 ? (
-                            <button onClick={() => setStep(s => s + 1)} className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
+                            <button onClick={nextStep} className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
                                 {t.next} <ChevronRight size={16} className={isArabic ? 'rotate-180' : ''} />
                             </button>
                         ) : (
-                            <Link href="/gym" className="flex-1 py-3 rounded-xl text-sm font-bold text-white text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
-                                <CheckCircle size={16} /> {t.finish}
-                            </Link>
+                            <button onClick={handleRegister} disabled={loading} className="flex-1 py-3 rounded-xl text-sm font-bold text-white text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
+                                {loading ? <Loader2 size={16} className="animate-spin" /> : <><CheckCircle size={16} /> {t.finish}</>}
+                            </button>
                         )}
                     </div>
                 </div>

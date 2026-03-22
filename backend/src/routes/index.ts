@@ -9,6 +9,7 @@ import { SocialController } from '../modules/social/social.controller';
 import { RecipeController } from '../modules/recipes/recipe.controller';
 import { PaymentWebhookController } from '../modules/payment/payment.controller';
 import { TurnstileController } from '../modules/gym/turnstile.controller';
+import { getGymStats, setOffPeakPricing, scanBarcode } from '../modules/gym/gym.controller';
 import { BiddingController } from '../modules/bidding/bidding.controller';
 import { SquadController } from '../modules/squads/squad.controller';
 import { verifyToken as authenticate } from '../core/middlewares/auth.middleware';
@@ -22,13 +23,17 @@ router.use('/auth', authRoutes);
 router.use('/finance', financialRoutes);
 
 // Health Check
-router.get('/health', (req, res) => {
+router.get('/health', (req: any, res: any) => {
     res.status(200).json({ status: 'OK', message: 'GEM Z API is running optimally.' });
 });
 
 // Trainee Routes
 router.get('/trainee/dashboard', authenticateRequest, TraineeController.getDashboardData);
 
+// Gym Routes
+router.get('/gym/stats', authenticateRequest, getGymStats);
+router.post('/gym/scan', authenticateRequest, scanBarcode);
+router.post('/gym/offpeak', authenticateRequest, setOffPeakPricing);
 // IoT Turnstile Access
 router.post('/gym/turnstile/verify', TurnstileController.verifyAccess);
 
