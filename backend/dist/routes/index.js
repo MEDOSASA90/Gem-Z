@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-// import authRoutes from '../modules/auth/auth.routes';
-// import financialRoutes from '../modules/financial/financial.routes';
+const auth_routes_1 = __importDefault(require("../modules/auth/auth.routes"));
+const financial_routes_1 = __importDefault(require("../modules/financial/financial.routes"));
 const trainee_controller_1 = require("../modules/trainee/trainee.controller");
 const coins_controller_1 = require("../modules/coins/coins.controller");
 const challenge_controller_1 = require("../modules/challenges/challenge.controller");
@@ -19,9 +19,9 @@ const squad_controller_1 = require("../modules/squads/squad.controller");
 const auth_middleware_1 = require("../core/middlewares/auth.middleware");
 const authenticateRequest = auth_middleware_1.verifyToken; // Alias for consistency
 const router = express_1.default.Router();
-// Existing Modules (Assuming they have separate router files in a real app)
-// router.use('/auth', authRoutes);
-// router.use('/finance', financialRoutes);
+// Existing Modules
+router.use('/auth', auth_routes_1.default);
+router.use('/finance', financial_routes_1.default);
 // Health Check
 router.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'GEM Z API is running optimally.' });

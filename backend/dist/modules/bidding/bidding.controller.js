@@ -1,21 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BiddingController = void 0;
-const pg_1 = require("pg");
 const uuid_1 = require("uuid");
-const pool = new pg_1.Pool();
 class BiddingController {
-    /**
-     * POST /api/v1/bidding/requests
-     * Trainee posts a new custom request (e.g., "Need rehab for shoulder injury")
-     */
     static async createRequest(req, res) {
         const userId = req.user?.userId;
         const { title, description, budget, durationWeeks } = req.body;
         try {
-            // For simulation, we'll assume a 'bidding_requests' table exists
-            // Since we didn't add it in Phase 3 DB schema, we will mock the response
-            // In a real scenario: INSERT INTO bidding_requests ...
             const mockRequest = {
                 id: (0, uuid_1.v4)(),
                 traineeId: userId,
@@ -37,13 +28,8 @@ class BiddingController {
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
-    /**
-     * GET /api/v1/bidding/requests
-     * Fetch all open requests (for Trainers to browse)
-     */
     static async getOpenRequests(req, res) {
         try {
-            // Mocking the feed of open requests
             const mockFeed = [
                 {
                     id: 'req_101',
@@ -72,16 +58,11 @@ class BiddingController {
             res.status(500).json({ success: false, message: 'Error fetching requests' });
         }
     }
-    /**
-     * POST /api/v1/bidding/requests/:id/bid
-     * Trainer submits a bid for a specific request
-     */
     static async submitBid(req, res) {
         const trainerId = req.user?.userId;
         const { id } = req.params;
         const { proposedPrice, message } = req.body;
         try {
-            // Mocking bid submission
             return res.status(201).json({
                 success: true,
                 message: 'Bid submitted successfully',
