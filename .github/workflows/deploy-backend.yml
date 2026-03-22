@@ -3,7 +3,7 @@ name: Deploy Backend to Hostinger
 on:
   push:
     branches:
-      - main
+      - staging
     paths:
       - 'backend/**'
 
