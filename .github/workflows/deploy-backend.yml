@@ -49,6 +49,4 @@ jobs:
         run: |
           sudo apt-get purge -y needrestart || true
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq lftp
-          echo "machine $FTP_SERVER login $FTP_USERNAME password $FTP_PASSWORD" > ~/.netrc
-          chmod 600 ~/.netrc
-          lftp -c "set ftp:ssl-allow yes; set ssl:verify-certificate no; open $FTP_SERVER; mirror -R -v -P 5 dist/ ./api/"
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" -e "set ftp:ssl-allow yes; set ssl:verify-certificate no; mirror -R -v -P 5 dist/ ./api/; quit"
