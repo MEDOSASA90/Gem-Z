@@ -6,6 +6,7 @@ on:
       - staging
     paths:
       - 'backend/**'
+      - '.github/workflows/**'
 
 jobs:
   build-and-deploy:
