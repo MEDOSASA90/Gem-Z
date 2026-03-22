@@ -34,15 +34,11 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: "https://api.gem-z.shop/api/v1"
 
-      - name: Deploy to Hostinger FTP (Frontend)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: public_html/
-          local-dir: frontend/out/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
+      - name: Deploy Frontend via FTP (LFTP)
+        env:
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y lftp
+          lftp -c "set ftp:ssl-allow yes; set ssl:verify-certificate no; open -u $FTP_USERNAME,'$FTP_PASSWORD' $FTP_SERVER; mirror -R -v -P 5 ./frontend/out/ public_html/"
