@@ -1,7 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Eye, EyeOff, Zap, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Zap, ArrowRight, Loader2 } from 'lucide-react';
+import { GemZApi } from '../../lib/api';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -30,10 +32,46 @@ export default function LoginPage() {
     const t = isArabic ? T.ar : T.en;
     const [showPass, setShowPass] = useState(false);
     const [role, setRole] = useState(0);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    
     const isDark = theme === 'dark';
+    const router = useRouter();
 
     const roleColors = ['#00FFA3', '#00B8FF', '#A78BFA', '#F59E0B'];
     const roleIcons = ['🏋️', '🎯', '🏢', '🛍️'];
+    const roleKeys = ['trainee', 'trainer', 'gym_admin', 'store_admin'];
+
+    const handleLogin = async () => {
+        if (!email || !password) {
+            setError(isArabic ? 'يرجى إدخال البريد الإلكتروني وكلمة المرور' : 'Please enter email and password');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const res = await GemZApi.Auth.login({ email, password });
+            
+            // Wait, the backend doesn't care about role select on login right now because it fetches the role from DB.
+            // But from frontend UX we might route them differently later based on DB role.
+            localStorage.setItem('gemz_access_token', res.accessToken);
+            localStorage.setItem('gemz_user', JSON.stringify(res.user));
+
+            if (res.user.role === 'trainee') router.push('/trainee');
+            else if (res.user.role === 'trainer') router.push('/trainer');
+            else if (res.user.role === 'gym_admin') router.push('/dashboard/gym');
+            else router.push('/dashboard/store');
+
+        } catch (err: any) {
+            setError(err.message || (isArabic ? 'خطأ في تسجيل الدخول' : 'Login failed'));
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
@@ -80,10 +118,16 @@ export default function LoginPage() {
 
                 {/* Card */}
                 <div className="p-8 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    {error && (
+                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm font-bold text-center">
+                            {error}
+                        </div>
+                    )}
+                    
                     <div className="space-y-5">
                         <div>
                             <label className="text-sm font-medium block mb-2" style={{ color: 'var(--text-secondary)' }}>{t.email}</label>
-                            <input type="email" className="w-full px-4 py-3 rounded-xl text-sm transition-colors input-base" placeholder="you@example.com" />
+                            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="w-full px-4 py-3 rounded-xl text-sm transition-colors input-base" placeholder="you@example.com" />
                         </div>
                         <div>
                             <div className="flex justify-between mb-2">
@@ -91,15 +135,15 @@ export default function LoginPage() {
                                 <a href="#" className="text-sm" style={{ color: roleColors[role] }}>{t.forgot}</a>
                             </div>
                             <div className="relative">
-                                <input type={showPass ? 'text' : 'password'} className="w-full px-4 py-3 rounded-xl text-sm transition-colors input-base pe-12" placeholder="••••••••" />
+                                <input value={password} onChange={(e) => setPassword(e.target.value)} type={showPass ? 'text' : 'password'} className="w-full px-4 py-3 rounded-xl text-sm transition-colors input-base pe-12" placeholder="••••••••" />
                                 <button onClick={() => setShowPass(!showPass)} className="absolute top-1/2 -translate-y-1/2 end-4" style={{ color: 'var(--text-muted)' }}>
                                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
                             </div>
                         </div>
 
-                        <button className="w-full py-3.5 rounded-xl font-bold text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 shadow-[0_0_25px_rgba(0,255,163,0.3)]" style={{ background: `linear-gradient(135deg, ${roleColors[role]}, #00B8FF)` }}>
-                            <Zap size={18} /> {t.login}
+                        <button onClick={handleLogin} disabled={loading} className="w-full py-3.5 rounded-xl font-bold text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50 shadow-[0_0_25px_rgba(0,255,163,0.3)]" style={{ background: `linear-gradient(135deg, ${roleColors[role]}, #00B8FF)` }}>
+                            {loading ? <Loader2 size={18} className="animate-spin" /> : <><Zap size={18} /> {t.login}</>}
                         </button>
 
                         <div className="flex items-center gap-3">

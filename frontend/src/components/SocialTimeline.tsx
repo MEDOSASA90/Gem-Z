@@ -1,8 +1,10 @@
 'use client';
 import React, { useState } from 'react';
-import { Heart, MessageSquare, Share2, Flame, Award, Send, Image as ImageIcon, Globe } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Flame, Award, Send, Image as ImageIcon, Globe, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { GemZApi } from '../lib/api';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function SocialTimeline() {
     const { isArabic, toggleLanguage } = useLanguage();
@@ -10,11 +12,41 @@ export default function SocialTimeline() {
     const isDark = theme === 'dark';
 
     const [postContent, setPostContent] = useState('');
+    const [posts, setPosts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [posting, setPosting] = useState(false);
 
-    const handlePost = () => {
+    React.useEffect(() => {
+        fetchPosts();
+    }, []);
+
+    const fetchPosts = async () => {
+        try {
+            const res: any = await GemZApi.Social.getFeed();
+            if (res.success) {
+                setPosts(res.posts);
+            }
+        } catch (error) {
+            console.error('Failed to fetch posts', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePost = async () => {
         if (!postContent.trim()) return;
-        // API Call to Posts module...
-        setPostContent('');
+        setPosting(true);
+        try {
+            const res: any = await GemZApi.Social.createPost(postContent);
+            if (res.success && res.post) {
+                setPosts([res.post, ...posts]);
+                setPostContent('');
+            }
+        } catch (error) {
+            console.error('Failed to create post', error);
+        } finally {
+            setPosting(false);
+        }
     };
 
     return (
@@ -58,45 +90,69 @@ export default function SocialTimeline() {
                             </button>
                             <button
                                 onClick={handlePost}
-                                className="text-black font-bold px-6 py-2 rounded-full hover:opacity-90 flex items-center gap-2 transition-opacity"
+                                disabled={posting || !postContent.trim()}
+                                className="text-black font-bold px-6 py-2 rounded-full hover:opacity-90 flex items-center gap-2 transition-opacity disabled:opacity-50"
                                 style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}
                             >
-                                {isArabic ? 'نشر' : 'Post'} <Send className={`w-4 h-4 ${isArabic ? 'rotate-180' : ''}`} />
+                                {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                                    <>{isArabic ? 'نشر' : 'Post'} <Send className={`w-4 h-4 ${isArabic ? 'rotate-180' : ''}`} /></>
+                                )}
                             </button>
                         </div>
                     </div>
 
                     {/* Feed Posts */}
-                    {[1, 2, 3].map((post) => (
-                        <div key={post} className="rounded-3xl p-5 glass-panel" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full shrink-0" style={{ background: 'var(--border-medium)', border: '1px solid var(--border-subtle)' }} />
-                                    <div>
-                                        <h4 className="font-bold flex items-center gap-2">
-                                            Sarah Jenkins <span className="text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold" style={{ background: 'rgba(0,184,255,0.1)', color: '#00B8FF' }}>Pro</span>
-                                        </h4>
-                                        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'قبل ساعتين • نادي الذهب' : "2 hours ago • Gold's Gym"}</p>
+                    {loading ? (
+                        <div className="flex justify-center p-8">
+                            <Loader2 className="w-8 h-8 animate-spin text-[#00FFA3]" />
+                        </div>
+                    ) : posts.length === 0 ? (
+                        <div className="text-center p-8" style={{ color: 'var(--text-secondary)' }}>
+                            {isArabic ? 'لا توجد منشورات حتى الآن. كن أول من ينشر!' : 'No posts yet. Be the first to post!'}
+                        </div>
+                    ) : (
+                        posts.map((post) => (
+                            <div key={post.id} className="rounded-3xl p-5 glass-panel" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-xl font-bold bg-gradient-to-br from-[#00FFA3] to-[#00B8FF] text-black border-2 border-[#0A0A0A]">
+                                            {post.author_name ? post.author_name.charAt(0).toUpperCase() : 'U'}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold flex items-center gap-2">
+                                                {post.author_name || 'Gem Z User'} 
+                                                <span className="text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold" style={{ background: 'rgba(0,184,255,0.1)', color: '#00B8FF' }}>{post.author_role || 'Trainee'}</span>
+                                            </h4>
+                                            <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                                                {post.created_at ? formatDistanceToNow(new Date(post.created_at), { addSuffix: true }) : 'Just now'}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <p className="mb-4 leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>
-                                {isArabic ? 'لقد سجلت رقمًا قياسيًا جديدًا في الرفعة المميتة! 120 كجم لـ 3 تكرارات. روتين ما قبل التمرين من المدرب الذكي جنوني. 🔥' : 'Just hit a new PR on deadlifts! 120kg for 3 reps. The pre-workout routine from the AI coach is insane. 🔥'}
-                            </p>
+                                <p className="mb-4 leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }} dir="auto">
+                                    {post.content}
+                                </p>
 
-                            <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
-                                <button className="flex items-center gap-2 transition-colors group hover:text-[#00FFA3]">
-                                    <Heart className="w-5 h-5 group-hover:fill-[#00FFA3]" /> <span className="font-bold font-mono">234</span>
-                                </button>
-                                <button className="flex items-center gap-2 transition-colors hover:text-[#00B8FF]">
-                                    <MessageSquare className="w-5 h-5" /> <span className="font-bold font-mono">42</span>
-                                </button>
-                                <button className="flex items-center gap-2 transition-colors hover:text-[#A78BFA]">
-                                    <Share2 className="w-5 h-5" />
-                                </button>
+                                {post.media_urls && post.media_urls.length > 0 && (
+                                    <div className="mb-4 rounded-xl overflow-hidden bg-[#0A0A0A] aspect-video flex items-center justify-center">
+                                        <img src={post.media_urls[0]} alt="Post media" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+
+                                <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
+                                    <button className="flex items-center gap-2 transition-colors group hover:text-[#00FFA3]">
+                                        <Heart className={`w-5 h-5 group-hover:fill-[#00FFA3] ${post.likes_count > 0 ? 'fill-[#00FFA3] text-[#00FFA3]' : ''}`} /> <span className="font-bold font-mono">{post.likes_count || 0}</span>
+                                    </button>
+                                    <button className="flex items-center gap-2 transition-colors hover:text-[#00B8FF]">
+                                        <MessageSquare className="w-5 h-5" /> <span className="font-bold font-mono">{post.comments_count || 0}</span>
+                                    </button>
+                                    <button className="flex items-center gap-2 transition-colors hover:text-[#A78BFA]">
+                                        <Share2 className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
 
                 {/* Sidebar: Leaderboards & Streaks */}

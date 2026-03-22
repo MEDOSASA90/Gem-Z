@@ -39,8 +39,44 @@ export const GemZApi = {
         };
 
         try {
-            const response = await fetch(`${BASE_URL}${endpoint}`, config);
-            const data = await response.json();
+            let response = await fetch(`${BASE_URL}${endpoint}`, config);
+            let data = await response.json();
+
+            // Intercept 401 Unauthorized (Token may be expired)
+            if (response.status === 401 && requireAuth) {
+                try {
+                    // Attempt to refresh token
+                    const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'omit' // cookies might not be supported if domains differ, but let's assume it works or handle via standard mode
+                    });
+
+                    if (refreshRes.ok) {
+                        const refreshData = await refreshRes.json();
+                        if (refreshData.accessToken) {
+                            localStorage.setItem('gemz_access_token', refreshData.accessToken);
+                            
+                            // Retry original request
+                            const retryConfig = {
+                                ...config,
+                                headers: {
+                                    ...config.headers,
+                                    'Authorization': `Bearer ${refreshData.accessToken}`
+                                }
+                            };
+                            response = await fetch(`${BASE_URL}${endpoint}`, retryConfig);
+                            data = await response.json();
+                        }
+                    } else {
+                        // Refresh failed, clear token
+                        localStorage.removeItem('gemz_access_token');
+                        if (typeof window !== 'undefined') window.location.href = '/login';
+                    }
+                } catch (refreshErr) {
+                    localStorage.removeItem('gemz_access_token');
+                }
+            }
 
             if (!response.ok) {
                 throw new Error(data.message || 'API Request Failed');
@@ -58,10 +94,17 @@ export const GemZApi = {
     Auth: {
         login: (credentials: any) => GemZApi.request('/auth/login', { method: 'POST', body: JSON.stringify(credentials), requireAuth: false }),
         register: (userData: any) => GemZApi.request('/auth/register', { method: 'POST', body: JSON.stringify(userData), requireAuth: false }),
+        refresh: () => GemZApi.request('/auth/refresh', { method: 'POST', requireAuth: false }),
     },
 
     Trainee: {
         getDashboard: () => GemZApi.request('/trainee/dashboard'),
+    },
+
+    Gym: {
+        getDashboard: () => GemZApi.request('/gym/stats'),
+        setOffPeak: (isActive: boolean, discountPercentage?: number) => 
+            GemZApi.request('/gym/offpeak', { method: 'POST', body: JSON.stringify({ isActive, discountPercentage }) }),
     },
 
     Coins: {

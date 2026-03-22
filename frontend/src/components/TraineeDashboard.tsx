@@ -10,6 +10,8 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useWearables } from '../hooks/useWearables';
+import { GemZApi } from '../lib/api';
+import { useRouter } from 'next/navigation';
 
 const BADGES = [
     { icon: '🔥', name: '7-Day Streak', nameAr: 'إنجاز ٧ أيام', earned: true, color: '#FF6B35' },
@@ -57,6 +59,28 @@ export default function TraineeDashboard() {
     const [qrTimer, setQrTimer] = useState(30);
 
     const { wearableData, connectDevice, disconnectDevice } = useWearables();
+    
+    // Live Database State
+    const [user, setUser] = useState<{ id: string, full_name: string, email: string } | null>(null);
+    const [dashData, setDashData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('gemz_user');
+        if (!storedUser) {
+            router.push('/login');
+            return;
+        }
+        setUser(JSON.parse(storedUser));
+
+        GemZApi.Trainee.getDashboard()
+            .then((res: any) => {
+                if(res.success) setDashData(res.data);
+            })
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [router]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -79,9 +103,15 @@ export default function TraineeDashboard() {
     const totalKcal = MEALS.reduce((a, m) => a + m.kcal, 0);
     const consumedKcal = MEALS.filter(m => m.done).reduce((a, m) => a + m.kcal, 0);
     const totalProtein = MEALS.reduce((a, m) => a + m.protein, 0);
-    const walletBalance = 1480;
-    const streakDays = 12;
-    const totalPoints = 2840;
+    
+    // Fallbacks if data is still loading or empty
+    const walletBalance = dashData?.wallet?.available_bal ? Number(dashData.wallet.available_bal) : 0;
+    const streakDays = dashData?.workoutStreak || 0;
+    const totalPoints = dashData?.profile?.gems_coins || 0;
+    
+    const weight = dashData?.profile?.weight_kg || '--';
+    const bodyFat = dashData?.profile?.body_fat_pct || '--';
+    const activeSub = dashData?.subscription;
 
     const tabs = [
         { id: 'overview', icon: BarChart3, labelEn: 'Overview', labelAr: 'نظرة عامة' },
@@ -98,12 +128,14 @@ export default function TraineeDashboard() {
             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
                     <div className="relative">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00FFA3] to-[#00B8FF] flex items-center justify-center text-black font-bold text-xl">A</div>
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00FFA3] to-[#00B8FF] flex items-center justify-center text-black font-bold text-xl">
+                            {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
+                        </div>
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#00FFA3] border-2 border-[#0A0A0A]" />
                     </div>
                     <div>
                         <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'أهلاً،' : 'Welcome back,'}</p>
-                        <h1 className="text-xl font-bold font-heading">{isArabic ? 'أحمد محمود 💪' : 'Ahmed Mahmoud 💪'}</h1>
+                        <h1 className="text-xl font-bold font-heading">{user?.full_name || '...'} 💪</h1>
                         <div className="flex items-center gap-2 mt-1">
                             <Flame size={14} className="text-[#FF6B35]" />
                             <span className="text-xs font-bold text-[#FF6B35]">{streakDays} {isArabic ? 'يوم متتالي 🔥' : 'day streak 🔥'}</span>
@@ -216,9 +248,9 @@ export default function TraineeDashboard() {
                             <h3 className="font-bold mb-5 flex items-center gap-2"><TrendingUp className="text-[#00FFA3]" size={18} />{isArabic ? 'إحصائيات الجسم' : 'Body Stats'}</h3>
                             <div className="grid grid-cols-3 gap-4">
                                 {[
-                                    { label: isArabic ? 'الوزن' : 'Weight', value: '82 kg', trend: '-2kg', color: '#00FFA3' },
-                                    { label: isArabic ? 'الدهون' : 'Body Fat', value: '18%', trend: '-1.2%', color: '#00B8FF' },
-                                    { label: isArabic ? 'العضلات' : 'Muscle', value: '42%', trend: '+0.8%', color: '#A78BFA' },
+                                    { label: isArabic ? 'الوزن' : 'Weight', value: `${weight} kg`, trend: '--', color: '#00FFA3' },
+                                    { label: isArabic ? 'الدهون' : 'Body Fat', value: `${bodyFat}%`, trend: '--', color: '#00B8FF' },
+                                    { label: isArabic ? 'العضلات' : 'Muscle', value: '--', trend: '--', color: '#A78BFA' },
                                 ].map((s, i) => (
                                     <div key={i} className="text-center p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
                                         <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{s.label}</p>
@@ -270,29 +302,40 @@ export default function TraineeDashboard() {
                     </div>
 
                     {/* Active Subscription */}
-                    <div className="rounded-2xl p-6 relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid rgba(0,255,163,0.3)', borderTop: '2px solid #00FFA3' }}>
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-[#00FFA3]/5 rounded-full blur-2xl" />
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الاشتراك النشط' : 'Active Subscription'}</p>
-                                <h3 className="text-xl font-bold text-[#00FFA3]">Gold Gym — Elite</h3>
-                                <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'ينتهي في ١٥ أبريل ٢٠٢٦' : 'Expires April 15, 2026'}</p>
+                    {activeSub ? (
+                        <div className="rounded-2xl p-6 relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid rgba(0,255,163,0.3)', borderTop: '2px solid #00FFA3' }}>
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-[#00FFA3]/5 rounded-full blur-2xl" />
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الاشتراك النشط' : 'Active Subscription'}</p>
+                                    <h3 className="text-xl font-bold text-[#00FFA3]">{activeSub.gym_name} — {activeSub.plan_name}</h3>
+                                    <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                                        {isArabic ? 'ينتهي في' : 'Expires'}: {new Date(activeSub.expires_at).toLocaleDateString()}
+                                    </p>
+                                </div>
+                                <button onClick={() => setQrVisible(true)} className="flex flex-col items-center gap-1 p-3 rounded-xl" style={{ background: 'rgba(0,255,163,0.1)', border: '1px solid rgba(0,255,163,0.3)' }}>
+                                    <QrCode size={24} className="text-[#00FFA3]" />
+                                    <span className="text-[10px] text-[#00FFA3] font-bold">CHECK IN</span>
+                                </button>
                             </div>
-                            <button onClick={() => setQrVisible(true)} className="flex flex-col items-center gap-1 p-3 rounded-xl" style={{ background: 'rgba(0,255,163,0.1)', border: '1px solid rgba(0,255,163,0.3)' }}>
-                                <QrCode size={24} className="text-[#00FFA3]" />
-                                <span className="text-[10px] text-[#00FFA3] font-bold">CHECK IN</span>
+                            <div className="mt-4">
+                                <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>
+                                    <span>{isArabic ? 'متبقي' : 'Remaining'}</span>
+                                    <span>36 {isArabic ? 'يوم' : 'days'}</span>
+                                </div>
+                                <div className="h-2 rounded-full" style={{ background: 'var(--bg-input)' }}>
+                                    <div className="h-2 rounded-full bg-gradient-to-r from-[#00FFA3] to-[#00B8FF]" style={{ width: '40%' }} />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="rounded-2xl p-6 relative overflow-hidden text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                            <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'ليس لديك اشتراك حالي' : 'No active subscription'}</p>
+                            <button className="px-5 py-2 rounded-xl text-sm font-bold text-black neon-glow" style={{ background: '#00FFA3' }}>
+                                {isArabic ? 'تصفح الجيمات المتاحة' : 'Browse Gyms'}
                             </button>
                         </div>
-                        <div className="mt-4">
-                            <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>
-                                <span>{isArabic ? 'متبقي' : 'Remaining'}</span>
-                                <span>36 {isArabic ? 'يوم' : 'days'}</span>
-                            </div>
-                            <div className="h-2 rounded-full" style={{ background: 'var(--bg-input)' }}>
-                                <div className="h-2 rounded-full bg-gradient-to-r from-[#00FFA3] to-[#00B8FF]" style={{ width: '40%' }} />
-                            </div>
-                        </div>
-                    </div>
+                    )}
                 </div>
             )}
 

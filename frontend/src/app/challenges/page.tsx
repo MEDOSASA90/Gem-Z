@@ -1,69 +1,14 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Trophy, Users, Timer, Target, Flame, ChevronRight,
-    Globe, Star, CheckCircle, Lock, Zap, Award
+    Globe, Star, CheckCircle, Lock, Zap, Award, Loader2
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 import Link from 'next/link';
 import GemZLogo from '../../components/GemZLogo';
-
-const CHALLENGES = [
-    {
-        id: 1, emoji: '🔥', color: '#FF6B35',
-        titleEn: '30-Day Fat Loss Challenge', titleAr: 'تحدي خسارة دهون 30 يوم',
-        descEn: 'Lose 2-4 kg in 30 days with structured workouts and diet plan.', descAr: 'اخسر 2-4 كيلو في 30 يوماً ببرنامج تمارين ونظام غذائي منظم.',
-        prize: 'EGP 500 Wallet Credit', prizeAr: '500 ج.م رصيد محفظة',
-        participants: 2840, goal: 'Lose 2kg+', goalAr: 'خسارة 2كج+',
-        daysLeft: 18, totalDays: 30, joined: true,
-        leaderboard: [
-            { rank: 1, name: 'Sara K.', lost: '3.8 kg', medal: '🥇' },
-            { rank: 2, name: 'Ahmed M.', lost: '3.2 kg', medal: '🥈' },
-            { rank: 3, name: 'Nour H.', lost: '2.9 kg', medal: '🥉' },
-            { rank: 12, name: 'You', lost: '1.4 kg', medal: '⭐', isMe: true },
-        ]
-    },
-    {
-        id: 2, emoji: '💪', color: '#00FFA3',
-        titleEn: '100 Push-Up Daily Challenge', titleAr: 'تحدي 100 ضغط يومياً',
-        descEn: 'Complete 100 push-ups every day for 21 consecutive days.', descAr: 'أكمل 100 ضغة يومياً لمدة 21 يوماً متتالياً.',
-        prize: 'Gold Badge + 200 pts', prizeAr: 'شارة ذهبية + 200 نقطة',
-        participants: 5120, goal: '100 reps/day', goalAr: '100 تكرار/يوم',
-        daysLeft: 7, totalDays: 21, joined: true,
-        leaderboard: [
-            { rank: 1, name: 'Mohamed A.', days: '21/21', medal: '🥇' },
-            { rank: 2, name: 'Karim T.', days: '20/21', medal: '🥈' },
-            { rank: 3, name: 'Layla R.', days: '19/21', medal: '🥉' },
-            { rank: 8, name: 'You', days: '14/21', medal: '⭐', isMe: true },
-        ]
-    },
-    {
-        id: 3, emoji: '🏃', color: '#00B8FF',
-        titleEn: '10K Steps Daily', titleAr: 'تحدي 10 ألف خطوة يومياً',
-        descEn: 'Walk or run 10,000 steps daily for an entire month.', descAr: 'امشِ أو اجرِ 10,000 خطوة يومياً لمدة شهر كامل.',
-        prize: 'Platinum Badge + Free Supplement', prizeAr: 'شارة بلاتينية + مكمل مجاني',
-        participants: 12400, goal: '10K steps/day', goalAr: '10K خطوة/يوم',
-        daysLeft: 24, totalDays: 30, joined: false,
-        leaderboard: [
-            { rank: 1, name: 'Hussein B.', steps: '380K', medal: '🥇' },
-            { rank: 2, name: 'Dina M.', steps: '358K', medal: '🥈' },
-            { rank: 3, name: 'Omar F.', steps: '342K', medal: '🥉' },
-        ]
-    },
-    {
-        id: 4, emoji: '⚔️', color: '#A78BFA',
-        titleEn: 'Gym vs Gym — Cairo Cup', titleAr: 'الجيم ضد الجيم — كأس القاهرة',
-        descEn: 'Gold Gym vs Platinum Fitness — top 3 members win gym credits!', descAr: 'جولد جيم vs بلاتينيوم فيتنس — أفضل 3 أعضاء يفوزون برصيد!',
-        prize: 'EGP 1,000 + Trophy', prizeAr: '1,000 ج.م + كأس',
-        participants: 890, goal: 'Most sessions', goalAr: 'أكثر جلسات',
-        daysLeft: 11, totalDays: 14, joined: false,
-        leaderboard: [
-            { rank: 1, name: '🟢 Gold Gym', score: '344 pts', medal: '🥇' },
-            { rank: 2, name: '🟣 Platinum', score: '289 pts', medal: '🥈' },
-        ]
-    },
-];
+import { GemZApi } from '../../lib/api';
 
 const MY_PROGRESS = {
     activeChallenges: 2,
@@ -76,10 +21,50 @@ export default function CommunityChallengePage() {
     const { isArabic, toggleLanguage } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const isDark = theme === 'dark';
-    const [selected, setSelected] = useState<typeof CHALLENGES[0] | null>(null);
+    const [selected, setSelected] = useState<any | null>(null);
     const [filter, setFilter] = useState<'all' | 'mine'>('all');
+    
+    const [challenges, setChallenges] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const displayed = filter === 'mine' ? CHALLENGES.filter(c => c.joined) : CHALLENGES;
+    useEffect(() => {
+        fetchChallenges();
+    }, []);
+
+    const fetchChallenges = async () => {
+        try {
+            const res: any = await GemZApi.Challenges.list();
+            if (res.success && res.challenges) {
+                setChallenges(res.challenges);
+            }
+        } catch (error) {
+            console.error('Failed to load challenges:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleJoin = async (id: string, e: any) => {
+        e.stopPropagation();
+        try {
+            const res: any = await GemZApi.Challenges.join(id);
+            if (res.success) {
+                setChallenges(p => p.map(c => c.id === id ? { ...c, joined: true } : c));
+            }
+        } catch (error) {
+            console.error('Failed to join', error);
+        }
+    };
+
+    const displayed = filter === 'mine' ? challenges.filter(c => c.joined) : challenges;
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center font-sans tracking-tight bg-black">
+                <Loader2 className="w-10 h-10 animate-spin text-[#00FFA3]" />
+            </div>
+        );
+    }
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen font-sans pb-20" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>

@@ -8,6 +8,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 import Link from 'next/link';
 import GemZLogo from '../../components/GemZLogo';
+import { GemZApi } from '../../lib/api';
+import { Loader2 } from 'lucide-react';
 
 const EARN_ACTIVITIES = [
     { icon: '🏋️', titleEn: 'Complete a Workout', titleAr: 'أكمل تمريناً', coinsEn: '+15 Coins', coinsAr: '+15 كوين', daily: true },
@@ -47,9 +49,57 @@ export default function CoinsPage() {
     const [activeTab, setActiveTab] = useState<'store' | 'earn' | 'history'>('store');
     const [redeemModal, setRedeemModal] = useState<typeof REWARDS[0] | null>(null);
     const [redeemed, setRedeemed] = useState<number[]>([]);
+    
+    // Live data states
+    const [currentCoins, setCurrentCoins] = useState<number>(0);
+    const [loading, setLoading] = useState(true);
+    const [redeeming, setRedeeming] = useState(false);
 
-    const currentCoins = 1840 - redeemed.reduce((sum, id) => sum + (REWARDS.find(r => r.id === id)?.cost || 0), 0);
+    React.useEffect(() => {
+        fetchDashboard();
+    }, []);
+
+    const fetchDashboard = async () => {
+        try {
+            const res: any = await GemZApi.Trainee.getDashboard();
+            if (res.success && res.data?.profile) {
+                setCurrentCoins(res.data.profile.total_points || 0);
+            }
+        } catch (error) {
+            console.error('Failed to load coins:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRedeem = async () => {
+        if (!redeemModal) return;
+        setRedeeming(true);
+        try {
+            const res: any = await GemZApi.Coins.redeem(redeemModal.id.toString());
+            if (res.success) {
+                setCurrentCoins(res.newBalance);
+                setRedeemed(p => [...p, redeemModal.id]);
+                setRedeemModal(null);
+            } else {
+                alert(res.message);
+            }
+        } catch (error: any) {
+            alert(error.message || 'Redemption failed');
+        } finally {
+            setRedeeming(false);
+        }
+    };
+
     const fmtCoins = (n: number) => n.toLocaleString('en-US');
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+                <Loader2 className="w-10 h-10 animate-spin text-[#FFCC00]" />
+            </div>
+        );
+    }
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen font-sans pb-28" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
@@ -218,11 +268,14 @@ export default function CoinsPage() {
                             <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>→ {fmtCoins(currentCoins - redeemModal.cost)} 🪙 {isArabic ? 'بعد الاستبدال' : 'after redemption'}</p>
                         </div>
                         <div className="flex gap-3 w-full">
-                            <button onClick={() => { setRedeemed(p => [...p, redeemModal.id]); setRedeemModal(null); }}
-                                className="flex-1 py-3 rounded-xl font-bold text-black" style={{ background: '#FFCC00' }}>
-                                {isArabic ? '✅ تأكيد' : '✅ Confirm'}
+                            <button onClick={handleRedeem}
+                                disabled={redeeming}
+                                className="flex-1 py-3 rounded-xl font-bold text-black flex items-center justify-center gap-2 disabled:opacity-50" style={{ background: '#FFCC00' }}>
+                                {redeeming ? <Loader2 className="w-5 h-5 animate-spin" /> : (isArabic ? '✅ تأكيد' : '✅ Confirm')}
                             </button>
-                            <button onClick={() => setRedeemModal(null)} className="flex-1 py-3 rounded-xl font-bold" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
+                            <button onClick={() => setRedeemModal(null)} 
+                                disabled={redeeming}
+                                className="flex-1 py-3 rounded-xl font-bold disabled:opacity-50" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
                                 {isArabic ? 'إلغاء' : 'Cancel'}
                             </button>
                         </div>

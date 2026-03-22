@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme } from '../../../context/ThemeContext';
-import { CheckCircle, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronRight, Loader2 } from 'lucide-react';
+import { GemZApi } from '../../../lib/api';
+import { useRouter } from 'next/navigation';
 
 const T = {
     en: {
@@ -42,6 +44,47 @@ export default function TraineeRegisterPage() {
     const t = isArabic ? T.ar : T.en;
     const [step, setStep] = useState(0);
     const [goals, setGoals] = useState<string[]>([]);
+    
+    // Auth State
+    const [formData, setFormData] = useState({ fullName: '', email: '', phone: '', password: '', confirm: '' });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const router = useRouter();
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleRegister = async () => {
+        if (formData.password !== formData.confirm) {
+            setError(isArabic ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
+            return;
+        }
+        
+        setLoading(true);
+        setError('');
+        
+        try {
+            const res = await GemZApi.Auth.register({
+                email: formData.email,
+                password: formData.password,
+                fullName: formData.fullName,
+                phone: formData.phone,
+                role: 'trainee'
+            });
+            
+            // Persist Session
+            localStorage.setItem('gemz_access_token', res.accessToken);
+            localStorage.setItem('gemz_user', JSON.stringify(res.user));
+            
+            router.push('/trainee');
+            
+        } catch (err: any) {
+            setError(err.message || (isArabic ? 'حدث خطأ أثناء التسجيل' : 'Registration failed'));
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const steps = [t.step1, t.step2, t.step3];
     const goalList = [t.weightLoss, t.muscle, t.endurance, t.wellness];
@@ -73,16 +116,22 @@ export default function TraineeRegisterPage() {
                 </div>
 
                 <div className="p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    {error && (
+                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm font-bold text-center">
+                            {error}
+                        </div>
+                    )}
+                    
                     {step === 0 && (
                         <div className="space-y-4">
-                            {[{ label: t.name, type: 'text', ph: isArabic ? 'محمد أحمد' : 'John Doe' },
-                            { label: t.email, type: 'email', ph: 'you@example.com' },
-                            { label: t.phone, type: 'tel', ph: isArabic ? '+20 1XX XXX XXXX' : '+1 XXX XXX XXXX' },
-                            { label: t.password, type: 'password', ph: '••••••••' },
-                            { label: t.confirm, type: 'password', ph: '••••••••' }].map((f, i) => (
+                            {[{ name: 'fullName', label: t.name, type: 'text', ph: isArabic ? 'محمد أحمد' : 'John Doe' },
+                            { name: 'email', label: t.email, type: 'email', ph: 'you@example.com' },
+                            { name: 'phone', label: t.phone, type: 'tel', ph: isArabic ? '+20 1XX XXX XXXX' : '+1 XXX XXX XXXX' },
+                            { name: 'password', label: t.password, type: 'password', ph: '••••••••' },
+                            { name: 'confirm', label: t.confirm, type: 'password', ph: '••••••••' }].map((f, i) => (
                                 <div key={i}>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{f.label}</label>
-                                    <input type={f.type} placeholder={f.ph} className="w-full px-4 py-3 rounded-xl text-sm input-base" />
+                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} placeholder={f.ph} className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
                                 </div>
                             ))}
                             <div>
@@ -95,7 +144,7 @@ export default function TraineeRegisterPage() {
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.dob}</label>
-                                <input type="date" className="w-full px-4 py-3 rounded-xl text-sm input-base" />
+                                <input type="date" className="w-full px-4 py-3 rounded-xl text-sm input-base bg-[var(--bg-input)] border border-[var(--border-subtle)]" />
                             </div>
                         </div>
                     )}
@@ -159,9 +208,9 @@ export default function TraineeRegisterPage() {
                                 {t.next} <ChevronRight size={16} className={isArabic ? 'rotate-180' : ''} />
                             </button>
                         ) : (
-                            <Link href="/trainee" className="flex-1 py-3 rounded-xl text-sm font-bold text-black text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90" style={{ background: `linear-gradient(135deg, ${ACCENT}, #00B8FF)`, boxShadow: `0 0 20px ${ACCENT}40` }}>
-                                <CheckCircle size={16} /> {t.finish}
-                            </Link>
+                            <button onClick={handleRegister} disabled={loading} className="flex-1 py-3 rounded-xl text-sm font-bold text-black text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: `linear-gradient(135deg, ${ACCENT}, #00B8FF)`, boxShadow: `0 0 20px ${ACCENT}40` }}>
+                                {loading ? <Loader2 size={16} className="animate-spin" /> : <><CheckCircle size={16} /> {t.finish}</>}
+                            </button>
                         )}
                     </div>
                 </div>

@@ -1,8 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Users, DollarSign, Activity, Clock, TrendingUp, Globe } from 'lucide-react';
+import { Users, DollarSign, Activity, Clock, TrendingUp, Globe, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { GemZApi } from '../lib/api';
 
 export default function GymDashboard() {
     const { isArabic, toggleLanguage } = useLanguage();
@@ -11,14 +12,33 @@ export default function GymDashboard() {
 
     const [isOffPeakActive, setIsOffPeakActive] = useState(false);
     const [stats, setStats] = useState({ availableBal: 0, pendingBal: 0, totalMembers: 0 });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setStats({ availableBal: 12500.50, pendingBal: 800.00, totalMembers: 842 });
+        fetchStats();
     }, []);
+
+    const fetchStats = async () => {
+        try {
+            const res: any = await GemZApi.Gym.getDashboard();
+            if (res.success && res.data) {
+                setStats(res.data);
+            }
+        } catch (error) {
+            console.error('Failed to load gym stats', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const toggleOffPeak = async () => {
         setIsOffPeakActive(!isOffPeakActive);
-        // API Call to gym.controller.ts -> setOffPeakPricing
+        try {
+            await GemZApi.Gym.setOffPeak(!isOffPeakActive, 20);
+        } catch (error) {
+            console.error('Failed to toggle off peak', error);
+            setIsOffPeakActive(isOffPeakActive); // revert on fail
+        }
     };
 
     const formatCurrency = (val: number) => val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
