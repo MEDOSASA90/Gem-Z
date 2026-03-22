@@ -49,4 +49,4 @@ jobs:
         run: |
           sudo apt-get purge -y needrestart || true
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq lftp
-          lftp -c "set ftp:ssl-allow yes; set ssl:verify-certificate no; open -u $FTP_USERNAME,'$FTP_PASSWORD' $FTP_SERVER; mirror -R -v -P 5 dist/ ./api/"
+          lftp -c "set ftp:ssl-allow yes; set ssl:verify-certificate no; open -u $FTP_USERNAME,'$FTP_PASSWORD' $FTP_SERVER; lcd dist; mirror -R -v -P 5 ./ public_html/api/"
