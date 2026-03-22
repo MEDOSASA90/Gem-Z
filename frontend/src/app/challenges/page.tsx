@@ -12,7 +12,7 @@ import GemZLogo from '../../components/GemZLogo';
 const CHALLENGES = [
     {
         id: 1, emoji: '🔥', color: '#FF6B35',
-        titleEn: '30-Day Fat Loss Challenge', titleAr: 'تحدي خسارة دهون ٣٠ يوم',
+        titleEn: '30-Day Fat Loss Challenge', titleAr: 'تحدي خسارة دهون 30 يوم',
         descEn: 'Lose 2-4 kg in 30 days with structured workouts and diet plan.', descAr: 'اخسر 2-4 كيلو في 30 يوماً ببرنامج تمارين ونظام غذائي منظم.',
         prize: 'EGP 500 Wallet Credit', prizeAr: '500 ج.م رصيد محفظة',
         participants: 2840, goal: 'Lose 2kg+', goalAr: 'خسارة 2كج+',
@@ -40,7 +40,7 @@ const CHALLENGES = [
     },
     {
         id: 3, emoji: '🏃', color: '#00B8FF',
-        titleEn: '10K Steps Daily', titleAr: 'تحدي ١٠ ألف خطوة يومياً',
+        titleEn: '10K Steps Daily', titleAr: 'تحدي 10 ألف خطوة يومياً',
         descEn: 'Walk or run 10,000 steps daily for an entire month.', descAr: 'امشِ أو اجرِ 10,000 خطوة يومياً لمدة شهر كامل.',
         prize: 'Platinum Badge + Free Supplement', prizeAr: 'شارة بلاتينية + مكمل مجاني',
         participants: 12400, goal: '10K steps/day', goalAr: '10K خطوة/يوم',
@@ -104,7 +104,7 @@ export default function CommunityChallengePage() {
                     {[
                         { icon: Zap, label: isArabic ? 'تحديات نشطة' : 'Active Challenges', value: MY_PROGRESS.activeChallenges, color: '#00FFA3' },
                         { icon: CheckCircle, label: isArabic ? 'تحديات مكتملة' : 'Completed', value: MY_PROGRESS.completedChallenges, color: '#34C759' },
-                        { icon: Star, label: isArabic ? 'النقاط المكتسبة' : 'Total Points', value: MY_PROGRESS.totalPoints.toLocaleString(), color: '#FFCC00' },
+                        { icon: Star, label: isArabic ? 'النقاط المكتسبة' : 'Total Points', value: MY_PROGRESS.totalPoints.toLocaleString('en-US'), color: '#FFCC00' },
                         { icon: Flame, label: isArabic ? 'أيام متتالية' : 'Current Streak', value: `${MY_PROGRESS.currentStreak}🔥`, color: '#FF6B35' },
                     ].map((s, i) => (
                         <div key={i} className="rounded-2xl p-4 text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
@@ -159,7 +159,7 @@ export default function CommunityChallengePage() {
 
                             <div className="flex items-center justify-between text-sm">
                                 <div className="flex items-center gap-3" style={{ color: 'var(--text-secondary)' }}>
-                                    <span className="flex items-center gap-1"><Users size={13} />{challenge.participants.toLocaleString()}</span>
+                                    <span className="flex items-center gap-1"><Users size={13} />{challenge.participants.toLocaleString('en-US')}</span>
                                     <span className="flex items-center gap-1"><Timer size={13} />{challenge.daysLeft}d {isArabic ? 'متبقي' : 'left'}</span>
                                 </div>
                                 <div className="flex items-center gap-1 font-bold" style={{ color: challenge.color }}>

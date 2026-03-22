@@ -24,7 +24,7 @@ function useCountdown(endTime: number) {
 const now = Date.now();
 const FLASH_DEALS = [
     { id: 1, type: 'supplement', emoji: '🥤', nameEn: 'Whey Protein 5LB — Gold Standard', nameAr: 'واي بروتين 5 باوند — الجولد ستاندرد', store: 'Muscle Pharm', storeAr: 'ماسل فارم', originalPrice: 1200, discountedPrice: 840, discount: 30, endTime: now + 3.5 * 3600 * 1000, sold: 47, total: 100, rating: 4.9, reviews: 328, color: '#00FFA3', tags: ['Beginner-friendly', 'Best Seller'], tagsAr: ['للمبتدئين', 'الأكثر مبيعاً'], badge: '🔥 HOT' },
-    { id: 2, type: 'gym', emoji: '🏋️', nameEn: 'Gold Gym — 3-Month Subscription', nameAr: 'جولد جيم — اشتراك ٣ شهور', store: 'Gold Gym Elite', storeAr: 'جولد جيم إيليت', originalPrice: 2550, discountedPrice: 1785, discount: 30, endTime: now + 1.2 * 3600 * 1000, sold: 82, total: 100, rating: 4.8, reviews: 1240, color: '#FFCC00', tags: ['Limited', 'All Branches'], tagsAr: ['محدود', 'جميع الفروع'], badge: '⚡ ENDING SOON' },
+    { id: 2, type: 'gym', emoji: '🏋️', nameEn: 'Gold Gym — 3-Month Subscription', nameAr: 'جولد جيم — اشتراك 3 شهور', store: 'Gold Gym Elite', storeAr: 'جولد جيم إيليت', originalPrice: 2550, discountedPrice: 1785, discount: 30, endTime: now + 1.2 * 3600 * 1000, sold: 82, total: 100, rating: 4.8, reviews: 1240, color: '#FFCC00', tags: ['Limited', 'All Branches'], tagsAr: ['محدود', 'جميع الفروع'], badge: '⚡ ENDING SOON' },
     { id: 3, type: 'supplement', emoji: '💊', nameEn: 'Creatine Monohydrate 500g', nameAr: 'كرياتين مونوهيدرات 500 جرام', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 380, discountedPrice: 228, discount: 40, endTime: now + 5.8 * 3600 * 1000, sold: 23, total: 50, rating: 4.7, reviews: 89, color: '#A78BFA', tags: ['Unflavored', 'Pure'], tagsAr: ['بدون نكهة', 'نقي 100%'], badge: null },
     { id: 4, type: 'gear', emoji: '🩱', nameEn: 'GEM Z Training Set (Top + Shorts)', nameAr: 'طقم تدريب GEM Z (تيشيرت + شورت)', store: 'GEM Z Official', storeAr: 'جيم زد الرسمي', originalPrice: 450, discountedPrice: 270, discount: 40, endTime: now + 8 * 3600 * 1000, sold: 65, total: 200, rating: 4.6, reviews: 55, color: '#00B8FF', tags: ['Exclusive', 'Breathable'], tagsAr: ['حصري', 'شبكي مريح'], badge: '✨ EXCLUSIVE' },
     { id: 5, type: 'supplement', emoji: '🧴', nameEn: 'BCAA 300g — Tropical Burst', nameAr: 'BCAA 300 جرام — فواكه استوائية', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 320, discountedPrice: 224, discount: 30, endTime: now + 11 * 3600 * 1000, sold: 18, total: 80, rating: 4.5, reviews: 42, color: '#FF6B35', tags: ['Tropical Flavor'], tagsAr: ['نكهة استوائية'], badge: null },
@@ -56,9 +56,9 @@ function DealCard({ deal, isArabic }: { deal: typeof FLASH_DEALS[0], isArabic: b
             <div className="p-5">
                 {/* Price */}
                 <div className="flex items-end gap-3 mb-4">
-                    <span className="text-3xl font-bold font-mono" style={{ color: deal.color }} dir="ltr">EGP {deal.discountedPrice.toLocaleString()}</span>
+                    <span className="text-3xl font-bold font-mono" style={{ color: deal.color }} dir="ltr">EGP {deal.discountedPrice.toLocaleString('en-US')}</span>
                     <div>
-                        <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }} dir="ltr">EGP {deal.originalPrice.toLocaleString()}</span>
+                        <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }} dir="ltr">EGP {deal.originalPrice.toLocaleString('en-US')}</span>
                         <span className="block text-xs font-bold text-[#FF3B30]">-{deal.discount}% {isArabic ? 'خصم' : 'OFF'}</span>
                     </div>
                 </div>

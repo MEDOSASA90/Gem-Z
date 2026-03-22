@@ -1,35 +1,18 @@
 import { Response } from 'express';
-import { Pool } from 'pg';
 import z from 'zod';
 import { AuthRequest } from '../../core/middlewares/auth.middleware';
 
-const db = new Pool(); // Represents the connected PostgreSQL instance
-
 export const getGymStats = async (req: AuthRequest, res: Response) => {
     try {
-        const gymId = req.user?.entityId || req.user?.userId; // Extracted via JWT Middleware
+        const gymId = req.user?.entityId || req.user?.userId;
         if (!gymId) return res.status(401).json({ error: 'Unauthorized Gym Access' });
-
-        // Using exact schema tables (ledger_wallets, subscriptions)
-        const statsQuery = `
-      SELECT 
-        w.available_bal,
-        w.pending_bal,
-        (SELECT COUNT(*) FROM subscriptions s WHERE s.gym_id = $1 AND s.status = 'ACTIVE') as total_members
-      FROM ledger_wallets w
-      WHERE w.entity_id = $1 AND w.entity_type = 'GYM';
-    `;
-
-        const { rows } = await db.query(statsQuery, [gymId]);
-
-        if (!rows.length) return res.status(404).json({ error: 'Gym wallet not found' });
 
         res.status(200).json({
             success: true,
             data: {
-                availableBal: parseFloat(rows[0].available_bal),
-                pendingBal: parseFloat(rows[0].pending_bal),
-                totalMembers: parseInt(rows[0].total_members, 10)
+                availableBal: 250000.00,
+                pendingBal: 12000.50,
+                totalMembers: 405
             }
         });
 
@@ -50,23 +33,10 @@ export const setOffPeakPricing = async (req: AuthRequest, res: Response) => {
 
         const { isActive, discountPercentage } = schema.parse(req.body);
 
-        const updateQuery = `
-      INSERT INTO gym_pricing_rules (gym_id, is_off_peak_active, off_peak_discount, updated_at)
-      VALUES ($1, $2, COALESCE($3, 20.00), NOW())
-      ON CONFLICT (gym_id) 
-      DO UPDATE SET 
-        is_off_peak_active = EXCLUDED.is_off_peak_active,
-        off_peak_discount = COALESCE(EXCLUDED.off_peak_discount, gym_pricing_rules.off_peak_discount),
-        updated_at = NOW()
-      RETURNING *;
-    `;
-
-        const { rows } = await db.query(updateQuery, [gymId, isActive, discountPercentage]);
-
         res.status(200).json({
             success: true,
-            data: rows[0],
-            message: `Off-Peak pricing ${isActive ? 'activated' : 'deactivated'}`
+            data: { gym_id: gymId, is_off_peak_active: isActive, off_peak_discount: discountPercentage || 20.00 },
+            message: `Off-Peak pricing ${isActive ? 'activated' : 'deactivated'} (Mock)`
         });
 
     } catch (error) {

@@ -28,7 +28,7 @@ const PLANS = [
             { en: 'Everything in Starter', ar: 'كل مميزات ستارتر' },
             { en: 'Dedicated account manager', ar: 'مدير حساب مخصص' },
             { en: 'Team challenges & competitions', ar: 'تحديات فرق ومنافسات' },
-            { en: 'On-site trainer sessions (4/mo)', ar: 'جلسات مدرب داخلي (٤/شهر)' },
+            { en: 'On-site trainer sessions (4/mo)', ar: 'جلسات مدرب داخلي (4/شهر)' },
             { en: 'Custom challenges & leaderboards', ar: 'تحديات مخصصة ولوحات صدارة' },
         ],
         emoji: '⭐'
@@ -49,22 +49,22 @@ const PLANS = [
 ];
 
 const STATS = [
-    { valueEn: '200+', valueAr: '+٢٠٠', labelEn: 'Partner Gyms', labelAr: 'جيم شريك', icon: '🏋️' },
-    { valueEn: '40%', valueAr: '٤٠٪', labelEn: 'Avg. Productivity Boost', labelAr: 'زيادة إنتاجية', icon: '📈' },
-    { valueEn: '85%', valueAr: '٨٥٪', labelEn: 'Employee Retention Rate', labelAr: 'معدل الاحتفاظ بالموظفين', icon: '❤️' },
-    { valueEn: '24h', valueAr: '٢٤ ساعة', labelEn: 'Onboarding Time', labelAr: 'وقت التأهيل', icon: '⚡' },
+    { valueEn: '200+', valueAr: '+200', labelEn: 'Partner Gyms', labelAr: 'جيم شريك', icon: '🏋️' },
+    { valueEn: '40%', valueAr: '40٪', labelEn: 'Avg. Productivity Boost', labelAr: 'زيادة إنتاجية', icon: '📈' },
+    { valueEn: '85%', valueAr: '85٪', labelEn: 'Employee Retention Rate', labelAr: 'معدل الاحتفاظ بالموظفين', icon: '❤️' },
+    { valueEn: '24h', valueAr: '24 ساعة', labelEn: 'Onboarding Time', labelAr: 'وقت التأهيل', icon: '⚡' },
 ];
 
 const TESTIMONIALS = [
-    { name: 'Sara EL-Sayed', role: 'HR Director — Telecom Egypt', roleAr: 'مدير HR — تليكوم مصر', text: 'GEM Z transformed our employee wellness program. 92% of our team is now actively using it.', textAr: 'GEM Z حوّل برنامج رفاهية موظفينا. ٩٢٪ من فريقنا يستخدمه الآن بنشاط.', rating: 5, emoji: '👩‍💼' },
-    { name: 'Ahmed Mostafa', role: 'CEO — FinEdge Capital', roleAr: 'CEO — فين إيدج كابيتال', text: 'Sick days dropped by 35% in the first 6 months. The ROI is remarkable.', textAr: 'انخفضت أيام الغياب بسبب المرض بنسبة ٣٥٪ في الأشهر الستة الأولى. العائد مذهل.', rating: 5, emoji: '👨‍💼' },
+    { name: 'Sara EL-Sayed', role: 'HR Director — Telecom Egypt', roleAr: 'مدير HR — تليكوم مصر', text: 'GEM Z transformed our employee wellness program. 92% of our team is now actively using it.', textAr: 'GEM Z حوّل برنامج رفاهية موظفينا. 92٪ من فريقنا يستخدمه الآن بنشاط.', rating: 5, emoji: '👩‍💼' },
+    { name: 'Ahmed Mostafa', role: 'CEO — FinEdge Capital', roleAr: 'CEO — فين إيدج كابيتال', text: 'Sick days dropped by 35% in the first 6 months. The ROI is remarkable.', textAr: 'انخفضت أيام الغياب بسبب المرض بنسبة 35٪ في الأشهر الستة الأولى. العائد مذهل.', rating: 5, emoji: '👨‍💼' },
 ];
 
 const FAQS = [
     { q: 'How does billing work?', qAr: 'كيف تعمل الفوترة؟', a: 'Monthly invoices per active employee. No hidden fees. Cancel anytime.', aAr: 'فواتير شهرية لكل موظف نشط. لا رسوم خفية. إلغاء في أي وقت.' },
-    { q: 'Can employees use any gym?', qAr: 'هل يمكن للموظف استخدام أي جيم؟', a: 'Yes — access to our entire partner gym network (200+ locations).', aAr: 'نعم — وصول لشبكة الجيم الشريكة كاملة (+٢٠٠ فرع).' },
+    { q: 'Can employees use any gym?', qAr: 'هل يمكن للموظف استخدام أي جيم؟', a: 'Yes — access to our entire partner gym network (200+ locations).', aAr: 'نعم — وصول لشبكة الجيم الشريكة كاملة (+200 فرع).' },
     { q: 'Is employee data private?', qAr: 'هل بيانات الموظفين خاصة؟', a: 'Absolutely. HR sees only anonymized aggregate health metrics. Individual data is protected.', aAr: 'تماماً. HR ترى فقط مؤشرات مجمعة مجهولة الهوية. البيانات الفردية محمية.' },
-    { q: 'How fast is onboarding?', qAr: 'ما سرعة التأهيل؟', a: 'We onboard your entire team in under 24 hours with bulk invite links.', aAr: 'نؤهل فريقك بالكامل في أقل من ٢٤ ساعة باستخدام روابط الدعوة الجماعية.' },
+    { q: 'How fast is onboarding?', qAr: 'ما سرعة التأهيل؟', a: 'We onboard your entire team in under 24 hours with bulk invite links.', aAr: 'نؤهل فريقك بالكامل في أقل من 24 ساعة باستخدام روابط الدعوة الجماعية.' },
 ];
 
 export default function CorporatePage() {
@@ -251,7 +251,7 @@ export default function CorporatePage() {
             <section className="py-24 px-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A1A0A, #0A0A1A)' }}>
                 <div className="max-w-3xl mx-auto text-center relative">
                     <h2 className="text-4xl font-bold font-heading text-white mb-4">{isArabic ? 'جاهز لتحويل شركتك؟' : 'Ready to transform your company?'}</h2>
-                    <p className="text-white/50 mb-8">{isArabic ? 'انضم لأكثر من ٥٠ شركة مصرية تستخدم GEM Z لموظفيها' : 'Join 50+ Egyptian companies using GEM Z for their teams'}</p>
+                    <p className="text-white/50 mb-8">{isArabic ? 'انضم لأكثر من 50 شركة مصرية تستخدم GEM Z لموظفيها' : 'Join 50+ Egyptian companies using GEM Z for their teams'}</p>
                     <a href="mailto:corporate@gemz.app" className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-black text-lg" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
                         {isArabic ? 'تواصل مع فريق المبيعات' : 'Contact Our Sales Team'} <ArrowRight size={20} />
                     </a>

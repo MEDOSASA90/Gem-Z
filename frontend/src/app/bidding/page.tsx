@@ -12,7 +12,7 @@ const MOCK_REQUESTS = [
         title: 'Need Post-Surgery Shoulder Rehab',
         titleAr: 'تأهيل الكتف بعد عملية جراحية',
         description: 'Looking for a certified trainer to help me regain shoulder mobility after rotator cuff surgery. Need 3 days/week near Heliopolis.',
-        descriptionAr: 'أبحث عن مدرب معتمد لتأهيل الكتف بعد العملية. أحتاج ٣ أيام في الأسبوع بالقرب من مصر الجديدة.',
+        descriptionAr: 'أبحث عن مدرب معتمد لتأهيل الكتف بعد العملية. أحتاج 3 أيام في الأسبوع بالقرب من مصر الجديدة.',
         budget: '2000 - 3000 EGP / month',
         durationWeeks: 8,
         bidsCount: 3,
@@ -24,14 +24,14 @@ const MOCK_REQUESTS = [
         traineeName: 'Sara K.',
         avatar: 'S',
         title: 'Wedding Prep - 12 Weeks to shred',
-        titleAr: 'تجهيز الفرح - تنشيف في ١٢ أسبوع',
+        titleAr: 'تجهيز الفرح - تنشيف في 12 أسبوع',
         description: 'Need an aggressive diet and HIIT plan to lose 8kg before my wedding in 3 months. Online tracking is fine.',
-        descriptionAr: 'أحتاج نظام غذائي وهيت مكثف لخسارة ٨ كيلو قبل فرحي. التدريب أونلاين مناسب.',
+        descriptionAr: 'أحتاج نظام غذائي وهيت مكثف لخسارة 8 كيلو قبل فرحي. التدريب أونلاين مناسب.',
         budget: '1500 - 2500 EGP / month',
         durationWeeks: 12,
         bidsCount: 5,
         postedAt: '5 hours ago',
-        postedAtAr: 'منذ ٥ ساعات'
+        postedAtAr: 'منذ 5 ساعات'
     },
     {
         id: 'req_103',

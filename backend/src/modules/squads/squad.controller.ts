@@ -1,27 +1,19 @@
 import { Request, Response } from 'express';
-import { Pool } from 'pg';
 import { AuthRequest } from '../../core/middlewares/auth.middleware';
 import { v4 as uuidv4 } from 'uuid';
 import { socketService } from '../../index';
 
-const pool = new Pool();
-
 export class SquadController {
-    /**
-     * POST /api/v1/squads
-     * Creates a new Squad (Guild)
-     */
     static async createSquad(req: AuthRequest, res: Response) {
         const creatorId = req.user?.userId;
         const { name, description, isPublic } = req.body;
 
         try {
-            // Mock DB: INSERT INTO squads ...
             const squadId = uuidv4();
 
             return res.status(201).json({
                 success: true,
-                message: 'Squad created successfully',
+                message: 'Squad created successfully (Mock)',
                 data: {
                     id: squadId,
                     name,
@@ -37,10 +29,6 @@ export class SquadController {
         }
     }
 
-    /**
-     * GET /api/v1/squads
-     * List squads to join
-     */
     static async listSquads(req: AuthRequest, res: Response) {
         try {
             const mockSquads = [
@@ -55,15 +43,11 @@ export class SquadController {
         }
     }
 
-    /**
-     * POST /api/v1/squads/:id/join
-     */
     static async joinSquad(req: AuthRequest, res: Response) {
         const userId = req.user?.userId;
         const { id } = req.params;
 
         try {
-            // Notify squad via websockets
             if (userId) {
                 socketService.notifySquad(id, 'member_joined', { userId, timestamp: new Date() });
             }

@@ -131,7 +131,7 @@ export default function SquadsPage() {
                                         <Zap size={14} className="text-[#FFCC00]" />
                                         <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'النقاط' : 'Points'}</span>
                                     </div>
-                                    <p className="font-bold text-lg">{currentSquad.points.toLocaleString()}</p>
+                                    <p className="font-bold text-lg">{currentSquad.points.toLocaleString('en-US')}</p>
                                 </div>
                             </div>
                         </div>
@@ -217,7 +217,7 @@ export default function SquadsPage() {
                                 <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{sq.members} {isArabic ? 'عضو' : 'members'}</p>
                             </div>
                             <div className="text-right">
-                                <p className="font-bold font-mono text-[#00FFA3]">{sq.points.toLocaleString()}</p>
+                                <p className="font-bold font-mono text-[#00FFA3]">{sq.points.toLocaleString('en-US')}</p>
                                 <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>PTS</p>
                             </div>
                         </div>

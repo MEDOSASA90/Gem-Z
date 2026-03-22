@@ -19,16 +19,16 @@ const SAMPLE_DIET_PLAN = {
     ],
     days: [
         {
-            day: 1, dayAr: 'اليوم ١',
+            day: 1, dayAr: 'اليوم 1',
             meals: [
-                { type: 'Breakfast', typeAr: 'إفطار', name: 'Oats + 3 Eggs + Orange Juice', nameAr: 'شوفان + ٣ بيض + عصير برتقال', kcal: 580, p: 42, c: 68, f: 14, time: '07:00', color: '#FFCC00', emoji: '🌅', vit: 'Vit D boost' },
+                { type: 'Breakfast', typeAr: 'إفطار', name: 'Oats + 3 Eggs + Orange Juice', nameAr: 'شوفان + 3 بيض + عصير برتقال', kcal: 580, p: 42, c: 68, f: 14, time: '07:00', color: '#FFCC00', emoji: '🌅', vit: 'Vit D boost' },
                 { type: 'Snack', typeAr: 'سناك', name: 'Tuna + Spinach Salad', nameAr: 'تونة + سلطة سبانخ', kcal: 280, p: 32, c: 10, f: 8, time: '10:30', color: '#00B8FF', emoji: '🐟', vit: 'Iron rich' },
                 { type: 'Lunch', typeAr: 'غداء', name: 'Grilled Chicken + Lentil Soup + Brown Rice', nameAr: 'دجاج مشوي + عدس + أرز بني', kcal: 720, p: 58, c: 80, f: 16, time: '13:30', color: '#00FFA3', emoji: '🍗', vit: 'Iron rich' },
                 { type: 'Dinner', typeAr: 'عشاء', name: 'Salmon + Broccoli + Sweet Potato', nameAr: 'سمك سلمون + بروكلي + بطاطا حلوة', kcal: 660, p: 46, c: 66, f: 24, time: '19:00', color: '#A78BFA', emoji: '🐟', vit: 'Vit D + Iron' },
             ]
         },
         {
-            day: 2, dayAr: 'اليوم ٢',
+            day: 2, dayAr: 'اليوم 2',
             meals: [
                 { type: 'Breakfast', typeAr: 'إفطار', name: 'Greek Yogurt + Berries + Flaxseed', nameAr: 'يوغرت يوناني + توت + بذر كتان', kcal: 420, p: 30, c: 45, f: 14, time: '07:00', color: '#FFCC00', emoji: '🫐', vit: 'Calcium' },
                 { type: 'Snack', typeAr: 'سناك', name: '2 Hard Boiled Eggs + Handful Almonds', nameAr: 'بيضتان مسلوقتان + لوز', kcal: 320, p: 24, c: 8, f: 22, time: '10:30', color: '#00B8FF', emoji: '🥚', vit: 'Vit D' },
@@ -98,7 +98,7 @@ export default function AINutritionistPage() {
                             {[
                                 { step: '1', icon: '📄', titleEn: 'Upload Labs', titleAr: 'ارفع التحاليل', descEn: 'PDF or image of your blood work', descAr: 'PDF أو صورة التحاليل' },
                                 { step: '2', icon: '🤖', titleEn: 'AI Analyzes', titleAr: 'AI يحلل', descEn: 'OCR reads and identifies markers', descAr: 'OCR يقرأ المؤشرات' },
-                                { step: '3', icon: '🥗', titleEn: 'Get Your Plan', titleAr: 'احصل على خطتك', descEn: 'Custom 7-day meal plan', descAr: 'خطة وجبات مخصصة ٧ أيام' },
+                                { step: '3', icon: '🥗', titleEn: 'Get Your Plan', titleAr: 'احصل على خطتك', descEn: 'Custom 7-day meal plan', descAr: 'خطة وجبات مخصصة 7 أيام' },
                             ].map(s => (
                                 <div key={s.step} className="text-center p-4 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                                     <div className="text-3xl mb-2">{s.icon}</div>

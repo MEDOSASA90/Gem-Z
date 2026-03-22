@@ -1,6 +1,6 @@
 import express from 'express';
-// import authRoutes from '../modules/auth/auth.routes';
-// import financialRoutes from '../modules/financial/financial.routes';
+import authRoutes from '../modules/auth/auth.routes';
+import financialRoutes from '../modules/financial/financial.routes';
 import { TraineeController } from '../modules/trainee/trainee.controller';
 import { CoinsController } from '../modules/coins/coins.controller';
 import { ChallengeController } from '../modules/challenges/challenge.controller';
@@ -17,9 +17,9 @@ const authenticateRequest = authenticate; // Alias for consistency
 
 const router = express.Router();
 
-// Existing Modules (Assuming they have separate router files in a real app)
-// router.use('/auth', authRoutes);
-// router.use('/finance', financialRoutes);
+// Existing Modules
+router.use('/auth', authRoutes);
+router.use('/finance', financialRoutes);
 
 // Health Check
 router.get('/health', (req, res) => {

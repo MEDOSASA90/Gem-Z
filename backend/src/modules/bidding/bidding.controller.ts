@@ -1,25 +1,13 @@
 import { Request, Response } from 'express';
-import { Pool } from 'pg';
 import { AuthRequest } from '../../core/middlewares/auth.middleware';
 import { v4 as uuidv4 } from 'uuid';
 
-const pool = new Pool();
-
 export class BiddingController {
-
-    /**
-     * POST /api/v1/bidding/requests
-     * Trainee posts a new custom request (e.g., "Need rehab for shoulder injury")
-     */
     static async createRequest(req: AuthRequest, res: Response) {
         const userId = req.user?.userId;
         const { title, description, budget, durationWeeks } = req.body;
 
         try {
-            // For simulation, we'll assume a 'bidding_requests' table exists
-            // Since we didn't add it in Phase 3 DB schema, we will mock the response
-            // In a real scenario: INSERT INTO bidding_requests ...
-
             const mockRequest = {
                 id: uuidv4(),
                 traineeId: userId,
@@ -43,13 +31,8 @@ export class BiddingController {
         }
     }
 
-    /**
-     * GET /api/v1/bidding/requests
-     * Fetch all open requests (for Trainers to browse)
-     */
     static async getOpenRequests(req: AuthRequest, res: Response) {
         try {
-            // Mocking the feed of open requests
             const mockFeed = [
                 {
                     id: 'req_101',
@@ -79,17 +62,12 @@ export class BiddingController {
         }
     }
 
-    /**
-     * POST /api/v1/bidding/requests/:id/bid
-     * Trainer submits a bid for a specific request
-     */
     static async submitBid(req: AuthRequest, res: Response) {
         const trainerId = req.user?.userId;
         const { id } = req.params;
         const { proposedPrice, message } = req.body;
 
         try {
-            // Mocking bid submission
             return res.status(201).json({
                 success: true,
                 message: 'Bid submitted successfully',

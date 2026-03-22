@@ -36,7 +36,7 @@ const T = {
     ar: {
         nav: { back: 'العودة للرئيسية', login: 'تسجيل الدخول' },
         title: 'أسعار بسيطة وشفافة', subtitle: 'اختر الباقة التي تناسب دورك في منظومة GEM Z. بدون رسوم خفية.',
-        billingOps: [{ id: 'monthly', label: 'دفع شهري' }, { id: 'annual', label: 'دفع سنوي (وفر ٢٠٪)' }],
+        billingOps: [{ id: 'monthly', label: 'دفع شهري' }, { id: 'annual', label: 'دفع سنوي (وفر 20٪)' }],
         roles: [
             {
                 id: 'trainee', name: 'المتدرب', color: '#00FFA3', price: 'مجاناً', unit: 'دائماً',
@@ -44,17 +44,17 @@ const T = {
                 features: ['خطط غذائية بالذكاء الاصطناعي', 'دخول ذكي برمز QR', 'تتبع أساسي للتمارين', 'وصول للمجتمع الاجتماعي']
             },
             {
-                id: 'trainer', name: 'المدرب المحترف', color: '#00B8FF', price: '٤٩٩ ج.م', unit: '/شهرياً',
+                id: 'trainer', name: 'المدرب المحترف', color: '#00B8FF', price: '499 ج.م', unit: '/شهرياً',
                 desc: 'أدوات متقدمة لإدارة وتنمية قائمة عملائك.',
                 features: ['عدد عملاء غير محدود', 'بروتوكولات تدريب مخصصة', 'تقسيم إيرادات تلقائي (80/20)', 'مراسلة العملاء داخل التطبيق']
             },
             {
-                id: 'gym', name: 'نخبة الصالات', color: '#A78BFA', price: '١,٩٩٩ ج.م', unit: '/شهرياً',
+                id: 'gym', name: 'نخبة الصالات', color: '#A78BFA', price: '1,999 ج.م', unit: '/شهرياً',
                 desc: 'حل شامل لإدارة المنشآت الرياضية B2B.',
                 features: ['نظام تحكم بالدخول عبر QR', 'فوترة وتجديد تلقائي', 'تسعير ديناميكي لأوقات الهدوء', 'تحليلات متعددة الفروع']
             },
             {
-                id: 'store', name: 'شريك المتجر', color: '#F59E0B', price: '١٢٪', unit: 'لكل مبيعة',
+                id: 'store', name: 'شريك المتجر', color: '#F59E0B', price: '12٪', unit: 'لكل مبيعة',
                 desc: 'بدون تكلفة مبدئية. ادفع فقط عند البيع.',
                 features: ['واجهة متجر رقمية', 'إدارة المخزون', 'مساحات إعلانية مستهدفة', 'دفعات فورية للمحفظة']
             }
@@ -164,7 +164,7 @@ export default function PricingPage() {
                         <Shield className="text-[#00FFA3]" size={28} />
                         <div className="text-start">
                             <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{isArabic ? 'مدفوعات آمنة' : 'Secure Payments'}</p>
-                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'تشفير ૨٥٦ بت' : '256-bit encryption'}</p>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'تشفير ૨56 بت' : '256-bit encryption'}</p>
                         </div>
                     </div>
                     <div className="hidden sm:block w-px h-10" style={{ background: 'var(--border-subtle)' }} />

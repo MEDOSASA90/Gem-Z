@@ -10,18 +10,18 @@ import Link from 'next/link';
 import GemZLogo from '../../components/GemZLogo';
 
 const EARN_ACTIVITIES = [
-    { icon: '🏋️', titleEn: 'Complete a Workout', titleAr: 'أكمل تمريناً', coinsEn: '+15 Coins', coinsAr: '+١٥ كوين', daily: true },
-    { icon: '🥗', titleEn: 'Log All Meals', titleAr: 'سجّل كل وجباتك', coinsEn: '+10 Coins', coinsAr: '+١٠ كوين', daily: true },
-    { icon: '💧', titleEn: 'Hit Water Goal', titleAr: 'حقق هدف الماء', coinsEn: '+5 Coins', coinsAr: '+٥ كوين', daily: true },
-    { icon: '🔥', titleEn: '7-Day Streak Bonus', titleAr: 'مكافأة ٧ أيام متتالية', coinsEn: '+50 Coins', coinsAr: '+٥٠ كوين', daily: false },
-    { icon: '👥', titleEn: 'Refer a Friend', titleAr: 'أحلت صديقاً', coinsEn: '+100 Coins', coinsAr: '+١٠٠ كوين', daily: false },
-    { icon: '🏆', titleEn: 'Win a Challenge', titleAr: 'فز في تحدي', coinsEn: '+200 Coins', coinsAr: '+٢٠٠ كوين', daily: false },
+    { icon: '🏋️', titleEn: 'Complete a Workout', titleAr: 'أكمل تمريناً', coinsEn: '+15 Coins', coinsAr: '+15 كوين', daily: true },
+    { icon: '🥗', titleEn: 'Log All Meals', titleAr: 'سجّل كل وجباتك', coinsEn: '+10 Coins', coinsAr: '+10 كوين', daily: true },
+    { icon: '💧', titleEn: 'Hit Water Goal', titleAr: 'حقق هدف الماء', coinsEn: '+5 Coins', coinsAr: '+5 كوين', daily: true },
+    { icon: '🔥', titleEn: '7-Day Streak Bonus', titleAr: 'مكافأة 7 أيام متتالية', coinsEn: '+50 Coins', coinsAr: '+50 كوين', daily: false },
+    { icon: '👥', titleEn: 'Refer a Friend', titleAr: 'أحلت صديقاً', coinsEn: '+100 Coins', coinsAr: '+100 كوين', daily: false },
+    { icon: '🏆', titleEn: 'Win a Challenge', titleAr: 'فز في تحدي', coinsEn: '+200 Coins', coinsAr: '+200 كوين', daily: false },
 ];
 
 const REWARDS = [
-    { id: 1, emoji: '💰', titleEn: 'EGP 50 Wallet Credit', titleAr: '٥٠ ج.م رصيد محفظة', cost: 500, type: 'wallet', color: '#00FFA3', stock: null, popular: true },
+    { id: 1, emoji: '💰', titleEn: 'EGP 50 Wallet Credit', titleAr: '50 ج.م رصيد محفظة', cost: 500, type: 'wallet', color: '#00FFA3', stock: null, popular: true },
     { id: 2, emoji: '🏋️', titleEn: '1 Free Gym Day Pass', titleAr: 'دخول مجاني للجيم يوم', cost: 800, type: 'gym', color: '#A78BFA', stock: 20, popular: false },
-    { id: 3, emoji: '🥤', titleEn: '10% Off Supplements', titleAr: 'خصم ١٠٪ مكملات', cost: 300, type: 'discount', color: '#00B8FF', stock: null, popular: true },
+    { id: 3, emoji: '🥤', titleEn: '10% Off Supplements', titleAr: 'خصم 10٪ مكملات', cost: 300, type: 'discount', color: '#00B8FF', stock: null, popular: true },
     { id: 4, emoji: '💊', titleEn: 'Free Creatine Sample', titleAr: 'عينة كرياتين مجانية', cost: 600, type: 'merchandise', color: '#FF6B35', stock: 50, popular: false },
     { id: 5, emoji: '🎽', titleEn: 'GEM Z T-Shirt', titleAr: 'تيشيرت GEM Z', cost: 1200, type: 'merchandise', color: '#FFCC00', stock: 30, popular: false },
     { id: 6, emoji: '⭐', titleEn: 'Premium Trainer Session', titleAr: 'جلسة مدرب بريميوم', cost: 2000, type: 'session', color: '#FF3B30', stock: null, popular: false },
@@ -30,8 +30,8 @@ const REWARDS = [
 const LEDGER = [
     { icon: '🏋️', descEn: 'Workout completed', descAr: 'تمرين مكتمل', amount: +15, date: 'Today', dateAr: 'اليوم', type: 'in' },
     { icon: '🥗', descEn: 'All meals logged', descAr: 'كل الوجبات مسجلة', amount: +10, date: 'Today', dateAr: 'اليوم', type: 'in' },
-    { icon: '💰', descEn: 'Redeemed: EGP 50 credit', descAr: 'استبدال: رصيد ٥٠ ج.م', amount: -500, date: 'Yesterday', dateAr: 'أمس', type: 'out' },
-    { icon: '🔥', descEn: '7-Day Streak Bonus', descAr: 'مكافأة ٧ أيام', amount: +50, date: '2 days ago', dateAr: 'منذ يومين', type: 'in' },
+    { icon: '💰', descEn: 'Redeemed: EGP 50 credit', descAr: 'استبدال: رصيد 50 ج.م', amount: -500, date: 'Yesterday', dateAr: 'أمس', type: 'out' },
+    { icon: '🔥', descEn: '7-Day Streak Bonus', descAr: 'مكافأة 7 أيام', amount: +50, date: '2 days ago', dateAr: 'منذ يومين', type: 'in' },
     { icon: '👥', descEn: 'Referral reward — Omar', descAr: 'مكافأة إحالة — عمر', amount: +100, date: 'Last week', dateAr: 'الأسبوع الماضي', type: 'in' },
 ];
 
@@ -48,7 +48,8 @@ export default function CoinsPage() {
     const [redeemModal, setRedeemModal] = useState<typeof REWARDS[0] | null>(null);
     const [redeemed, setRedeemed] = useState<number[]>([]);
 
-    const fmtCoins = (n: number) => n.toLocaleString();
+    const currentCoins = 1840 - redeemed.reduce((sum, id) => sum + (REWARDS.find(r => r.id === id)?.cost || 0), 0);
+    const fmtCoins = (n: number) => n.toLocaleString('en-US');
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen font-sans pb-28" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
@@ -77,17 +78,17 @@ export default function CoinsPage() {
                     <div className="relative">
                         <p className="text-sm font-medium mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{isArabic ? 'رصيد الكوينز' : 'Coin Balance'}</p>
                         <div className="flex items-end gap-3 mb-1">
-                            <span className="text-6xl font-bold font-mono text-[#FFCC00]">{fmtCoins(MY_COINS)}</span>
+                            <span className="text-6xl font-bold font-mono text-[#FFCC00]">{fmtCoins(currentCoins)}</span>
                             <span className="text-[#FFCC00] text-xl mb-2">🪙</span>
                         </div>
                         {/* Level bar */}
                         <div className="mt-4">
                             <div className="flex justify-between text-xs mb-1.5">
                                 <span className="text-[#FFCC00] font-bold">{isArabic ? LEVEL_NAME.ar : LEVEL_NAME.en}</span>
-                                <span style={{ color: 'rgba(255,255,255,0.4)' }}>{fmtCoins(MY_COINS)} / {fmtCoins(LEVEL_THRESHOLD)} {isArabic ? 'للمستوى التالي' : 'to next level'}</span>
+                                <span style={{ color: 'rgba(255,255,255,0.4)' }}>{fmtCoins(currentCoins)} / {fmtCoins(LEVEL_THRESHOLD)} {isArabic ? 'للمستوى التالي' : 'to next level'}</span>
                             </div>
                             <div className="h-2 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                                <div className="h-2 rounded-full" style={{ width: `${(MY_COINS / LEVEL_THRESHOLD) * 100}%`, background: 'linear-gradient(to right, #FFCC00, #FF6B35)' }} />
+                                <div className="h-2 rounded-full" style={{ width: `${(currentCoins / LEVEL_THRESHOLD) * 100}%`, background: 'linear-gradient(to right, #FFCC00, #FF6B35)' }} />
                             </div>
                             <p className="text-xs mt-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
                                 {isArabic ? `المستوى القادم: ${NEXT_LEVEL.ar}` : `Next: ${NEXT_LEVEL.en}`}
@@ -119,7 +120,7 @@ export default function CoinsPage() {
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                             {REWARDS.map(reward => {
-                                const canAfford = MY_COINS >= reward.cost;
+                                const canAfford = currentCoins >= reward.cost;
                                 const done = redeemed.includes(reward.id);
                                 return (
                                     <div key={reward.id} className="rounded-2xl p-5 relative overflow-hidden transition-all hover:scale-[1.02]"
@@ -213,8 +214,8 @@ export default function CoinsPage() {
                         </div>
                         <div className="w-full p-4 rounded-2xl text-center" style={{ background: 'var(--bg-input)' }}>
                             <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'رصيدك الحالي' : 'Current balance'}</p>
-                            <p className="text-2xl font-bold font-mono text-[#FFCC00]">{fmtCoins(MY_COINS)} 🪙</p>
-                            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>→ {fmtCoins(MY_COINS - redeemModal.cost)} 🪙 {isArabic ? 'بعد الاستبدال' : 'after redemption'}</p>
+                            <p className="text-2xl font-bold font-mono text-[#FFCC00]">{fmtCoins(currentCoins)} 🪙</p>
+                            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>→ {fmtCoins(currentCoins - redeemModal.cost)} 🪙 {isArabic ? 'بعد الاستبدال' : 'after redemption'}</p>
                         </div>
                         <div className="flex gap-3 w-full">
                             <button onClick={() => { setRedeemed(p => [...p, redeemModal.id]); setRedeemModal(null); }}

@@ -10,11 +10,11 @@ import Link from 'next/link';
 import GemZLogo from '../../components/GemZLogo';
 
 const ENTRIES = [
-    { date: '2024-01-01', dateAr: 'يناير ١', weight: 88.5, fat: 28, muscle: 38, waist: 95, photo: null, note: 'Started GEM Z journey', noteAr: 'بدأت رحلتي مع GEM Z' },
-    { date: '2024-02-01', dateAr: 'فبراير ١', weight: 86.2, fat: 26, muscle: 39, waist: 93, photo: null, note: 'First month solid', noteAr: 'أول شهر ممتاز' },
-    { date: '2024-03-01', dateAr: 'مارس ١', weight: 84.8, fat: 24, muscle: 40.5, waist: 91, photo: null, note: 'Feeling stronger', noteAr: 'أحس بقوة أكبر' },
-    { date: '2024-04-01', dateAr: 'أبريل ١', weight: 83.1, fat: 22, muscle: 42, waist: 89, photo: null, note: 'Diet on point', noteAr: 'النظام الغذائي ممتاز' },
-    { date: '2024-05-01', dateAr: 'مايو ١', weight: 82.0, fat: 20.5, muscle: 43, waist: 87, photo: null, note: 'Best shape yet!', noteAr: 'أفضل شكل حتى الآن!' },
+    { date: '2024-01-01', dateAr: 'يناير 1', weight: 88.5, fat: 28, muscle: 38, waist: 95, photo: null, note: 'Started GEM Z journey', noteAr: 'بدأت رحلتي مع GEM Z' },
+    { date: '2024-02-01', dateAr: 'فبراير 1', weight: 86.2, fat: 26, muscle: 39, waist: 93, photo: null, note: 'First month solid', noteAr: 'أول شهر ممتاز' },
+    { date: '2024-03-01', dateAr: 'مارس 1', weight: 84.8, fat: 24, muscle: 40.5, waist: 91, photo: null, note: 'Feeling stronger', noteAr: 'أحس بقوة أكبر' },
+    { date: '2024-04-01', dateAr: 'أبريل 1', weight: 83.1, fat: 22, muscle: 42, waist: 89, photo: null, note: 'Diet on point', noteAr: 'النظام الغذائي ممتاز' },
+    { date: '2024-05-01', dateAr: 'مايو 1', weight: 82.0, fat: 20.5, muscle: 43, waist: 87, photo: null, note: 'Best shape yet!', noteAr: 'أفضل شكل حتى الآن!' },
 ];
 
 const METRICS = [
