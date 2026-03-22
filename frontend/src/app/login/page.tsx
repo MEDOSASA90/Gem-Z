@@ -54,7 +54,7 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const res = await GemZApi.Auth.login({ email, password });
+            const res: any = await GemZApi.Auth.login({ email, password });
             
             // Wait, the backend doesn't care about role select on login right now because it fetches the role from DB.
             // But from frontend UX we might route them differently later based on DB role.

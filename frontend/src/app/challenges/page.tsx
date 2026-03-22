@@ -174,9 +174,9 @@ export default function CommunityChallengePage() {
                             </div>
                         </div>
                         <div className="space-y-3">
-                            {selected.leaderboard.map((entry, i) => (
+                            {selected.leaderboard.map((entry: any, i: number) => (
                                 <div key={i} className="flex items-center gap-4 p-4 rounded-2xl"
-                                    style={{ background: (entry as any).isMe ? `${selected.color}10` : 'var(--bg-input)', border: (entry as any).isMe ? `1px solid ${selected.color}40` : '1px solid transparent' }}>
+                                    style={{ background: entry.isMe ? `${selected.color}10` : 'var(--bg-input)', border: entry.isMe ? `1px solid ${selected.color}40` : '1px solid transparent' }}>
                                     <span className="text-xl">{entry.medal}</span>
                                     <span className="font-mono text-sm w-8" style={{ color: 'var(--text-muted)' }}>#{entry.rank}</span>
                                     <span className="flex-1 font-bold">{entry.name}</span>
