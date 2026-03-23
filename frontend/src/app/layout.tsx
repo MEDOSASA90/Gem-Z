@@ -6,6 +6,7 @@ import { ThemeProvider } from "../context/ThemeContext";
 import { SocketProvider } from "../context/SocketContext";
 import FloatingSupportWidget from "../components/FloatingSupportWidget";
 import BottomNav from "../components/BottomNav";
+import GlobalLangToggle from "../components/GlobalLangToggle";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "600", "700", "800"], variable: "--font-outfit" });
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </main>
               <BottomNav />
               <FloatingSupportWidget />
+              <GlobalLangToggle />
             </SocketProvider>
           </LanguageProvider>
         </ThemeProvider>

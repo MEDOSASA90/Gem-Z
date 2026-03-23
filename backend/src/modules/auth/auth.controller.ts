@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { db } from '../../core/database/db';
+import { AIService } from '../../services/ai.service';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_gem_z_super_secure';
 const REFRESH_SECRET = process.env.REFRESH_SECRET || 'dev_refresh_gem_z_super_secure';
@@ -20,11 +21,26 @@ const registerSchema = z.object({
     fitnessLevel: z.string().optional(),
     idFrontBase64: z.string().optional(),
     idBackBase64: z.string().optional(),
+    avatarBase64: z.string().optional(),
+    logoBase64: z.string().optional(),
     gymData: z.object({
         name: z.string().optional(),
         locationUrl: z.string().optional(),
         femaleHours: z.string().optional(),
         amenities: z.array(z.string()).optional()
+    }).optional(),
+    storeData: z.object({
+        name: z.string().optional(),
+        category: z.string().optional(),
+        website: z.string().optional()
+    }).optional(),
+    trainerData: z.object({
+        specialization: z.string().optional(),
+        experience: z.coerce.number().optional(),
+        certs: z.array(z.string()).optional(),
+        bio: z.string().optional(),
+        social: z.string().optional(),
+        rate: z.coerce.number().optional()
     }).optional()
 });
 
@@ -33,7 +49,7 @@ export class AuthController {
         let client;
         try {
             const validatedData = registerSchema.parse(req.body);
-            const { email, password, fullName, role, phone, countryCode, gender, dob, referralCode, fitnessLevel, idFrontBase64, idBackBase64, gymData } = validatedData;
+            const { email, password, fullName, role, phone, countryCode, gender, dob, referralCode, fitnessLevel, idFrontBase64, idBackBase64, avatarBase64, logoBase64, gymData, storeData, trainerData } = validatedData;
 
             client = await db.connect();
 
@@ -59,11 +75,17 @@ export class AuthController {
 
             await client.query('BEGIN');
 
+            // 0. Extract ID data if images are provided
+            let idParsedData = null;
+            if (idFrontBase64 && idBackBase64) {
+                idParsedData = await AIService.extractIdData(idFrontBase64, idBackBase64);
+            }
+
             // 1. Insert User
             const userRes = await client.query(
-                `INSERT INTO users (email, password_hash, full_name, role, phone, country_code, gender, date_of_birth, referred_by_user_id) 
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, email, role, full_name, referral_code`,
-                [email, password_hash, fullName, role, phone || null, countryCode || '+20', gender || null, dob ? new Date(dob) : null, referredByUserId]
+                `INSERT INTO users (email, password_hash, full_name, role, phone, country_code, gender, date_of_birth, referred_by_user_id, id_parsed_data, avatar_url) 
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id, email, role, full_name, referral_code`,
+                [email, password_hash, fullName, role, phone || null, countryCode || '+20', gender || null, dob ? new Date(dob) : null, referredByUserId, idParsedData, avatarBase64 || null]
             );
             const user = userRes.rows[0];
 
@@ -75,18 +97,28 @@ export class AuthController {
                      [user.id, fitnessLevel || null, idFrontBase64 || null, idBackBase64 || null]
                 );
             } else if (role === 'trainer') {
-                await client.query('INSERT INTO trainer_profiles (user_id) VALUES ($1)', [user.id]);
+                await client.query(
+                    `INSERT INTO trainer_profiles (user_id, bio, specializations, certifications, years_experience, hourly_rate_egp) 
+                     VALUES ($1, $2, $3, $4, $5, $6)`, 
+                     [user.id, trainerData?.bio || null, trainerData?.specialization ? [trainerData.specialization] : [], trainerData?.certs || [], trainerData?.experience || 0, trainerData?.rate || null]
+                );
             } else if (role === 'gym_admin' && gymData) {
                 const gymRes = await client.query(
-                    `INSERT INTO gyms (owner_user_id, name, location_url, female_hours, amenities) 
-                     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-                    [user.id, gymData.name || 'Unnamed Gym', gymData.locationUrl || null, gymData.femaleHours || null, gymData.amenities || []]
+                    `INSERT INTO gyms (owner_user_id, name, location_url, female_hours, amenities, logo_url) 
+                     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+                    [user.id, gymData.name || 'Unnamed Gym', gymData.locationUrl || null, gymData.femaleHours || null, gymData.amenities || [], logoBase64 || null]
                 );
                 
                 // Construct a default branch so check-ins have a target
                 await client.query(
                     `INSERT INTO gym_branches (gym_id, name, address) VALUES ($1, 'Main Branch', 'HQ')`,
                     [gymRes.rows[0].id]
+                );
+            } else if (role === 'store_admin' && storeData) {
+                await client.query(
+                    `INSERT INTO stores (owner_user_id, name, description, logo_url) 
+                     VALUES ($1, $2, $3, $4)`,
+                    [user.id, storeData.name || 'Unnamed Store', storeData.category || null, logoBase64 || null]
                 );
             }
 

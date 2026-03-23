@@ -46,6 +46,7 @@ export default function GymRegisterPage() {
     const t = isArabic ? T.ar : T.en;
     const [step, setStep] = useState(0);
     const [amens, setAmens] = useState<string[]>([]);
+    const [logoBase64, setLogoBase64] = useState('');
     
     const [formData, setFormData] = useState({
         adminName: '', email: '', phone: '', password: '', confirm: '',
@@ -61,6 +62,14 @@ export default function GymRegisterPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => setLogoBase64(reader.result as string);
+        reader.readAsDataURL(file);
+    };
+
     const validateStep = (currentStep: number) => {
         setError('');
         if (currentStep === 0) {
@@ -74,7 +83,7 @@ export default function GymRegisterPage() {
             }
         }
         if (currentStep === 1) {
-            if (!formData.gymName || !formData.locationUrl) {
+            if (!formData.gymName || !formData.locationUrl || !logoBase64) {
                 setError(t.errRequired);
                 return false;
             }
@@ -98,6 +107,7 @@ export default function GymRegisterPage() {
                 fullName: formData.adminName,
                 phone: formData.phone,
                 role: 'gym_admin',
+                logoBase64,
                 gymData: {
                     name: formData.gymName,
                     locationUrl: formData.locationUrl,
@@ -192,6 +202,15 @@ export default function GymRegisterPage() {
                             <div>
                                 <label className="text-sm font-medium block mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}><Clock size={16} /> {t.femaleHours}</label>
                                 <input name="femaleHours" value={formData.femaleHours} onChange={handleChange} type="text" placeholder={isArabic ? 'مثال: 08:00 ص - 12:00 م' : 'e.g. 08:00 AM - 12:00 PM'} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-medium block mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>Gym Logo (Required)</label>
+                                <label className="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 relative h-32 overflow-hidden" style={{ borderColor: logoBase64 ? ACCENT : 'var(--border-medium)', background: 'var(--bg-input)' }}>
+                                    {logoBase64 ? <img src={logoBase64} className="absolute inset-0 w-full h-full object-cover opacity-60" /> : <div className="text-gray-400 mb-2">☁️</div>}
+                                    <span className="text-xs relative z-10 font-bold" style={{ color: logoBase64 ? '#fff' : 'var(--text-muted)' }}>{logoBase64 ? (isArabic ? 'تم الرفع' : 'Uploaded') : 'Browse or drag image (PNG, JPG)'}</span>
+                                    <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                                </label>
                             </div>
 
                             <div className="pt-2">

@@ -16,10 +16,17 @@ export default function SocialTimeline() {
     const [posts, setPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [posting, setPosting] = useState(false);
+    const [user, setUser] = useState<any>(null);
 
     React.useEffect(() => {
+        const u = localStorage.getItem('gemz_user');
+        if (u) {
+            try { setUser(JSON.parse(u)); } catch(e){}
+        }
         fetchPosts();
     }, []);
+
+    const isVisitor = !user;
 
     const fetchPosts = async () => {
         try {
@@ -71,7 +78,8 @@ export default function SocialTimeline() {
                     </div>
 
                     {/* Create Post Input */}
-                    <div className="p-4 rounded-3xl shadow-lg glass-panel" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    {!isVisitor ? (
+                    <div className="p-4 mb-6 rounded-3xl shadow-lg glass-panel" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <div className="flex gap-4">
                             <div className="w-12 h-12 rounded-full p-[2px] shrink-0" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
                                 <div className="w-full h-full rounded-full bg-gray-300 dark:bg-gray-800 border-2" style={{ borderColor: 'var(--bg-card)' }} />
@@ -101,6 +109,15 @@ export default function SocialTimeline() {
                             </button>
                         </div>
                     </div>
+                    ) : (
+                        <div className="p-6 mb-6 rounded-3xl shadow-lg glass-panel text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                            <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{isArabic ? 'انضم للمجتمع' : 'Join the Community'}</h3>
+                            <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'سجل دخولك للتفاعل ونشر يومياتك ورؤية الصور' : 'Sign in to interact, post updates, and view media.'}</p>
+                            <a href="/login" className="px-6 py-2 rounded-full text-black font-bold inline-block hover:scale-105 transition-transform" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
+                                {isArabic ? 'تسجيل الدخول' : 'Sign In'}
+                            </a>
+                        </div>
+                    )}
 
                     {/* Feed Posts */}
                     {loading ? (
@@ -117,11 +134,11 @@ export default function SocialTimeline() {
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-xl font-bold bg-gradient-to-br from-[#00FFA3] to-[#00B8FF] text-black border-2 border-[#0A0A0A]">
-                                            {post.author_name ? post.author_name.charAt(0).toUpperCase() : 'U'}
+                                            {isVisitor ? '🔒' : (post.author_name ? post.author_name.charAt(0).toUpperCase() : 'U')}
                                         </div>
                                         <div>
                                             <h4 className="font-bold flex items-center gap-2">
-                                                {post.author_name || (isArabic ? 'مستخدم GEM Z' : 'Gem Z User')} 
+                                                {isVisitor ? (isArabic ? 'مستخدم مخفي' : 'Hidden User') : (post.author_name || (isArabic ? 'مستخدم GEM Z' : 'Gem Z User'))} 
                                                 <span className="text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold" style={{ background: 'rgba(0,184,255,0.1)', color: '#00B8FF' }}>
                                                     {post.author_role || (isArabic ? 'متدرب' : 'Trainee')}
                                                 </span>
@@ -137,19 +154,25 @@ export default function SocialTimeline() {
                                 </p>
 
                                 {post.media_urls && post.media_urls.length > 0 && (
-                                    <div className="mb-4 rounded-xl overflow-hidden bg-[#0A0A0A] aspect-video flex items-center justify-center">
-                                        <img src={post.media_urls[0]} alt="Post media" className="w-full h-full object-cover" />
+                                    <div className="mb-4 rounded-xl overflow-hidden bg-[#0A0A0A] aspect-video flex items-center justify-center relative">
+                                        {isVisitor ? (
+                                            <div className="absolute inset-0 backdrop-blur-xl bg-black/60 flex flex-col items-center justify-center z-10 p-4 text-center">
+                                                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-2">🔒</div>
+                                                <span className="text-sm font-bold text-white tracking-wide">{isArabic ? 'الصورة مخفية للزوار' : 'Media hidden for visitors'}</span>
+                                            </div>
+                                        ) : null}
+                                        <img src={post.media_urls[0]} alt="Post media" className={`w-full h-full object-cover ${isVisitor ? 'blur-2xl opacity-40 scale-110' : ''}`} />
                                     </div>
                                 )}
 
                                 <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
-                                    <button className="flex items-center gap-2 transition-colors group hover:text-[#00FFA3]">
-                                        <Heart className={`w-5 h-5 group-hover:fill-[#00FFA3] ${post.likes_count > 0 ? 'fill-[#00FFA3] text-[#00FFA3]' : ''}`} /> <span className="font-bold font-mono">{post.likes_count || 0}</span>
+                                    <button disabled={isVisitor} className={`flex items-center gap-2 transition-colors group ${!isVisitor ? 'hover:text-[#00FFA3]' : 'opacity-50 cursor-not-allowed'}`}>
+                                        <Heart className={`w-5 h-5 ${!isVisitor && 'group-hover:fill-[#00FFA3]'} ${post.likes_count > 0 ? 'fill-[#00FFA3] text-[#00FFA3]' : ''}`} /> <span className="font-bold font-mono">{post.likes_count || 0}</span>
                                     </button>
-                                    <button className="flex items-center gap-2 transition-colors hover:text-[#00B8FF]">
+                                    <button disabled={isVisitor} className={`flex items-center gap-2 transition-colors ${!isVisitor ? 'hover:text-[#00B8FF]' : 'opacity-50 cursor-not-allowed'}`}>
                                         <MessageSquare className="w-5 h-5" /> <span className="font-bold font-mono">{post.comments_count || 0}</span>
                                     </button>
-                                    <button className="flex items-center gap-2 transition-colors hover:text-[#A78BFA]">
+                                    <button disabled={isVisitor} className={`flex items-center gap-2 transition-colors ${!isVisitor ? 'hover:text-[#A78BFA]' : 'opacity-50 cursor-not-allowed'}`}>
                                         <Share2 className="w-5 h-5" />
                                     </button>
                                 </div>
@@ -170,11 +193,13 @@ export default function SocialTimeline() {
                         </button>
                     </div>
 
-                    <div className="rounded-3xl p-6 glass-panel" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderTop: '2px solid rgba(0,255,163,0.3)', boxShadow: isDark ? '0 0 30px rgba(0,255,163,0.03)' : 'none' }}>
-                        <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
+                    <div className="rounded-3xl p-6 glass-panel relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00FFA3] to-[#00B8FF]" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#00FFA3] opacity-5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+                        <h3 className="text-lg font-bold flex items-center gap-2 mb-6 relative z-10">
                             <Flame className="w-5 h-5 text-[#00FFA3]" /> {isArabic ? 'أعلى السلاسل النشطة' : 'Top Active Streaks'}
                         </h3>
-                        <div className="space-y-4">
+                        <div className="space-y-4 relative z-10">
                             {[
                                 { name: 'Marcus D.', streak: 45 },
                                 { name: 'Elena R.', streak: 38 },
@@ -192,11 +217,13 @@ export default function SocialTimeline() {
                         </div>
                     </div>
 
-                    <div className="rounded-3xl p-6 glass-panel" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderTop: '2px solid rgba(0,184,255,0.3)' }}>
-                        <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
+                    <div className="rounded-3xl p-6 glass-panel relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00B8FF] to-[#A78BFA]" />
+                        <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#00B8FF] opacity-5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+                        <h3 className="text-lg font-bold flex items-center gap-2 mb-6 relative z-10">
                             <Award className="w-5 h-5 text-[#00B8FF]" /> {isArabic ? 'شارات الأسبوع' : 'Weekly Badges'}
                         </h3>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-3 gap-3 relative z-10">
                             {[1, 2, 3, 4, 5, 6].map(b => (
                                 <div key={b} className="aspect-square rounded-2xl flex items-center justify-center transition-all cursor-pointer hover:scale-105" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
                                     <div className="w-10 h-10 rounded-full shadow-inner" style={{ background: 'var(--border-medium)' }} />

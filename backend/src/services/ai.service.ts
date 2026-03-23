@@ -86,4 +86,53 @@ export class AIService {
             throw new Error('Failed to generate AI Diet Plan');
         }
     }
+
+    /**
+     * Extracts National ID, Full Name, and Date of Birth from ID card images using GPT-4o.
+     */
+    static async extractIdData(idFrontBase64: string, idBackBase64: string) {
+        try {
+            const prompt = `
+            You are an expert AI system for the "GEM Z" fitness platform.
+            Extract the following information from the provided ID card images (front and back).
+            
+            REQUIREMENTS:
+            - Output MUST be valid JSON.
+            - Extract 'national_id', 'full_name', and 'date_of_birth' (YYYY-MM-DD format).
+            
+            EXPECTED JSON FORMAT:
+            {
+              "national_id": "String",
+              "full_name": "String",
+              "date_of_birth": "YYYY-MM-DD"
+            }
+            `;
+
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [
+                    { role: 'system', content: prompt },
+                    { 
+                        role: 'user', 
+                        content: [
+                            { type: 'text', text: 'Here is the front of the ID.' },
+                            { type: 'image_url', image_url: { url: idFrontBase64 } },
+                            { type: 'text', text: 'Here is the back of the ID.' },
+                            { type: 'image_url', image_url: { url: idBackBase64 } }
+                        ] as any
+                    }
+                ],
+                response_format: { type: "json_object" },
+                temperature: 0.1,
+            });
+
+            const responseContent = completion.choices[0].message.content;
+            if (!responseContent) throw new Error('OpenAI returned empty response.');
+
+            return JSON.parse(responseContent);
+        } catch (error) {
+            console.error('[AIService] extractIdData Error:', error);
+            return null; // Return null to not block registration if AI fails
+        }
+    }
 }

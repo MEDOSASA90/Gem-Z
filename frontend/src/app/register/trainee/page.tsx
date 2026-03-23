@@ -22,7 +22,7 @@ const T = {
         medical: 'Medical Conditions (Optional)', medicalPlaceholder: 'e.g. Diabetes, Knee injury...',
         next: 'Next', back2: 'Back', finish: 'Create Account',
         loginLink: 'Already have an account?', login: 'Sign In',
-        agree: 'I agree to the Terms & Privacy Policy',
+        agree: 'I agree to the Terms & Privacy Policy, and understand that my ID uploads will exclusively be securely analyzed by AI to extract identity data according to platform policies.',
         errRequired: 'Please fill all required fields before proceeding.',
     },
     ar: {
@@ -39,7 +39,7 @@ const T = {
         medical: 'الحالات الطبية (اختياري)', medicalPlaceholder: 'مثال: سكري، إصابة في الركبة...',
         next: 'التالي', back2: 'السابق', finish: 'إنشاء الحساب',
         loginLink: 'لديك حساب؟', login: 'تسجيل الدخول',
-        agree: 'أوافق على الشروط وسياسة الخصوصية',
+        agree: 'أوافق على الشروط وسياسة الخصوصية، وأتفهم أنه سيتم تحليل صور الهوية بشكل آمن بواسطة الذكاء الاصطناعي لاستخراج البيانات وتخزينها حسب سياسات المنصة.',
         errRequired: 'يرجى ملء جميع الحقول المطلوبة قبل الاستمرار.',
     }
 };

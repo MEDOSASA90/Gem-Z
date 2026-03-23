@@ -1,15 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Users, Settings, CircleDot } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Users, Settings, CircleDot, Lock } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function LiveVirtualClass() {
     const { isArabic } = useLanguage();
+    const router = useRouter();
 
     const [isMuted, setIsMuted] = useState(false);
     const [isVideoOn, setIsVideoOn] = useState(true);
     const [showChat, setShowChat] = useState(false);
+    const [isVisitor, setIsVisitor] = useState(false);
+    const [checking, setChecking] = useState(true);
+
+    useEffect(() => {
+        const u = localStorage.getItem('gemz_user');
+        if (!u) {
+            setIsVisitor(true);
+            setTimeout(() => router.push('/login'), 3500);
+        }
+        setChecking(false);
+    }, [router]);
+
+    if (checking) return null;
+
+    if (isVisitor) {
+        return (
+            <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center font-sans">
+                <div className="w-24 h-24 rounded-3xl bg-red-500/10 flex items-center justify-center mb-6 shadow-[#FF0055]/20 shadow-[0_0_40px] border border-red-500/20">
+                    <Lock size={40} className="text-red-500" />
+                </div>
+                <h1 className="text-3xl font-bold mb-3">{isArabic ? 'محتوى حصري للأعضاء' : 'Members Only Content'}</h1>
+                <p className="text-gray-400 mb-8 max-w-md text-center leading-relaxed">
+                    {isArabic ? 'لا يمكن للزوار الوصول إلى جلسات البث المباشر. جاري توجيهك لصفحة تسجيل الدخول...' : 'Visitors cannot access live streaming sessions. Redirecting you to login...'}
+                </p>
+                <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen bg-black text-white flex flex-col font-sans">

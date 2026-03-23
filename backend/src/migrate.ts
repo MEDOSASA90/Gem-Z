@@ -16,11 +16,12 @@ async function migrate() {
 
     try {
         await client.connect();
-        console.log('✅ Connected to Supabase!');
+        console.log('✅ Connected to Postgres Database on VPS!');
 
         const schemaFiles = [
             '../../database/schema.sql',
             '../../database/schema_v2_additions.sql',
+            '../../database/schema_v4_additions.sql',
             '../../database/seed_pricing.sql'
         ];
 
