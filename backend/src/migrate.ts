@@ -26,14 +26,18 @@ async function migrate() {
         ];
 
         for (const file of schemaFiles) {
-            const sqlPath = path.join(__dirname, file);
-            if (fs.existsSync(sqlPath)) {
-                console.log(`⏳ Executing ${file}...`);
-                const sql = fs.readFileSync(sqlPath, 'utf8');
-                await client.query(sql);
-                console.log(`✅ Finished ${file}`);
-            } else {
-                console.warn(`⚠️ File not found: ${sqlPath}`);
+            const filePath = path.join(__dirname, file);
+            console.log(`[Migrate] Checking ${file}...`);
+            try {
+                if (fs.existsSync(filePath)) {
+                    const sql = fs.readFileSync(filePath, 'utf8');
+                    await client.query(sql);
+                    console.log(`[Migrate] Successfully executed ${file}`);
+                } else {
+                    console.log(`[Migrate] Skipping ${file} (not found in current deployment environment)`);
+                }
+            } catch (error) {
+                console.error(`[Migrate] Error executing ${file}:`, error);
             }
         }
 
