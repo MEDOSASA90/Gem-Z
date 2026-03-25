@@ -5,8 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PushNotificationService = void 0;
 const web_push_1 = __importDefault(require("web-push"));
-const pg_1 = require("pg");
-const pool = new pg_1.Pool();
+const db_1 = require("../core/database/db");
 // VAPID keys should be generated using `webpush.generateVAPIDKeys()` and stored in ENV
 // We use placeholder keys here or check ENV variables.
 const publicVapidKey = process.env.VAPID_PUBLIC_KEY || 'BM_Mock_Public_Key_Gem_Z_Alpha_Numeric_String';
@@ -18,7 +17,7 @@ class PushNotificationService {
      * The frontend service worker passes the subscription object here.
      */
     static async saveSubscription(userId, subscription) {
-        const client = await pool.connect();
+        const client = await db_1.db.connect();
         try {
             // Mocking the DB insertion for device push tokens
             /*
@@ -43,7 +42,7 @@ class PushNotificationService {
      * Send a standard push notification payload to a specific user.
      */
     static async notifyUser(userId, payload) {
-        const client = await pool.connect();
+        const client = await db_1.db.connect();
         try {
             // 1. Fetch user's subscription from DB
             // const res = await client.query('SELECT subscription_json FROM push_subscriptions WHERE user_id = $1', [userId]);

@@ -1,8 +1,11 @@
 import OpenAI from 'openai';
-import { Pool } from 'pg';
+import { db } from '../core/database/db';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const db = new Pool();
+let openai: OpenAI;
+try {
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'fake-key-to-skip-crash-on-startup' });
+} catch (e) {}
+
 
 interface UserProfile {
     userId: string;
@@ -133,6 +136,225 @@ export class AIService {
         } catch (error) {
             console.error('[AIService] extractIdData Error:', error);
             return null; // Return null to not block registration if AI fails
+        }
+    }
+
+    /**
+     * Generates a comprehensive diet and workout plan for a specific trainee based on provided stats.
+     */
+    static async generateComprehensivePlan(profile: any, trainerId: string) {
+        try {
+            const prompt = `
+            You are an elite sports nutritionist and personal trainer AI for "GEM Z".
+            Create a highly optimal, structured 7-day Diet & Workout Plan based on the trainee's profile.
+            
+            TRAINEE PROFILE:
+            Name: ${profile.traineeName}
+            Age: ${profile.age}, Weight: ${profile.weight}kg, Height: ${profile.height || 'N/A'}cm
+            Goal: ${profile.goal}
+            Fitness Level: ${profile.fitnessLevel || 'Beginner'}
+            Allergies/Dietary: ${profile.allergies || 'None'}
+            Physical Limitations: ${profile.limitations || 'None'}
+            
+            REQUIREMENTS:
+            - Output MUST be valid JSON.
+            - Include both 'diet_plan' and 'workout_plan'.
+            - Create a structured 7-day routine. Calculate strict macros.
+            
+            EXPECTED JSON FORMAT:
+            {
+              "diet_plan": {
+                  "daily_calories": Number,
+                  "macros": {"protein": Number, "carbs": Number, "fats": Number},
+                  "days": [
+                      { "day": 1, "meals": [{"type": "String", "food": "String", "calories": Number}] }
+                  ]
+              },
+              "workout_plan": {
+                  "goal": "String",
+                  "days": [
+                      { "day": 1, "focus": "String", "exercises": [{"name": "String", "sets": Number, "reps": "String"}] }
+                  ]
+              },
+              "warnings": ["String"]
+            }
+            `;
+
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [{ role: 'system', content: prompt }],
+                response_format: { type: "json_object" },
+                temperature: 0.3,
+            });
+
+            const content = completion.choices[0].message.content;
+            if (!content) throw new Error('OpenAI empty response');
+            
+            const parsedPlan = JSON.parse(content);
+
+            const insertQuery = `
+                INSERT INTO ai_generated_plans (trainer_id, trainee_name, plan_type, plan_data, created_at)
+                VALUES ($1, $2, $3, $4, NOW())
+                RETURNING id;
+            `;
+
+            const { rows } = await db.query(insertQuery, [
+                trainerId,
+                profile.traineeName,
+                'FULL_PLAN',
+                parsedPlan
+            ]);
+
+            return { planId: rows[0].id, plan: parsedPlan };
+
+        } catch (error) {
+            console.error('[AIService] Comprehensive Plan Error:', error);
+            throw new Error('Failed to generate full AI Plan');
+        }
+    }
+
+    /**
+     * AI Form Analysis using Vision API
+     */
+    static async analyzeForm(imageUrl: string, exerciseName: string) {
+        try {
+            const prompt = `
+            You are an expert AI personal trainer specializing in biomechanics and exercise form.
+            Analyze the provided image of a user performing the exercise: ${exerciseName}.
+            Identify any form errors, suggest corrections, and rate the form out of 10.
+            
+            EXPECTED JSON FORMAT:
+            {
+              "rating": Number,
+              "errors_detected": ["String"],
+              "corrections": ["String"],
+              "is_safe": Boolean
+            }
+            `;
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [
+                    { role: 'system', content: prompt },
+                    { 
+                        role: 'user', 
+                        content: [
+                            { type: 'text', text: 'Analyze this exercise form.' },
+                            { type: 'image_url', image_url: { url: imageUrl } }
+                        ] as any
+                    }
+                ],
+                response_format: { type: "json_object" },
+                temperature: 0.1,
+            });
+            const content = completion.choices[0].message.content;
+            if (!content) throw new Error('OpenAI empty response');
+            return JSON.parse(content);
+        } catch (error) {
+            console.error('[AIService] analyzeForm Error:', error);
+            throw new Error('Failed to analyze form');
+        }
+    }
+
+    /**
+     * AI Food Scanner using Vision API
+     */
+    static async scanFood(imageUrl: string) {
+        try {
+            const prompt = `
+            You are an expert AI nutritionist.
+            Analyze the provided image of food and estimate its macronutrients and calories.
+            
+            EXPECTED JSON FORMAT:
+            {
+              "food_identified": "String",
+              "estimated_calories": Number,
+              "macros": { "protein": Number, "carbs": Number, "fats": Number },
+              "confidence_score": Number
+            }
+            `;
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [
+                    { role: 'system', content: prompt },
+                    { 
+                        role: 'user', 
+                        content: [
+                            { type: 'text', text: 'Analyze this food.' },
+                            { type: 'image_url', image_url: { url: imageUrl } }
+                        ] as any
+                    }
+                ],
+                response_format: { type: "json_object" },
+                temperature: 0.2,
+            });
+            const content = completion.choices[0].message.content;
+            if (!content) throw new Error('OpenAI empty response');
+            return JSON.parse(content);
+        } catch (error) {
+            console.error('[AIService] scanFood Error:', error);
+            throw new Error('Failed to scan food');
+        }
+    }
+
+    /**
+     * Dynamic Plan Adjuster
+     */
+    static async adjustPlanDynamically(planId: string, feedback: any) {
+        try {
+            const prompt = `
+            You are an expert AI personal trainer.
+            Adjust the workout plan dynamically based on user feedback (fatigue, sleep, muscle soreness).
+            
+            USER FEEDBACK:
+            ${JSON.stringify(feedback)}
+            
+            EXPECTED JSON FORMAT:
+            {
+              "adjusted_plan_summary": "String",
+              "intensity_modifier": "String",
+              "recommended_rest_days_added": Number,
+              "modified_exercises": ["String"]
+            }
+            `;
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [{ role: 'system', content: prompt }],
+                response_format: { type: "json_object" },
+                temperature: 0.3,
+            });
+            const content = completion.choices[0].message.content;
+            if (!content) throw new Error('OpenAI empty response');
+            return JSON.parse(content);
+        } catch (error) {
+            console.error('[AIService] adjustPlanDynamically Error:', error);
+            throw new Error('Failed to adjust plan');
+        }
+    }
+
+    /**
+     * Fitness Chatbot
+     */
+    static async chatWithAI(userId: string, message: string) {
+        try {
+            const prompt = `
+            You are the "GEM Z" AI Fitness Coach. 
+            Answer the user's fitness, diet, or health-related question accurately, enthusiastically, and concisely.
+            If the question is unrelated to fitness, health, or the app, politely steer them back.
+            `;
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [
+                    { role: 'system', content: prompt },
+                    { role: 'user', content: message }
+                ],
+                temperature: 0.7,
+            });
+            const content = completion.choices[0].message.content;
+            if (!content) throw new Error('OpenAI empty response');
+            return content;
+        } catch (error) {
+            console.error('[AIService] chatWithAI Error:', error);
+            throw new Error('Failed to chat with AI');
         }
     }
 }

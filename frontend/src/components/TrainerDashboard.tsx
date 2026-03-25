@@ -33,7 +33,7 @@ export default function TrainerDashboard() {
                     </button>
                     <button className="px-6 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 group hover:opacity-80" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                         {isArabic ? 'فتح الجدول' : 'Open Schedule'}
-                        <Calendar className={`w-4 h-4 group-hover:scale-110 transition-transform ${isArabic ? 'ml-2' : ''}`} style={{ color: '#00B8FF' }} />
+                        <Calendar className={`w-4 h-4 group-hover:scale-110 transition-transform ${isArabic ? 'ml-2' : ''}`} style={{ color: 'var(--color-secondary)' }} />
                     </button>
                 </div>
             </div>
@@ -41,25 +41,25 @@ export default function TrainerDashboard() {
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div className="rounded-3xl p-6 glass-panel-hover overflow-hidden relative" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    <div className={`absolute ${isArabic ? '-left-6' : '-right-6'} -top-6 w-32 h-32 rounded-full blur-2xl transition-colors opacity-10 pointer-events-none`} style={{ background: '#00FFA3' }} />
+                    <div className={`absolute ${isArabic ? '-left-6' : '-right-6'} -top-6 w-32 h-32 rounded-full blur-2xl transition-colors opacity-10 pointer-events-none`} style={{ background: 'var(--color-primary)' }} />
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 rounded-xl text-[#00FFA3]" style={{ background: 'rgba(0,255,163,0.1)' }}>
+                        <div className="p-3 rounded-xl text-[var(--color-primary)]" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)' }}>
                             <Users size={24} />
                         </div>
                         <h3 className="font-medium" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'إجمالي العملاء' : 'Total Clients'}</h3>
                     </div>
                     <div className="flex items-end gap-3 p-1">
                         <h2 className="text-4xl font-bold">{stats.clients}</h2>
-                        <span className="text-sm text-[#00FFA3] flex items-center mb-1 font-bold">
+                        <span className="text-sm text-[var(--color-primary)] flex items-center mb-1 font-bold">
                             <TrendingUp className={`w-4 h-4 ${isArabic ? 'ml-1' : 'mr-1'}`} /> {isArabic ? '+3 هذا الأسبوع' : '+3 this week'}
                         </span>
                     </div>
                 </div>
 
                 <div className="rounded-3xl p-6 glass-panel-hover overflow-hidden relative" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    <div className={`absolute ${isArabic ? '-left-6' : '-right-6'} -top-6 w-32 h-32 rounded-full blur-2xl transition-colors opacity-10 pointer-events-none`} style={{ background: '#A78BFA' }} />
+                    <div className={`absolute ${isArabic ? '-left-6' : '-right-6'} -top-6 w-32 h-32 rounded-full blur-2xl transition-colors opacity-10 pointer-events-none`} style={{ background: 'var(--color-purple)' }} />
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 rounded-xl text-[#A78BFA]" style={{ background: 'rgba(167,139,250,0.1)' }}>
+                        <div className="p-3 rounded-xl text-[var(--color-purple)]" style={{ background: 'rgba(167,139,250,0.1)' }}>
                             <DollarSign size={24} />
                         </div>
                         <h3 className="font-medium" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الأرباح الشهرية' : 'Monthly Earnings'}</h3>
@@ -70,9 +70,9 @@ export default function TrainerDashboard() {
                 </div>
 
                 <div className="rounded-3xl p-6 glass-panel-hover overflow-hidden relative" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    <div className={`absolute ${isArabic ? '-left-6' : '-right-6'} -top-6 w-32 h-32 rounded-full blur-2xl transition-colors opacity-10 pointer-events-none`} style={{ background: '#00B8FF' }} />
+                    <div className={`absolute ${isArabic ? '-left-6' : '-right-6'} -top-6 w-32 h-32 rounded-full blur-2xl transition-colors opacity-10 pointer-events-none`} style={{ background: 'var(--color-secondary)' }} />
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 rounded-xl text-[#00B8FF]" style={{ background: 'rgba(0,184,255,0.1)' }}>
+                        <div className="p-3 rounded-xl text-[var(--color-secondary)]" style={{ background: 'rgba(var(--color-secondary-rgb), 0.1)' }}>
                             <Target size={24} />
                         </div>
                         <h3 className="font-medium" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'البرامج النشطة' : 'Active Plans'}</h3>
@@ -101,9 +101,9 @@ export default function TrainerDashboard() {
 
                     <div className="space-y-4">
                         {[
-                            { name: 'Sarah Jenkins', type: isArabic ? 'مرحلة التضخيم ٢' : 'Hypertrophy Phase 2', progress: 75, status: 'Online', color: '#00FFA3' },
+                            { name: 'Sarah Jenkins', type: isArabic ? 'مرحلة التضخيم ٢' : 'Hypertrophy Phase 2', progress: 75, status: 'Online', color: 'var(--color-primary)' },
                             { name: 'Marcus D.', type: isArabic ? 'بروتوكول حرق الدهون' : 'Fat Loss Protocol', progress: 42, status: 'Offline', color: 'gray' },
-                            { name: 'Elena R.', type: isArabic ? 'تأسيس القوة' : 'Strength Base', progress: 90, status: 'In Gym', color: '#00B8FF' },
+                            { name: 'Elena R.', type: isArabic ? 'تأسيس القوة' : 'Strength Base', progress: 90, status: 'In Gym', color: 'var(--color-secondary)' },
                         ].map((client, i) => (
                             <div key={i} className="flex items-center justify-between p-4 rounded-2xl transition-colors group cursor-pointer hover:bg-black/5 dark:hover:bg-white/5" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
                                 <div className="flex items-center gap-4">
@@ -121,13 +121,13 @@ export default function TrainerDashboard() {
                                     <div className="hidden sm:block">
                                         <div className="flex justify-between text-xs mb-1 font-bold">
                                             <span style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'التقدم' : 'Progress'}</span>
-                                            <span className="font-mono text-[#00FFA3]">{client.progress}%</span>
+                                            <span className="font-mono text-[var(--color-primary)]">{client.progress}%</span>
                                         </div>
                                         <div className="w-32 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border-subtle)' }}>
-                                            <div className={`h-full ${isArabic ? 'float-right' : ''}`} style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)', width: `${client.progress}%` }} />
+                                            <div className={`h-full ${isArabic ? 'float-right' : ''}`} style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))', width: `${client.progress}%` }} />
                                         </div>
                                     </div>
-                                    <button className={`transition-colors hover:text-[#00B8FF] ${isArabic ? 'rotate-180' : ''}`} style={{ color: 'var(--text-muted)' }}>
+                                    <button className={`transition-colors hover:text-[var(--color-secondary)] ${isArabic ? 'rotate-180' : ''}`} style={{ color: 'var(--text-muted)' }}>
                                         <ArrowRight size={20} />
                                     </button>
                                 </div>
@@ -138,11 +138,11 @@ export default function TrainerDashboard() {
 
                 {/* Quick Actions / Assign Plan */}
                 <div className="rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between glass-panel" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    <div className={`absolute top-0 ${isArabic ? 'left-0' : 'right-0'} opacity-30 pointer-events-none w-full h-full`} style={{ background: `radial-gradient(circle at top ${isArabic ? 'left' : 'right'}, rgba(0,184,255,0.1), transparent 70%)` }} />
+                    <div className={`absolute top-0 ${isArabic ? 'left-0' : 'right-0'} opacity-30 pointer-events-none w-full h-full`} style={{ background: `radial-gradient(circle at top ${isArabic ? 'left' : 'right'}, rgba(var(--color-secondary-rgb), 0.1), transparent 70%)` }} />
 
                     <div className="relative z-10">
                         <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
-                            <Activity className="w-5 h-5 text-[#00B8FF]" /> {isArabic ? 'تعيين سريع' : 'Quick Assign'}
+                            <Activity className="w-5 h-5 text-[var(--color-secondary)]" /> {isArabic ? 'تعيين سريع' : 'Quick Assign'}
                         </h3>
                         <p className="text-sm mb-6 leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>
                             {isArabic
@@ -169,7 +169,7 @@ export default function TrainerDashboard() {
                         </div>
                     </div>
 
-                    <button className="w-full mt-8 text-black font-bold py-3.5 rounded-xl transition-opacity flex items-center justify-center gap-2 relative z-10 hover:opacity-90" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)', boxShadow: isDark ? '0 0 20px rgba(0,184,255,0.3)' : 'none' }}>
+                    <button className="w-full mt-8 text-black font-bold py-3.5 rounded-xl transition-opacity flex items-center justify-center gap-2 relative z-10 hover:opacity-90" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))', boxShadow: isDark ? '0 0 20px rgba(var(--color-secondary-rgb), 0.1)' : 'none' }}>
                         <CheckCircle size={20} /> {isArabic ? 'إرسال إلى تطبيق العميل' : 'Push to Client App'}
                     </button>
                 </div>

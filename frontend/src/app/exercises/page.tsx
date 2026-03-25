@@ -21,7 +21,7 @@ const MUSCLE_GROUPS = [
 ];
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-    Beginner: '#34C759', Intermediate: '#FFCC00', Advanced: '#FF3B30',
+    Beginner: '#34C759', Intermediate: 'var(--color-warning)', Advanced: 'var(--color-danger)',
 };
 
 const EXERCISES = [
@@ -95,7 +95,7 @@ export default function ExerciseLibraryPage() {
                     {MUSCLE_GROUPS.map(mg => (
                         <button key={mg.id} onClick={() => setSelectedMuscle(mg.id)}
                             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap shrink-0 transition-all"
-                            style={{ background: selectedMuscle === mg.id ? '#00FFA3' : 'var(--bg-card)', color: selectedMuscle === mg.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${selectedMuscle === mg.id ? '#00FFA3' : 'var(--border-subtle)'}` }}>
+                            style={{ background: selectedMuscle === mg.id ? 'var(--color-primary)' : 'var(--bg-card)', color: selectedMuscle === mg.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${selectedMuscle === mg.id ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
                             <span>{mg.icon}</span> {isArabic ? mg.nameAr : mg.nameEn}
                         </button>
                     ))}
@@ -120,7 +120,7 @@ export default function ExerciseLibraryPage() {
                                 <span className="flex items-center gap-1"><Dumbbell size={12} />{ex.equipment}</span>
                                 <span className="flex items-center gap-1"><Zap size={12} />{ex.kcalPerMin} kcal/min</span>
                             </div>
-                            <button className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all group-hover:bg-[#00FFA3] group-hover:text-black"
+                            <button className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all group-hover:bg-[var(--color-primary)] group-hover:text-black"
                                 style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)' }}>
                                 <Play size={14} /> {isArabic ? 'عرض التمرين' : 'View Exercise'}
                             </button>
@@ -152,7 +152,7 @@ export default function ExerciseLibraryPage() {
                                     { label: isArabic ? 'الحرق' : 'Burn', value: `${selectedExercise.kcalPerMin} kcal/m`, icon: Zap },
                                 ].map((s, i) => (
                                     <div key={i} className="p-3 rounded-xl text-center" style={{ background: 'var(--bg-input)' }}>
-                                        <s.icon size={16} className="mx-auto mb-1 text-[#00FFA3]" />
+                                        <s.icon size={16} className="mx-auto mb-1 text-[var(--color-primary)]" />
                                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{s.label}</p>
                                         <p className="font-bold text-sm capitalize">{s.value}</p>
                                     </div>
@@ -164,7 +164,7 @@ export default function ExerciseLibraryPage() {
                                 <div className="space-y-2">
                                     {selectedExercise.steps.map((step, i) => (
                                         <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
-                                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-black shrink-0" style={{ background: '#00FFA3' }}>{i + 1}</div>
+                                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-black shrink-0" style={{ background: 'var(--color-primary)' }}>{i + 1}</div>
                                             <p className="text-sm">{step}</p>
                                         </div>
                                     ))}
@@ -172,7 +172,7 @@ export default function ExerciseLibraryPage() {
                             </div>
 
                             <div className="flex gap-3 mt-5">
-                                <button className="flex-1 py-3 rounded-xl font-bold text-black" style={{ background: '#00FFA3' }}>
+                                <button className="flex-1 py-3 rounded-xl font-bold text-black" style={{ background: 'var(--color-primary)' }}>
                                     {isArabic ? '➕ إضافة للتمرين' : '➕ Add to Workout'}
                                 </button>
                                 <button onClick={() => setSelectedExercise(null)} className="px-5 py-3 rounded-xl font-bold" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>

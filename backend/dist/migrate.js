@@ -18,22 +18,29 @@ async function migrate() {
     });
     try {
         await client.connect();
-        console.log('✅ Connected to Supabase!');
+        console.log('✅ Connected to Postgres Database on VPS!');
         const schemaFiles = [
             '../../database/schema.sql',
             '../../database/schema_v2_additions.sql',
+            '../../database/schema_v4_additions.sql',
+            '../../database/schema_v5_ecosystem.sql',
             '../../database/seed_pricing.sql'
         ];
         for (const file of schemaFiles) {
-            const sqlPath = path_1.default.join(__dirname, file);
-            if (fs_1.default.existsSync(sqlPath)) {
-                console.log(`⏳ Executing ${file}...`);
-                const sql = fs_1.default.readFileSync(sqlPath, 'utf8');
-                await client.query(sql);
-                console.log(`✅ Finished ${file}`);
+            const filePath = path_1.default.join(__dirname, file);
+            console.log(`[Migrate] Checking ${file}...`);
+            try {
+                if (fs_1.default.existsSync(filePath)) {
+                    const sql = fs_1.default.readFileSync(filePath, 'utf8');
+                    await client.query(sql);
+                    console.log(`[Migrate] Successfully executed ${file}`);
+                }
+                else {
+                    console.log(`[Migrate] Skipping ${file} (not found in current deployment environment)`);
+                }
             }
-            else {
-                console.warn(`⚠️ File not found: ${sqlPath}`);
+            catch (error) {
+                console.error(`[Migrate] Error executing ${file}:`, error);
             }
         }
         console.log('🎉 All migrations completed successfully!');

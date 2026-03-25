@@ -1,6 +1,8 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
+import path from 'path';
 import routes from './routes';
 import { errorHandler } from './core/middlewares/error.middleware';
 import { SocketService } from './core/sockets/socket';
@@ -16,6 +18,9 @@ export const socketService = new SocketService(server);
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static uploads
+app.use('/uploads', express.static(path.join(__dirname, '../../public/uploads')));
 
 // Main Router V1
 app.use('/api/v1', routes);

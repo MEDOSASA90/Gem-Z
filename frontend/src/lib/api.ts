@@ -15,7 +15,7 @@ export const GemZApi = {
     /**
      * Core Fetch wrapper with JWT injection
      */
-    async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+    async request(endpoint: string, options: RequestOptions = {}): Promise<any> {
         const { requireAuth = true, ...customConfig } = options;
 
         const headers: HeadersInit = {
@@ -103,13 +103,19 @@ export const GemZApi = {
 
     Gym: {
         getDashboard: () => GemZApi.request('/gym/stats'),
-        setOffPeak: (isActive: boolean, discountPercentage?: number) => 
-            GemZApi.request('/gym/offpeak', { method: 'POST', body: JSON.stringify({ isActive, discountPercentage }) }),
+        buyPass: (gymId: string, price: number) => GemZApi.request('/gym/passes/buy', { method: 'POST', body: JSON.stringify({ gymId, price }) }),
+        scanPass: (qrCode: string) => GemZApi.request('/gym/passes/scan', { method: 'POST', body: JSON.stringify({ qrCode }) }),
+        getTraineePasses: () => GemZApi.request('/trainee/passes')
     },
 
     Coins: {
         earn: (amount: number, reason: string) => GemZApi.request('/coins/earn', { method: 'POST', body: JSON.stringify({ amount, reason }) }),
         redeem: (rewardId: string) => GemZApi.request('/coins/redeem', { method: 'POST', body: JSON.stringify({ rewardId }) }),
+    },
+
+    Chat: {
+        getHistory: (contactId: string) => GemZApi.request(`/chat/history/${contactId}`),
+        getContacts: () => GemZApi.request('/chat/contacts')
     },
 
     Store: {
@@ -130,5 +136,15 @@ export const GemZApi = {
     Challenges: {
         list: () => GemZApi.request('/challenges'),
         join: (id: string, gymId?: string) => GemZApi.request(`/challenges/${id}/join`, { method: 'POST', body: JSON.stringify({ gymId }) })
+    },
+
+    AI: {
+        generatePlan: (data: any) => GemZApi.request('/ai/generate', { method: 'POST', body: JSON.stringify(data) }),
+        getSavedPlans: () => GemZApi.request('/ai/plans')
+    },
+
+    Finance: {
+        getWallet: () => GemZApi.request('/finance/wallet'),
+        requestPayout: (amount: number, bankDetails: any) => GemZApi.request('/finance/payout', { method: 'POST', body: JSON.stringify({ amount, bankDetails }) })
     }
 };

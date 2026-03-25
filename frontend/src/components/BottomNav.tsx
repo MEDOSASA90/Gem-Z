@@ -8,17 +8,17 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 
 const NAV_ITEMS = [
-    { href: '/trainee', icon: BarChart3, labelEn: 'Home', labelAr: 'الرئيسية', color: '#00FFA3' },
-    { href: '/exercises', icon: Dumbbell, labelEn: 'Exercises', labelAr: 'تمارين', color: '#00B8FF' },
-    { href: '/ai-nutritionist', icon: Apple, labelEn: 'Diet AI', labelAr: 'تغذية', color: '#A78BFA' },
-    { href: '/ai-form', icon: Activity, labelEn: 'Form AI', labelAr: 'أداء', color: '#00FFA3' },
-    { href: '/gym-map', icon: MapPin, labelEn: 'Map', labelAr: 'خريطة', color: '#FFCC00' },
-    { href: '/challenges', icon: Trophy, labelEn: 'Challenges', labelAr: 'تحديات', color: '#FF6B35' },
-    { href: '/ai-coach', icon: Bot, labelEn: 'Coach', labelAr: 'مساعد', color: '#A78BFA' },
-    { href: '/flash-deals', icon: Zap, labelEn: 'Deals', labelAr: 'عروض', color: '#FF3B30' },
-    { href: '/coins', icon: Star, labelEn: 'Coins', labelAr: 'كوينز', color: '#FFCC00' },
-    { href: '/progress', icon: TrendingUp, labelEn: 'Progress', labelAr: 'تقدم', color: '#00FFA3' },
-    { href: '/recipes', icon: ChefHat, labelEn: 'Recipes', labelAr: 'وصفات', color: '#FF6B35' },
+    { href: '/trainee', icon: BarChart3, labelEn: 'Home', labelAr: 'الرئيسية', color: 'var(--color-primary)' },
+    { href: '/exercises', icon: Dumbbell, labelEn: 'Exercises', labelAr: 'تمارين', color: 'var(--color-secondary)' },
+    { href: '/ai-nutritionist', icon: Apple, labelEn: 'Diet AI', labelAr: 'تغذية', color: 'var(--color-purple)' },
+    { href: '/ai-form', icon: Activity, labelEn: 'Form AI', labelAr: 'أداء', color: 'var(--color-primary)' },
+    { href: '/gym-map', icon: MapPin, labelEn: 'Map', labelAr: 'خريطة', color: 'var(--color-warning)' },
+    { href: '/challenges', icon: Trophy, labelEn: 'Challenges', labelAr: 'تحديات', color: 'var(--color-orange)' },
+    { href: '/ai-coach', icon: Bot, labelEn: 'Coach', labelAr: 'مساعد', color: 'var(--color-purple)' },
+    { href: '/flash-deals', icon: Zap, labelEn: 'Deals', labelAr: 'عروض', color: 'var(--color-danger)' },
+    { href: '/coins', icon: Star, labelEn: 'Coins', labelAr: 'كوينز', color: 'var(--color-warning)' },
+    { href: '/progress', icon: TrendingUp, labelEn: 'Progress', labelAr: 'تقدم', color: 'var(--color-primary)' },
+    { href: '/recipes', icon: ChefHat, labelEn: 'Recipes', labelAr: 'وصفات', color: 'var(--color-orange)' },
 ];
 
 export default function BottomNav() {

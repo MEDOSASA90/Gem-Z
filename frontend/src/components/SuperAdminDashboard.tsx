@@ -39,7 +39,7 @@ export default function SuperAdminDashboard() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
                 <div>
                     <h1 className="text-3xl font-bold font-heading flex items-center gap-3">
-                        <ShieldCheck className="w-8 h-8 text-[#00FFA3]" /> {isArabic ? 'نقطة قيادة منصة GEM Z' : 'GEM Z Command Node'}
+                        <ShieldCheck className="w-8 h-8 text-[var(--color-primary)]" /> {isArabic ? 'نقطة قيادة منصة GEM Z' : 'GEM Z Command Node'}
                     </h1>
                     <p className="mt-2 text-sm uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                         {isArabic ? 'تصريح مستوى ٥' : 'Level 5 Clearance'}
@@ -53,8 +53,8 @@ export default function SuperAdminDashboard() {
                         <Globe className="w-4 h-4" /> <span className="text-sm font-medium">{isArabic ? 'EN' : 'عربي'}</span>
                     </button>
                     <div className="flex items-center gap-3 py-2.5 px-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                        <div className="w-2 h-2 rounded-full bg-[#00FFA3] animate-pulse" />
-                        <span className="text-sm font-mono text-[#00FFA3]">
+                        <div className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
+                        <span className="text-sm font-mono text-[var(--color-primary)]">
                             {isArabic ? 'النظام متصل • ' : 'System Online • '} {metrics.platformHealth}%
                         </span>
                     </div>
@@ -73,9 +73,9 @@ export default function SuperAdminDashboard() {
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all shrink-0`}
                         style={{
-                            background: activeTab === tab.id ? '#00FFA3' : 'var(--bg-card)',
+                            background: activeTab === tab.id ? 'var(--color-primary)' : 'var(--bg-card)',
                             color: activeTab === tab.id ? '#000' : 'var(--text-secondary)',
-                            border: `1px solid ${activeTab === tab.id ? '#00FFA3' : 'var(--border-subtle)'}`
+                            border: `1px solid ${activeTab === tab.id ? 'var(--color-primary)' : 'var(--border-subtle)'}`
                         }}
                     >
                         <tab.icon size={16} /> {isArabic ? tab.labelAr : tab.labelEn}
@@ -93,15 +93,15 @@ export default function SuperAdminDashboard() {
                             <p className="text-4xl font-bold font-mono tracking-tight">{formatCurrency(metrics.activeUsers)}</p>
                         </div>
 
-                        <div className="rounded-2xl p-6 relative overflow-hidden md:col-span-2 shadow-[0_0_30px_rgba(0,255,163,0.05)] border-t border-t-[#00FFA3]/30" style={{ background: 'var(--bg-card)', borderLeft: '1px solid var(--border-subtle)', borderRight: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
+                        <div className="rounded-2xl p-6 relative overflow-hidden md:col-span-2 shadow-[0_0_30px_rgba(var(--color-primary-rgb), 0.3] border-t border-t-[var(--color-primary)]/30" style={{ background: 'var(--bg-card)', borderLeft: '1px solid var(--border-subtle)', borderRight: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الإيرادات المتراكمة للمنصة' : 'Cumulative Platform Revenue'}</h3>
-                                    <p className="text-4xl font-bold font-mono tracking-tight text-[#00FFA3]" dir="ltr">
+                                    <p className="text-4xl font-bold font-mono tracking-tight text-[var(--color-primary)]" dir="ltr">
                                         EGP {formatCurrency(metrics.revenue)}
                                     </p>
                                 </div>
-                                <div className="p-3 bg-[#00FFA3]/10 text-[#00FFA3] rounded-xl"><Activity className="w-6 h-6" /></div>
+                                <div className="p-3 bg-[var(--color-primary)]/10 text-[var(--color-primary)] rounded-xl"><Activity className="w-6 h-6" /></div>
                             </div>
                             <div className="flex gap-4 text-xs font-mono mt-4" style={{ color: 'var(--text-muted)' }}>
                                 <span>{isArabic ? 'من المتدربين: ٤٥٪' : 'Trainee: 45%'}</span>
@@ -110,11 +110,11 @@ export default function SuperAdminDashboard() {
                             </div>
                         </div>
 
-                        <div className="rounded-2xl p-6 relative overflow-hidden border-t border-t-[#FF3B30]/30" style={{ background: 'var(--bg-card)', borderLeft: '1px solid var(--border-subtle)', borderRight: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
+                        <div className="rounded-2xl p-6 relative overflow-hidden border-t border-t-[var(--color-danger)]/30" style={{ background: 'var(--bg-card)', borderLeft: '1px solid var(--border-subtle)', borderRight: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
                             <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'النزاعات المفتوحة' : 'Open Disputes'}</h3>
                             <div className="flex items-center justify-between">
-                                <p className="text-4xl font-bold font-mono text-[#FF3B30]">{metrics.disputes}</p>
-                                <button onClick={() => setActiveTab('support')} className="text-xs px-3 py-1.5 rounded-lg bg-[#FF3B30]/10 text-[#FF3B30] font-bold">
+                                <p className="text-4xl font-bold font-mono text-[var(--color-danger)]">{metrics.disputes}</p>
+                                <button onClick={() => setActiveTab('support')} className="text-xs px-3 py-1.5 rounded-lg bg-[var(--color-danger)]/10 text-[var(--color-danger)] font-bold">
                                     {isArabic ? 'عرض' : 'View'}
                                 </button>
                             </div>
@@ -126,7 +126,7 @@ export default function SuperAdminDashboard() {
                         <div className="rounded-2xl flex flex-col overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                             <div className="p-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                                 <h3 className="text-lg font-bold flex items-center gap-2">
-                                    <CreditCard className="w-5 h-5 text-[#00B8FF]" />
+                                    <CreditCard className="w-5 h-5 text-[var(--color-secondary)]" />
                                     {isArabic ? 'دفتر الأستاذ المباشر' : 'Live Ledger Stream'}
                                 </h3>
                             </div>
@@ -146,7 +146,7 @@ export default function SuperAdminDashboard() {
                                         </div>
                                         <div className={`text-${isArabic ? 'left' : 'right'}`}>
                                             <span className="block font-bold" dir="ltr" style={{ color: 'var(--text-primary)' }}>{log.amount}</span>
-                                            <span className="text-xs text-[#00FFA3]" dir="ltr">{isArabic ? 'رسوم: ' : 'Fee: '}{log.fee}</span>
+                                            <span className="text-xs text-[var(--color-primary)]" dir="ltr">{isArabic ? 'رسوم: ' : 'Fee: '}{log.fee}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -179,12 +179,12 @@ export default function SuperAdminDashboard() {
                                         <tr key={i} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                                             <td className="px-6 py-4 font-mono font-medium">{ticket.id}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 rounded text-xs ${ticket.status === 'Open' ? 'bg-[#FFCC00]/10 text-[#FFCC00]' : 'bg-gray-800 text-gray-400'}`}>
+                                                <span className={`px-2 py-1 rounded text-xs ${ticket.status === 'Open' ? 'bg-[var(--color-warning)]/10 text-[var(--color-warning)]' : 'bg-gray-800 text-gray-400'}`}>
                                                     {isArabic ? ticket.statusAr : ticket.status}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`flex items-center gap-1 ${ticket.priority === 'High' ? 'text-[#FF3B30]' : 'text-gray-400'}`}>
+                                                <span className={`flex items-center gap-1 ${ticket.priority === 'High' ? 'text-[var(--color-danger)]' : 'text-gray-400'}`}>
                                                     {ticket.priority === 'High' && <AlertTriangle className="w-3 h-3" />}
                                                     {isArabic ? ticket.priorityAr : ticket.priority}
                                                 </span>
@@ -209,7 +209,7 @@ export default function SuperAdminDashboard() {
                     {/* Financial & General Settings */}
                     <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                            <Settings className="text-[#00B8FF]" />
+                            <Settings className="text-[var(--color-secondary)]" />
                             <h2 className="text-xl font-bold">{isArabic ? 'الإعدادات العامة' : 'General Settings'}</h2>
                         </div>
 
@@ -238,12 +238,12 @@ export default function SuperAdminDashboard() {
                                     <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'يوقف دخول المستخدمين مؤقتاً' : 'Temporarily disables user login'}</p>
                                 </div>
                                 <button onClick={() => setSettings({ ...settings, maintenanceMode: !settings.maintenanceMode })}
-                                    className={`w-12 h-6 rounded-full transition-colors relative ${settings.maintenanceMode ? 'bg-[#FF3B30]' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                                    className={`w-12 h-6 rounded-full transition-colors relative ${settings.maintenanceMode ? 'bg-[var(--color-danger)]' : 'bg-gray-300 dark:bg-gray-600'}`}>
                                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.maintenanceMode ? (isArabic ? 'right-7' : 'left-7') : (isArabic ? 'right-1' : 'left-1')}`} />
                                 </button>
                             </div>
 
-                            <button className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-xl text-black font-bold transition-opacity hover:opacity-90" style={{ background: '#00B8FF' }}>
+                            <button className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-xl text-black font-bold transition-opacity hover:opacity-90" style={{ background: 'var(--color-secondary)' }}>
                                 <Save size={18} /> {isArabic ? 'حفظ التغييرات' : 'Save Changes'}
                             </button>
                         </div>
@@ -252,7 +252,7 @@ export default function SuperAdminDashboard() {
                     {/* Social Links Manager */}
                     <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                            <LinkIcon className="text-[#A78BFA]" />
+                            <LinkIcon className="text-[var(--color-purple)]" />
                             <h2 className="text-xl font-bold">{isArabic ? 'وسائل التواصل' : 'Social Media Links'}</h2>
                         </div>
 
@@ -271,7 +271,7 @@ export default function SuperAdminDashboard() {
                                 </div>
                             ))}
 
-                            <button className="w-full mt-6 flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold transition-opacity hover:opacity-90" style={{ background: '#A78BFA' }}>
+                            <button className="w-full mt-6 flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold transition-opacity hover:opacity-90" style={{ background: 'var(--color-purple)' }}>
                                 <CheckCircle size={18} /> {isArabic ? 'تحديث الروابط' : 'Update Links'}
                             </button>
                         </div>
@@ -285,7 +285,7 @@ export default function SuperAdminDashboard() {
                     {/* Tickets List */}
                     <div className="w-full md:w-1/3 rounded-2xl flex flex-col overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <div className="p-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                            <h2 className="font-bold flex items-center gap-2"><Ticket size={18} className="text-[#FFCC00]" /> {isArabic ? 'صندوق الوارد' : 'Inbox'}</h2>
+                            <h2 className="font-bold flex items-center gap-2"><Ticket size={18} className="text-[var(--color-warning)]" /> {isArabic ? 'صندوق الوارد' : 'Inbox'}</h2>
                         </div>
                         <div className="overflow-y-auto flex-1">
                             {[
@@ -293,14 +293,14 @@ export default function SuperAdminDashboard() {
                                 { id: 'TKT-843', user: 'Gold Gym Elite', issue: 'QR scanner hardware error', status: 'Pending', priority: 'Medium', time: '2 hrs ago' },
                                 { id: 'TKT-112', user: 'Muscle Pharm', issue: 'Updating store tax info', status: 'Resolved', priority: 'Low', time: '1 day ago' }
                             ].map((t, i) => (
-                                <div key={i} className="p-4 border-b cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style={{ borderColor: 'var(--border-subtle)', borderLeft: i === 0 ? '4px solid #FF3B30' : '4px solid transparent' }}>
+                                <div key={i} className="p-4 border-b cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style={{ borderColor: 'var(--border-subtle)', borderLeft: i === 0 ? '4px solid var(--color-danger)' : '4px solid transparent' }}>
                                     <div className="flex justify-between items-start mb-1">
                                         <span className="font-mono text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>{t.id}</span>
                                         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{t.time}</span>
                                     </div>
                                     <p className="font-bold text-sm mb-1">{t.user}</p>
                                     <p className="text-xs truncate mb-2" style={{ color: 'var(--text-secondary)' }}>{t.issue}</p>
-                                    <span className="text-[10px] uppercase font-bold px-2 py-1 rounded bg-[#FF3B30]/10 text-[#FF3B30]">{t.status}</span>
+                                    <span className="text-[10px] uppercase font-bold px-2 py-1 rounded bg-[var(--color-danger)]/10 text-[var(--color-danger)]">{t.status}</span>
                                 </div>
                             ))}
                         </div>
@@ -324,15 +324,15 @@ export default function SuperAdminDashboard() {
                                 <p className="text-sm">Hello admin, my recent client transfer of 1500 EGP is showing as 'Pending' in my wallet for 2 days now. Can you check?</p>
                             </div>
 
-                            <div className={`p-4 rounded-xl max-w-[80%] flex flex-col ${isArabic ? 'mr-auto items-end bg-[#00FFA3]/10 text-[#00FFA3]' : 'ml-auto items-end bg-[#00FFA3]/10 text-[#00FFA3]'}`} style={{ border: '1px solid rgba(0,255,163,0.3)' }}>
+                            <div className={`p-4 rounded-xl max-w-[80%] flex flex-col ${isArabic ? 'mr-auto items-end bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'ml-auto items-end bg-[var(--color-primary)]/10 text-[var(--color-primary)]'}`} style={{ border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
                                 <p className="text-xs mb-1 font-bold">Admin Support • 10:20 AM</p>
                                 <p className="text-sm font-medium">Hello Ahmed. The bank is currently processing the settlement batch. It should reflect in your balance by 2 PM today.</p>
                             </div>
                         </div>
 
                         <div className="p-4 border-t flex gap-3" style={{ borderColor: 'var(--border-subtle)' }}>
-                            <input type="text" placeholder={isArabic ? 'اكتب ردك هنا...' : 'Type your reply...'} className="flex-1 px-4 py-3 rounded-xl text-sm input-base focus:border-[#00FFA3]" />
-                            <button className="px-6 py-3 rounded-xl font-bold text-black transition-opacity hover:opacity-90 leading-none" style={{ background: '#00FFA3' }}>
+                            <input type="text" placeholder={isArabic ? 'اكتب ردك هنا...' : 'Type your reply...'} className="flex-1 px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-primary)]" />
+                            <button className="px-6 py-3 rounded-xl font-bold text-black transition-opacity hover:opacity-90 leading-none" style={{ background: 'var(--color-primary)' }}>
                                 {isArabic ? 'إرسال' : 'Send'}
                             </button>
                         </div>

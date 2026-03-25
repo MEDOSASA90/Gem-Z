@@ -11,7 +11,7 @@ import GemZLogo from '../../components/GemZLogo';
 
 const PLANS = [
     {
-        name: 'Starter', nameAr: 'ستارتر', color: '#00B8FF',
+        name: 'Starter', nameAr: 'ستارتر', color: 'var(--color-secondary)',
         pricePerEmployee: 80, minEmployees: 10, maxEmployees: 50,
         features: [
             { en: 'Full gym network access', ar: 'وصول لشبكة الجيم الكاملة' },
@@ -22,7 +22,7 @@ const PLANS = [
         emoji: '🚀'
     },
     {
-        name: 'Business', nameAr: 'بيزنس', color: '#A78BFA', best: true,
+        name: 'Business', nameAr: 'بيزنس', color: 'var(--color-purple)', best: true,
         pricePerEmployee: 65, minEmployees: 51, maxEmployees: 200,
         features: [
             { en: 'Everything in Starter', ar: 'كل مميزات ستارتر' },
@@ -34,7 +34,7 @@ const PLANS = [
         emoji: '⭐'
     },
     {
-        name: 'Enterprise', nameAr: 'إنتربرايز', color: '#FFCC00',
+        name: 'Enterprise', nameAr: 'إنتربرايز', color: 'var(--color-warning)',
         pricePerEmployee: 50, minEmployees: 201, maxEmployees: null,
         features: [
             { en: 'Everything in Business', ar: 'كل مميزات بيزنس' },
@@ -87,7 +87,7 @@ export default function CorporatePage() {
                 <div className="flex items-center gap-3">
                     <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
                     <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
-                    <a href="mailto:corporate@gemz.app" className="px-5 py-2.5 rounded-xl font-bold text-sm text-black" style={{ background: '#00FFA3' }}>
+                    <a href="mailto:corporate@gemz.app" className="px-5 py-2.5 rounded-xl font-bold text-sm text-black" style={{ background: 'var(--color-primary)' }}>
                         {isArabic ? '📞 تواصل معنا' : '📞 Contact Sales'}
                     </a>
                 </div>
@@ -95,16 +95,16 @@ export default function CorporatePage() {
 
             {/* Hero */}
             <section className="relative overflow-hidden py-28 px-8" style={{ background: 'linear-gradient(135deg, #0A1A0A 0%, #0A0A1A 50%, #1A0A0A 100%)' }}>
-                <div className="absolute inset-0 bg-gradient-radial from-[#00FFA3]/5 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-radial from-[var(--color-primary)]/5 to-transparent" />
                 <div className="max-w-5xl mx-auto text-center relative">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 text-sm font-bold" style={{ background: 'rgba(0,255,163,0.1)', border: '1px solid rgba(0,255,163,0.2)', color: '#00FFA3' }}>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 text-sm font-bold" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)', color: 'var(--color-primary)' }}>
                         <Building2 size={14} /> {isArabic ? 'GEM Z للشركات' : 'GEM Z for Corporates'}
                     </div>
                     <h1 className="text-5xl md:text-7xl font-bold font-heading text-white mb-6 leading-tight">
                         {isArabic ? (
-                            <><span className="text-[#00FFA3]">موظفون أصحاء.</span><br />شركة أقوى.</>
+                            <><span className="text-[var(--color-primary)]">موظفون أصحاء.</span><br />شركة أقوى.</>
                         ) : (
-                            <><span className="text-[#00FFA3]">Healthier Teams.</span><br />Stronger Business.</>
+                            <><span className="text-[var(--color-primary)]">Healthier Teams.</span><br />Stronger Business.</>
                         )}
                     </h1>
                     <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
@@ -113,7 +113,7 @@ export default function CorporatePage() {
                             : 'End-to-end employee wellness — gym access, AI nutrition, form correction, and health analytics — all in one platform.'}
                     </p>
                     <div className="flex flex-wrap gap-4 justify-center">
-                        <button className="px-8 py-4 rounded-2xl font-bold text-black text-lg flex items-center gap-2" style={{ background: '#00FFA3' }}>
+                        <button className="px-8 py-4 rounded-2xl font-bold text-black text-lg flex items-center gap-2" style={{ background: 'var(--color-primary)' }}>
                             {isArabic ? 'ابدأ تجربة مجانية' : 'Start Free Trial'} <ArrowRight size={18} />
                         </button>
                         <button className="px-8 py-4 rounded-2xl font-bold text-white text-lg" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
@@ -129,7 +129,7 @@ export default function CorporatePage() {
                     {STATS.map((s, i) => (
                         <div key={i} className="text-center">
                             <div className="text-3xl mb-2">{s.icon}</div>
-                            <p className="text-4xl font-bold font-mono text-[#00FFA3] mb-1">{isArabic ? s.valueAr : s.valueEn}</p>
+                            <p className="text-4xl font-bold font-mono text-[var(--color-primary)] mb-1">{isArabic ? s.valueAr : s.valueEn}</p>
                             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{isArabic ? s.labelAr : s.labelEn}</p>
                         </div>
                     ))}
@@ -144,10 +144,10 @@ export default function CorporatePage() {
                     <div className="rounded-3xl p-8" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <div className="flex items-center justify-between mb-4">
                             <span className="font-bold">{isArabic ? 'عدد الموظفين:' : 'Employees:'}</span>
-                            <span className="text-2xl font-bold text-[#00FFA3] font-mono">{employees}</span>
+                            <span className="text-2xl font-bold text-[var(--color-primary)] font-mono">{employees}</span>
                         </div>
                         <input type="range" min={10} max={500} step={10} value={employees} onChange={e => setEmployees(+e.target.value)}
-                            className="w-full mb-8 accent-[#00FFA3]" />
+                            className="w-full mb-8 accent-[var(--color-primary)]" />
                         <div className="flex items-end justify-center gap-6 mb-4">
                             <div className="text-center">
                                 <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الخطة المثالية' : 'Best Plan'}</p>
@@ -155,7 +155,7 @@ export default function CorporatePage() {
                             </div>
                             <div className="text-center">
                                 <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'لكل موظف شهرياً' : 'Per employee/mo'}</p>
-                                <p className="text-2xl font-bold text-[#00FFA3]" dir="ltr">EGP {selectedPlan.pricePerEmployee}</p>
+                                <p className="text-2xl font-bold text-[var(--color-primary)]" dir="ltr">EGP {selectedPlan.pricePerEmployee}</p>
                             </div>
                             <div className="text-center">
                                 <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الإجمالي الشهري' : 'Monthly total'}</p>
@@ -190,7 +190,7 @@ export default function CorporatePage() {
                                 <ul className="space-y-2.5 mb-6">
                                     {plan.features.map((f, i) => (
                                         <li key={i} className="flex items-start gap-2 text-sm">
-                                            <CheckCircle size={14} className="text-[#00FFA3] mt-0.5 shrink-0" />
+                                            <CheckCircle size={14} className="text-[var(--color-primary)] mt-0.5 shrink-0" />
                                             <span style={{ color: 'var(--text-secondary)' }}>{isArabic ? f.ar : f.en}</span>
                                         </li>
                                     ))}
@@ -211,7 +211,7 @@ export default function CorporatePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {TESTIMONIALS.map((t, i) => (
                             <div key={i} className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                                <div className="flex mb-3">{[...Array(t.rating)].map((_, j) => <Star key={j} size={16} className="fill-[#FFCC00] text-[#FFCC00]" />)}</div>
+                                <div className="flex mb-3">{[...Array(t.rating)].map((_, j) => <Star key={j} size={16} className="fill-[var(--color-warning)] text-[var(--color-warning)]" />)}</div>
                                 <p className="text-sm mb-4 italic" style={{ color: 'var(--text-secondary)' }}>"{isArabic ? t.textAr : t.text}"</p>
                                 <div className="flex items-center gap-3">
                                     <div className="text-3xl">{t.emoji}</div>
@@ -252,7 +252,7 @@ export default function CorporatePage() {
                 <div className="max-w-3xl mx-auto text-center relative">
                     <h2 className="text-4xl font-bold font-heading text-white mb-4">{isArabic ? 'جاهز لتحويل شركتك؟' : 'Ready to transform your company?'}</h2>
                     <p className="text-white/50 mb-8">{isArabic ? 'انضم لأكثر من 50 شركة مصرية تستخدم GEM Z لموظفيها' : 'Join 50+ Egyptian companies using GEM Z for their teams'}</p>
-                    <a href="mailto:corporate@gemz.app" className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-black text-lg" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
+                    <a href="mailto:corporate@gemz.app" className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-black text-lg" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
                         {isArabic ? 'تواصل مع فريق المبيعات' : 'Contact Our Sales Team'} <ArrowRight size={20} />
                     </a>
                 </div>

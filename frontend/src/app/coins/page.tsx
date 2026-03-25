@@ -21,12 +21,12 @@ const EARN_ACTIVITIES = [
 ];
 
 const REWARDS = [
-    { id: 1, emoji: '💰', titleEn: 'EGP 50 Wallet Credit', titleAr: '50 ج.م رصيد محفظة', cost: 500, type: 'wallet', color: '#00FFA3', stock: null, popular: true },
-    { id: 2, emoji: '🏋️', titleEn: '1 Free Gym Day Pass', titleAr: 'دخول مجاني للجيم يوم', cost: 800, type: 'gym', color: '#A78BFA', stock: 20, popular: false },
-    { id: 3, emoji: '🥤', titleEn: '10% Off Supplements', titleAr: 'خصم 10٪ مكملات', cost: 300, type: 'discount', color: '#00B8FF', stock: null, popular: true },
-    { id: 4, emoji: '💊', titleEn: 'Free Creatine Sample', titleAr: 'عينة كرياتين مجانية', cost: 600, type: 'merchandise', color: '#FF6B35', stock: 50, popular: false },
-    { id: 5, emoji: '🎽', titleEn: 'GEM Z T-Shirt', titleAr: 'تيشيرت GEM Z', cost: 1200, type: 'merchandise', color: '#FFCC00', stock: 30, popular: false },
-    { id: 6, emoji: '⭐', titleEn: 'Premium Trainer Session', titleAr: 'جلسة مدرب بريميوم', cost: 2000, type: 'session', color: '#FF3B30', stock: null, popular: false },
+    { id: 1, emoji: '💰', titleEn: 'EGP 50 Wallet Credit', titleAr: '50 ج.م رصيد محفظة', cost: 500, type: 'wallet', color: 'var(--color-primary)', stock: null, popular: true },
+    { id: 2, emoji: '🏋️', titleEn: '1 Free Gym Day Pass', titleAr: 'دخول مجاني للجيم يوم', cost: 800, type: 'gym', color: 'var(--color-purple)', stock: 20, popular: false },
+    { id: 3, emoji: '🥤', titleEn: '10% Off Supplements', titleAr: 'خصم 10٪ مكملات', cost: 300, type: 'discount', color: 'var(--color-secondary)', stock: null, popular: true },
+    { id: 4, emoji: '💊', titleEn: 'Free Creatine Sample', titleAr: 'عينة كرياتين مجانية', cost: 600, type: 'merchandise', color: 'var(--color-orange)', stock: 50, popular: false },
+    { id: 5, emoji: '🎽', titleEn: 'GEM Z T-Shirt', titleAr: 'تيشيرت GEM Z', cost: 1200, type: 'merchandise', color: 'var(--color-warning)', stock: 30, popular: false },
+    { id: 6, emoji: '⭐', titleEn: 'Premium Trainer Session', titleAr: 'جلسة مدرب بريميوم', cost: 2000, type: 'session', color: 'var(--color-danger)', stock: null, popular: false },
 ];
 
 const LEDGER = [
@@ -96,7 +96,7 @@ export default function CoinsPage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
-                <Loader2 className="w-10 h-10 animate-spin text-[#FFCC00]" />
+                <Loader2 className="w-10 h-10 animate-spin text-[var(--color-warning)]" />
             </div>
         );
     }
@@ -109,7 +109,7 @@ export default function CoinsPage() {
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
                         <h1 className="font-bold font-heading flex items-center gap-2">
-                            <Star size={18} className="text-[#FFCC00]" /> {isArabic ? 'GEM Z Coins 🪙' : 'GEM Z Coins 🪙'}
+                            <Star size={18} className="text-[var(--color-warning)]" /> {isArabic ? 'GEM Z Coins 🪙' : 'GEM Z Coins 🪙'}
                         </h1>
                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'اكسب واستبدل نقاطك' : 'Earn & redeem your points'}</p>
                     </div>
@@ -123,22 +123,22 @@ export default function CoinsPage() {
             <div className="max-w-4xl mx-auto p-6">
                 {/* Balance Hero Card */}
                 <div className="rounded-3xl p-7 mb-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1200, #0a0a1a)', border: '1px solid rgba(255,204,0,0.3)' }}>
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFCC00]/8 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#FF6B35]/8 rounded-full blur-2xl" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-warning)]/8 rounded-full blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-[var(--color-orange)]/8 rounded-full blur-2xl" />
                     <div className="relative">
                         <p className="text-sm font-medium mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{isArabic ? 'رصيد الكوينز' : 'Coin Balance'}</p>
                         <div className="flex items-end gap-3 mb-1">
-                            <span className="text-6xl font-bold font-mono text-[#FFCC00]">{fmtCoins(currentCoins)}</span>
-                            <span className="text-[#FFCC00] text-xl mb-2">🪙</span>
+                            <span className="text-6xl font-bold font-mono text-[var(--color-warning)]">{fmtCoins(currentCoins)}</span>
+                            <span className="text-[var(--color-warning)] text-xl mb-2">🪙</span>
                         </div>
                         {/* Level bar */}
                         <div className="mt-4">
                             <div className="flex justify-between text-xs mb-1.5">
-                                <span className="text-[#FFCC00] font-bold">{isArabic ? LEVEL_NAME.ar : LEVEL_NAME.en}</span>
+                                <span className="text-[var(--color-warning)] font-bold">{isArabic ? LEVEL_NAME.ar : LEVEL_NAME.en}</span>
                                 <span style={{ color: 'rgba(255,255,255,0.4)' }}>{fmtCoins(currentCoins)} / {fmtCoins(LEVEL_THRESHOLD)} {isArabic ? 'للمستوى التالي' : 'to next level'}</span>
                             </div>
                             <div className="h-2 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                                <div className="h-2 rounded-full" style={{ width: `${(currentCoins / LEVEL_THRESHOLD) * 100}%`, background: 'linear-gradient(to right, #FFCC00, #FF6B35)' }} />
+                                <div className="h-2 rounded-full" style={{ width: `${(currentCoins / LEVEL_THRESHOLD) * 100}%`, background: 'linear-gradient(to right, var(--color-warning), var(--color-orange))' }} />
                             </div>
                             <p className="text-xs mt-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
                                 {isArabic ? `المستوى القادم: ${NEXT_LEVEL.ar}` : `Next: ${NEXT_LEVEL.en}`}
@@ -156,7 +156,7 @@ export default function CoinsPage() {
                     ].map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
                             className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                            style={{ background: activeTab === tab.id ? '#FFCC00' : 'var(--bg-card)', color: activeTab === tab.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === tab.id ? '#FFCC00' : 'var(--border-subtle)'}` }}>
+                            style={{ background: activeTab === tab.id ? 'var(--color-warning)' : 'var(--bg-card)', color: activeTab === tab.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === tab.id ? 'var(--color-warning)' : 'var(--border-subtle)'}` }}>
                             {isArabic ? tab.ar : tab.en}
                         </button>
                     ))}
@@ -176,7 +176,7 @@ export default function CoinsPage() {
                                     <div key={reward.id} className="rounded-2xl p-5 relative overflow-hidden transition-all hover:scale-[1.02]"
                                         style={{ background: 'var(--bg-card)', border: `1px solid ${done ? 'rgba(52,199,89,0.4)' : canAfford ? `${reward.color}30` : 'var(--border-subtle)'}`, opacity: done ? 0.7 : 1 }}>
                                         {reward.popular && !done && (
-                                            <span className="absolute top-3 end-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-black" style={{ background: '#FFCC00' }}>🔥 POPULAR</span>
+                                            <span className="absolute top-3 end-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-black" style={{ background: 'var(--color-warning)' }}>🔥 POPULAR</span>
                                         )}
                                         {done && <span className="absolute top-3 end-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-white bg-[#34C759]">✓ Redeemed</span>}
                                         <div className="text-4xl mb-3">{reward.emoji}</div>
@@ -203,7 +203,7 @@ export default function CoinsPage() {
                 {activeTab === 'earn' && (
                     <div className="space-y-4">
                         <div className="p-4 rounded-2xl mb-2" style={{ background: 'rgba(255,204,0,0.07)', border: '1px solid rgba(255,204,0,0.2)' }}>
-                            <p className="text-sm font-bold text-[#FFCC00]">{isArabic ? '💡 كل نشاط يومي = كوينز مجانية!' : '💡 Every daily activity = free coins!'}</p>
+                            <p className="text-sm font-bold text-[var(--color-warning)]">{isArabic ? '💡 كل نشاط يومي = كوينز مجانية!' : '💡 Every daily activity = free coins!'}</p>
                         </div>
                         <div>
                             <h3 className="font-bold mb-3 text-sm uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'أنشطة يومية' : 'Daily Activities'}</h3>
@@ -214,7 +214,7 @@ export default function CoinsPage() {
                                         <p className="font-bold">{isArabic ? act.titleAr : act.titleEn}</p>
                                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'يومياً' : 'Daily reward'}</p>
                                     </div>
-                                    <span className="font-bold font-mono text-[#FFCC00]">{isArabic ? act.coinsAr : act.coinsEn}</span>
+                                    <span className="font-bold font-mono text-[var(--color-warning)]">{isArabic ? act.coinsAr : act.coinsEn}</span>
                                 </div>
                             ))}
                         </div>
@@ -227,7 +227,7 @@ export default function CoinsPage() {
                                         <p className="font-bold">{isArabic ? act.titleAr : act.titleEn}</p>
                                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'مرة واحدة / كل حدث' : 'One-time / per event'}</p>
                                     </div>
-                                    <span className="font-bold font-mono text-[#FFCC00]">{isArabic ? act.coinsAr : act.coinsEn}</span>
+                                    <span className="font-bold font-mono text-[var(--color-warning)]">{isArabic ? act.coinsAr : act.coinsEn}</span>
                                 </div>
                             ))}
                         </div>
@@ -244,7 +244,7 @@ export default function CoinsPage() {
                                     <p className="font-bold text-sm">{isArabic ? entry.descAr : entry.descEn}</p>
                                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? entry.dateAr : entry.date}</p>
                                 </div>
-                                <span className="font-bold font-mono text-lg" style={{ color: entry.type === 'in' ? '#00FFA3' : '#FF3B30' }}>
+                                <span className="font-bold font-mono text-lg" style={{ color: entry.type === 'in' ? 'var(--color-primary)' : 'var(--color-danger)' }}>
                                     {entry.type === 'in' ? '+' : ''}{entry.amount} 🪙
                                 </span>
                             </div>
@@ -264,13 +264,13 @@ export default function CoinsPage() {
                         </div>
                         <div className="w-full p-4 rounded-2xl text-center" style={{ background: 'var(--bg-input)' }}>
                             <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'رصيدك الحالي' : 'Current balance'}</p>
-                            <p className="text-2xl font-bold font-mono text-[#FFCC00]">{fmtCoins(currentCoins)} 🪙</p>
+                            <p className="text-2xl font-bold font-mono text-[var(--color-warning)]">{fmtCoins(currentCoins)} 🪙</p>
                             <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>→ {fmtCoins(currentCoins - redeemModal.cost)} 🪙 {isArabic ? 'بعد الاستبدال' : 'after redemption'}</p>
                         </div>
                         <div className="flex gap-3 w-full">
                             <button onClick={handleRedeem}
                                 disabled={redeeming}
-                                className="flex-1 py-3 rounded-xl font-bold text-black flex items-center justify-center gap-2 disabled:opacity-50" style={{ background: '#FFCC00' }}>
+                                className="flex-1 py-3 rounded-xl font-bold text-black flex items-center justify-center gap-2 disabled:opacity-50" style={{ background: 'var(--color-warning)' }}>
                                 {redeeming ? <Loader2 className="w-5 h-5 animate-spin" /> : (isArabic ? '✅ تأكيد' : '✅ Confirm')}
                             </button>
                             <button onClick={() => setRedeemModal(null)} 

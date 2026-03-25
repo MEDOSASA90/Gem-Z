@@ -81,5 +81,57 @@ export class ChallengeController {
             return res.status(500).json({ success: false, message: 'Failed to join challenge' });
         }
     }
+
+    static async createLiveSquadChallenge(req: AuthRequest, res: Response) {
+        try {
+            const { squadId, challengeType, goal, durationDays } = req.body;
+            if (!squadId || !challengeType || !goal) {
+                return res.status(400).json({ success: false, message: 'Missing required parameters' });
+            }
+            // Mock logic for creating a squad challenge
+            return res.status(201).json({ 
+                success: true, 
+                message: 'Live squad challenge created successfully',
+                challenge: { squadId, challengeType, goal, durationDays, status: 'active' }
+            });
+        } catch (error) {
+            console.error('[ChallengeController] createLiveSquadChallenge:', error);
+            return res.status(500).json({ success: false, message: 'Server Error' });
+        }
+    }
+
+    static async trackUserHabit(req: AuthRequest, res: Response) {
+        try {
+            const userId = req.user?.userId;
+            const { habitType, amount } = req.body; // e.g., 'water', 'fasting_hours'
+            if (!habitType || amount === undefined) {
+                return res.status(400).json({ success: false, message: 'Missing habit data' });
+            }
+            // Mock logic for tracking habit and rewarding coins/points
+            return res.status(200).json({ 
+                success: true, 
+                message: `${habitType} tracked successfully! You earned 10 coins.`,
+                coinsEarned: 10
+            });
+        } catch (error) {
+            console.error('[ChallengeController] trackUserHabit:', error);
+            return res.status(500).json({ success: false, message: 'Server Error' });
+        }
+    }
+
+    static async getCorporateLeaderboard(req: AuthRequest, res: Response) {
+        try {
+            // Mock corporate B2B leaderboard data
+            const corporateLeaderboard = [
+                { rank: 1, companyName: 'TechCorp Egypt', points: 15400, topDepartment: 'Engineering' },
+                { rank: 2, companyName: 'Innovate LLC', points: 12100, topDepartment: 'Sales' },
+                { rank: 3, companyName: 'GemZ Internal', points: 9800, topDepartment: 'Marketing' }
+            ];
+            return res.status(200).json({ success: true, corporateLeaderboard });
+        } catch (error) {
+            console.error('[ChallengeController] getCorporateLeaderboard:', error);
+            return res.status(500).json({ success: false, message: 'Server Error' });
+        }
+    }
 }
 

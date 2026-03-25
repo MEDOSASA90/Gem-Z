@@ -1,4 +1,5 @@
 'use client';
+import GemZLogo from '../../components/GemZLogo';
 import React from 'react';
 import Link from 'next/link';
 import { Users, Dumbbell, Building2, ShoppingBag, ArrowRight } from 'lucide-react';
@@ -6,9 +7,9 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
 const roles = [
-    { icon: Users, key: 'trainee', color: '#00FFA3', en: { title: 'Trainee', desc: 'Track your workouts, diet, and gym memberships with AI-powered coaching.' }, ar: { title: 'متدرب', desc: 'تتبع تمارينك، نظامك الغذائي، وعضوياتك في الجيم بتدريب مدعوم بالذكاء الاصطناعي.' } },
-    { icon: Dumbbell, key: 'trainer', color: '#00B8FF', en: { title: 'Personal Trainer', desc: 'Manage clients, assign programs, and grow your income through our ecosystem.' }, ar: { title: 'مدرب شخصي', desc: 'أدر عملاءك، خصص البرامج، ونمِّ دخلك من خلال منظومتنا.' } },
-    { icon: Building2, key: 'gym', color: '#A78BFA', en: { title: 'Gym / Branch', desc: 'Onboard members, manage attendance with QR codes, and track revenue in real time.' }, ar: { title: 'صالة رياضية', desc: 'استقطب الأعضاء، أدر الحضور برمز QR، وتتبع إيراداتك فورياً.' } },
+    { icon: Users, key: 'trainee', color: 'var(--color-primary)', en: { title: 'Trainee', desc: 'Track your workouts, diet, and gym memberships with AI-powered coaching.' }, ar: { title: 'متدرب', desc: 'تتبع تمارينك، نظامك الغذائي، وعضوياتك في الجيم بتدريب مدعوم بالذكاء الاصطناعي.' } },
+    { icon: Dumbbell, key: 'trainer', color: 'var(--color-secondary)', en: { title: 'Personal Trainer', desc: 'Manage clients, assign programs, and grow your income through our ecosystem.' }, ar: { title: 'مدرب شخصي', desc: 'أدر عملاءك، خصص البرامج، ونمِّ دخلك من خلال منظومتنا.' } },
+    { icon: Building2, key: 'gym', color: 'var(--color-purple)', en: { title: 'Gym / Branch', desc: 'Onboard members, manage attendance with QR codes, and track revenue in real time.' }, ar: { title: 'صالة رياضية', desc: 'استقطب الأعضاء، أدر الحضور برمز QR، وتتبع إيراداتك فورياً.' } },
     { icon: ShoppingBag, key: 'store', color: '#F59E0B', en: { title: 'Store / Brand', desc: 'Sell supplements and gear to a targeted fitness audience. Automated revenue splits.' }, ar: { title: 'متجر / علامة تجارية', desc: 'بع المكملات والمعدات لجمهور لياقة مستهدف. تقسيم إيرادات تلقائي.' } },
 ];
 
@@ -19,12 +20,12 @@ export default function RegisterPage() {
 
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
-            <div className="absolute top-0 start-0 w-[500px] h-[500px] rounded-full blur-[200px] pointer-events-none opacity-20" style={{ background: 'radial-gradient(circle, #00FFA3, transparent)' }} />
-            <div className="absolute bottom-0 end-0 w-[400px] h-[400px] rounded-full blur-[160px] pointer-events-none opacity-15" style={{ background: 'radial-gradient(circle, #A78BFA, transparent)' }} />
+            <div className="absolute top-0 start-0 w-[500px] h-[500px] rounded-full blur-[200px] pointer-events-none opacity-20" style={{ background: 'radial-gradient(circle, var(--color-primary), transparent)' }} />
+            <div className="absolute bottom-0 end-0 w-[400px] h-[400px] rounded-full blur-[160px] pointer-events-none opacity-15" style={{ background: 'radial-gradient(circle, var(--color-purple), transparent)' }} />
 
             <div className="text-center mb-12 z-10">
                 <Link href="/">
-                    <img src="/gem-z-logo.png" alt="GEM Z" className="h-12 mx-auto mb-6 object-contain" />
+                    <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
                 </Link>
                 <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
                     {isArabic ? 'اختر نوع حسابك' : 'Choose Your Account Type'}
@@ -60,7 +61,7 @@ export default function RegisterPage() {
 
             <p className="text-center mt-8 text-sm z-10" style={{ color: 'var(--text-secondary)' }}>
                 {isArabic ? 'لديك حساب بالفعل؟' : 'Already have an account?'}{' '}
-                <Link href="/login" className="font-bold hover:underline" style={{ color: '#00FFA3' }}>
+                <Link href="/login" className="font-bold hover:underline" style={{ color: 'var(--color-primary)' }}>
                     {isArabic ? 'تسجيل الدخول' : 'Sign In'}
                 </Link>
             </p>

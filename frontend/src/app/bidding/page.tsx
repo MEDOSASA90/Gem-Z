@@ -81,11 +81,11 @@ export default function BiddingMarketplace() {
                     <div key={req.id} onClick={() => setSelectedRequest(req)}
                         className="rounded-2xl p-5 cursor-pointer transition-transform hover:-translate-y-1 relative overflow-hidden"
                         style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#00B8FF]/5 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-secondary)]/5 rounded-full blur-3xl pointer-events-none" />
 
                         <div className="flex justify-between items-start mb-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-black" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-black" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
                                     {req.avatar}
                                 </div>
                                 <div>
@@ -95,8 +95,8 @@ export default function BiddingMarketplace() {
                                     </p>
                                 </div>
                             </div>
-                            <div className="text-center px-3 py-1 rounded-lg" style={{ background: 'rgba(0,184,255,0.1)', border: '1px solid rgba(0,184,255,0.2)' }}>
-                                <span className="text-xs font-bold text-[#00B8FF]">{req.bidsCount} {isArabic ? 'عروض' : 'bids'}</span>
+                            <div className="text-center px-3 py-1 rounded-lg" style={{ background: 'rgba(var(--color-secondary-rgb), 0.1)', border: '1px solid rgba(var(--color-secondary-rgb), 0.25)' }}>
+                                <span className="text-xs font-bold text-[var(--color-secondary)]">{req.bidsCount} {isArabic ? 'عروض' : 'bids'}</span>
                             </div>
                         </div>
 
@@ -106,16 +106,16 @@ export default function BiddingMarketplace() {
 
                         <div className="flex flex-wrap gap-3 mt-4">
                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold" style={{ background: 'var(--bg-input)' }}>
-                                <ShieldCheck size={14} className="text-[#00FFA3]" />
+                                <ShieldCheck size={14} className="text-[var(--color-primary)]" />
                                 <span>{isArabic ? 'حساب موثق' : 'Verified Profile'}</span>
                             </div>
                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold" style={{ background: 'var(--bg-input)' }}>
-                                <Clock size={14} className="text-[#A78BFA]" />
+                                <Clock size={14} className="text-[var(--color-purple)]" />
                                 <span>{req.durationWeeks} {isArabic ? 'أسبوع' : 'weeks'}</span>
                             </div>
                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold w-full md:w-auto" style={{ background: 'var(--bg-input)' }}>
                                 <span className="text-green-500">💰</span>
-                                <span className="font-mono text-[#00FFA3]">{req.budget}</span>
+                                <span className="font-mono text-[var(--color-primary)]">{req.budget}</span>
                             </div>
                         </div>
                     </div>
@@ -125,8 +125,8 @@ export default function BiddingMarketplace() {
             {/* Application Modal */}
             {selectedRequest && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedRequest(null)}>
-                    <div className="rounded-3xl p-6 md:p-8 flex flex-col gap-6 max-w-md w-full relative" style={{ background: 'var(--bg-card)', border: '1px solid rgba(0,255,163,0.3)' }} onClick={e => e.stopPropagation()}>
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#00FFA3]/10 rounded-full blur-3xl" />
+                    <div className="rounded-3xl p-6 md:p-8 flex flex-col gap-6 max-w-md w-full relative" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }} onClick={e => e.stopPropagation()}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-primary)]/10 rounded-full blur-3xl" />
 
                         <div>
                             <h2 className="text-xl font-bold font-heading mb-2">{isArabic ? selectedRequest.titleAr : selectedRequest.title}</h2>
@@ -136,11 +136,11 @@ export default function BiddingMarketplace() {
                         <div className="space-y-4">
                             <div>
                                 <label className="text-xs font-bold mb-2 block tracking-wider uppercase text-gray-400">{isArabic ? 'عرض السعر (ر.س/ج.م)' : 'Your Bid (Monthly)'}</label>
-                                <input type="number" placeholder="e.g. 2500" className="w-full bg-[#1A1A1A] p-4 flex-1 outline-none text-white font-mono rounded-xl border border-[#333] focus:border-[#00FFA3] transition-colors" />
+                                <input type="number" placeholder="e.g. 2500" className="w-full bg-[#1A1A1A] p-4 flex-1 outline-none text-white font-mono rounded-xl border border-[#333] focus:border-[var(--color-primary)] transition-colors" />
                             </div>
                             <div>
                                 <label className="text-xs font-bold mb-2 block tracking-wider uppercase text-gray-400">{isArabic ? 'رسالة للمتدرب' : 'Message to Trainee'}</label>
-                                <textarea placeholder={isArabic ? 'اشرح خطتك ولماذا أنت الأنسب...' : 'Explain your approach...'} rows={4} className="w-full bg-[#1A1A1A] p-4 flex-1 outline-none text-white rounded-xl border border-[#333] focus:border-[#00FFA3] transition-colors resize-none" />
+                                <textarea placeholder={isArabic ? 'اشرح خطتك ولماذا أنت الأنسب...' : 'Explain your approach...'} rows={4} className="w-full bg-[#1A1A1A] p-4 flex-1 outline-none text-white rounded-xl border border-[#333] focus:border-[var(--color-primary)] transition-colors resize-none" />
                             </div>
                         </div>
 
@@ -148,7 +148,7 @@ export default function BiddingMarketplace() {
                             <button onClick={() => setSelectedRequest(null)} className="flex-1 py-3.5 rounded-xl font-bold text-sm transition-colors hover:bg-white/10" style={{ border: '1px solid var(--border-subtle)' }}>
                                 {isArabic ? 'إلغاء' : 'Cancel'}
                             </button>
-                            <button onClick={() => setSelectedRequest(null)} className="flex-1 py-3.5 rounded-xl font-bold text-sm text-black neon-glow transition-transform hover:scale-95" style={{ background: '#00FFA3' }}>
+                            <button onClick={() => setSelectedRequest(null)} className="flex-1 py-3.5 rounded-xl font-bold text-sm text-black neon-glow transition-transform hover:scale-95" style={{ background: 'var(--color-primary)' }}>
                                 {isArabic ? 'تقديم العرض 🚀' : 'Submit Bid 🚀'}
                             </button>
                         </div>

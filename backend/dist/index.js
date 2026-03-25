@@ -4,9 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.socketService = void 0;
+require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const http_1 = __importDefault(require("http"));
+const path_1 = __importDefault(require("path"));
 const routes_1 = __importDefault(require("./routes"));
 const error_middleware_1 = require("./core/middlewares/error.middleware");
 const socket_1 = require("./core/sockets/socket");
@@ -19,6 +21,8 @@ exports.socketService = new socket_1.SocketService(server);
 app.use((0, cors_1.default)({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+// Serve static uploads
+app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, '../../public/uploads')));
 // Main Router V1
 app.use('/api/v1', routes_1.default);
 // Global Error Handler

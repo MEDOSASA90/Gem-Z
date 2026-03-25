@@ -18,10 +18,10 @@ const ENTRIES = [
 ];
 
 const METRICS = [
-    { key: 'weight', labelEn: 'Weight (kg)', labelAr: 'الوزن (كجم)', color: '#00B8FF', unit: 'kg', icon: '⚖️' },
-    { key: 'fat', labelEn: 'Body Fat %', labelAr: 'دهون الجسم %', color: '#FF6B35', unit: '%', icon: '🔥' },
-    { key: 'muscle', labelEn: 'Muscle Mass %', labelAr: 'كتلة العضل %', color: '#00FFA3', unit: '%', icon: '💪' },
-    { key: 'waist', labelEn: 'Waist (cm)', labelAr: 'الخصر (سم)', color: '#A78BFA', unit: 'cm', icon: '📏' },
+    { key: 'weight', labelEn: 'Weight (kg)', labelAr: 'الوزن (كجم)', color: 'var(--color-secondary)', unit: 'kg', icon: '⚖️' },
+    { key: 'fat', labelEn: 'Body Fat %', labelAr: 'دهون الجسم %', color: 'var(--color-orange)', unit: '%', icon: '🔥' },
+    { key: 'muscle', labelEn: 'Muscle Mass %', labelAr: 'كتلة العضل %', color: 'var(--color-primary)', unit: '%', icon: '💪' },
+    { key: 'waist', labelEn: 'Waist (cm)', labelAr: 'الخصر (سم)', color: 'var(--color-purple)', unit: 'cm', icon: '📏' },
 ];
 
 function MiniChart({ entries, metricKey, color }: { entries: typeof ENTRIES, metricKey: string, color: string }) {
@@ -76,12 +76,12 @@ export default function BodyProgressPage() {
                 <div className="flex items-center gap-4">
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2"><TrendingUp size={18} className="text-[#00FFA3]" />{isArabic ? 'تتبع التقدم' : 'Body Progress'}</h1>
+                        <h1 className="font-bold font-heading flex items-center gap-2"><TrendingUp size={18} className="text-[var(--color-primary)]" />{isArabic ? 'تتبع التقدم' : 'Body Progress'}</h1>
                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'رحلتك من البداية حتى الآن' : 'Your transformation journey'}</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-black" style={{ background: '#00FFA3' }}>
+                    <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-black" style={{ background: 'var(--color-primary)' }}>
                         <Plus size={14} /> {isArabic ? 'إضافة قياس' : 'Log Stats'}
                     </button>
                     <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
@@ -98,7 +98,7 @@ export default function BodyProgressPage() {
                         const d = +(last - first).toFixed(1);
                         const isPositive = d > 0;
                         const isBad = (m.key === 'fat' || m.key === 'waist' || m.key === 'weight') && isPositive;
-                        const goodColor = isBad ? '#FF3B30' : '#00FFA3';
+                        const goodColor = isBad ? 'var(--color-danger)' : 'var(--color-primary)';
                         return (
                             <button key={m.key} onClick={() => setSelectedMetric(m.key)}
                                 className="p-4 rounded-2xl text-left transition-all hover:scale-[1.02]"
@@ -140,7 +140,7 @@ export default function BodyProgressPage() {
                         {[compareIdx[0], compareIdx[1]].map((idx, side) => (
                             <div key={side}>
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs font-bold" style={{ color: side === 0 ? '#FF6B35' : '#00FFA3' }}>
+                                    <span className="text-xs font-bold" style={{ color: side === 0 ? 'var(--color-orange)' : 'var(--color-primary)' }}>
                                         {side === 0 ? (isArabic ? 'البداية' : 'BEFORE') : (isArabic ? 'الآن' : 'AFTER')}
                                     </span>
                                     <div className="flex items-center gap-1">
@@ -150,8 +150,8 @@ export default function BodyProgressPage() {
                                     </div>
                                 </div>
                                 <div className="aspect-square rounded-2xl flex flex-col items-center justify-center gap-3 relative overflow-hidden"
-                                    style={{ background: side === 0 ? 'rgba(255,107,53,0.08)' : 'rgba(0,255,163,0.08)', border: `1px dashed ${side === 0 ? '#FF6B35' : '#00FFA3'}50` }}>
-                                    <Camera size={32} style={{ color: side === 0 ? '#FF6B35' : '#00FFA3', opacity: 0.5 }} />
+                                    style={{ background: side === 0 ? 'rgba(255,107,53,0.08)' : 'rgba(var(--color-primary-rgb), 0.1)', border: `1px dashed ${side === 0 ? 'var(--color-orange)' : 'var(--color-primary)'}50` }}>
+                                    <Camera size={32} style={{ color: side === 0 ? 'var(--color-orange)' : 'var(--color-primary)', opacity: 0.5 }} />
                                     <p className="text-xs text-center px-4" style={{ color: 'var(--text-muted)' }}>
                                         {isArabic ? 'انقر لإضافة صورة' : 'Tap to add photo'}
                                     </p>
@@ -170,16 +170,16 @@ export default function BodyProgressPage() {
                     <div className="flex items-center justify-center gap-8 p-4 rounded-xl" style={{ background: 'var(--bg-input)' }}>
                         <div className="text-center">
                             <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? metric.labelAr : metric.labelEn}</p>
-                            <p className="font-bold font-mono" style={{ color: '#FF6B35' }}>{firstVal}{metric.unit}</p>
+                            <p className="font-bold font-mono" style={{ color: 'var(--color-orange)' }}>{firstVal}{metric.unit}</p>
                         </div>
                         <ArrowRight size={20} style={{ color: 'var(--text-muted)' }} />
                         <div className="text-center">
                             <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الآن' : 'Now'}</p>
-                            <p className="font-bold font-mono" style={{ color: '#00FFA3' }}>{lastVal}{metric.unit}</p>
+                            <p className="font-bold font-mono" style={{ color: 'var(--color-primary)' }}>{lastVal}{metric.unit}</p>
                         </div>
                         <div className="text-center">
                             <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'التغيير' : 'Change'}</p>
-                            <p className="font-bold font-mono text-xl" style={{ color: diff > 0 ? '#FF3B30' : '#00FFA3' }}>
+                            <p className="font-bold font-mono text-xl" style={{ color: diff > 0 ? 'var(--color-danger)' : 'var(--color-primary)' }}>
                                 {diff > 0 ? '+' : ''}{diff}{metric.unit}
                             </p>
                         </div>
@@ -193,7 +193,7 @@ export default function BodyProgressPage() {
                         {[...ENTRIES].reverse().map((e, i) => (
                             <div key={i} className="flex gap-4 p-4 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                                 <div className="flex flex-col items-center">
-                                    <div className="w-3 h-3 rounded-full bg-[#00FFA3]" />
+                                    <div className="w-3 h-3 rounded-full bg-[var(--color-primary)]" />
                                     {i < ENTRIES.length - 1 && <div className="w-0.5 flex-1 mt-1" style={{ background: 'var(--border-subtle)' }} />}
                                 </div>
                                 <div className="flex-1">
@@ -229,7 +229,7 @@ export default function BodyProgressPage() {
                             </div>
                         ))}
                         <div className="flex gap-3">
-                            <button className="flex-1 py-3 rounded-xl font-bold text-black" style={{ background: '#00FFA3' }}>
+                            <button className="flex-1 py-3 rounded-xl font-bold text-black" style={{ background: 'var(--color-primary)' }}>
                                 {isArabic ? '✅ حفظ' : '✅ Save'}
                             </button>
                             <button onClick={() => setShowAddModal(false)} className="px-6 py-3 rounded-xl font-bold" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>

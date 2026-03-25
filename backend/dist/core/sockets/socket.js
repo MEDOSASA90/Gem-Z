@@ -55,6 +55,27 @@ class SocketService {
                     timestamp: new Date()
                 });
             });
+            socket.on('private_message', async (data) => {
+                if (!userId || !data.receiverId || !data.content)
+                    return;
+                try {
+                    // Import db dynamically or use query directly
+                    const { db } = require('../../database/db');
+                    // 1. Save to Database
+                    const { rows } = await db.query(`
+                        INSERT INTO chat_messages (sender_id, receiver_id, content) 
+                        VALUES ($1, $2, $3) RETURNING *
+                    `, [userId, data.receiverId, data.content]);
+                    const msg = rows[0];
+                    // 2. Emit to Receiver
+                    socket.to(`user_${data.receiverId}`).emit('receive_message', msg);
+                    // 3. Emit acknowledgement back to Sender
+                    socket.emit('message_sent', msg);
+                }
+                catch (error) {
+                    console.error('[Socket] private_message error:', error);
+                }
+            });
             socket.on('disconnect', () => {
                 console.log(`[Socket] User Disconnected: ${userId}`);
             });

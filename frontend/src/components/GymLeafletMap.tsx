@@ -126,7 +126,7 @@ export default function GymLeafletMap({ gyms, stores, selectedGymId, selectedSto
                             ${gym.emoji}
                             ${gym.discount > 0 ? `<div style="
                                 position: absolute; top: -8px; right: -8px;
-                                background: #FF3B30; color: white;
+                                background: var(--color-danger); color: white;
                                 border-radius: 50%; width: 20px; height: 20px;
                                 font-size: 9px; font-weight: bold;
                                 display: flex; align-items: center; justify-content: center;
@@ -154,12 +154,12 @@ export default function GymLeafletMap({ gyms, stores, selectedGymId, selectedSto
                             </div>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="color:#FFCC00; font-size:12px;">⭐ ${gym.rating}</span>
+                            <span style="color:var(--color-warning); font-size:12px;">⭐ ${gym.rating}</span>
                             <span style="color:${gym.color}; font-weight:700; font-size:13px;">
                                 EGP ${gym.discount > 0 ? Math.round(gym.price * (1 - gym.discount / 100)) : gym.price}/mo
                             </span>
                         </div>
-                        ${gym.discount > 0 ? `<p style="color:#FF3B30; font-size:11px; margin-top:4px; font-weight:700;">🏷 ${gym.discount}% OFF — ${isArabic ? gym.discountReasonAr : gym.discountReason}</p>` : ''}
+                        ${gym.discount > 0 ? `<p style="color:var(--color-danger); font-size:11px; margin-top:4px; font-weight:700;">🏷 ${gym.discount}% OFF — ${isArabic ? gym.discountReasonAr : gym.discountReason}</p>` : ''}
                         <div style="margin-top:6px;">
                             <span style="
                                 background: ${gym.isOpen ? 'rgba(52,199,89,0.15)' : 'rgba(100,100,100,0.15)'};
@@ -195,7 +195,7 @@ export default function GymLeafletMap({ gyms, stores, selectedGymId, selectedSto
                             ${store.emoji}
                             ${store.discount > 0 ? `<div style="
                                 position: absolute; top: -6px; right: -6px;
-                                background: #FF3B30; color: white;
+                                background: var(--color-danger); color: white;
                                 border-radius: 50%; width: 18px; height: 18px;
                                 font-size: 8px; font-weight: bold;
                                 display: flex; align-items: center; justify-content: center;
@@ -223,9 +223,9 @@ export default function GymLeafletMap({ gyms, stores, selectedGymId, selectedSto
                             </div>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="color:#FFCC00; font-size:12px;">⭐ ${store.rating} (${store.reviews})</span>
+                            <span style="color:var(--color-warning); font-size:12px;">⭐ ${store.rating} (${store.reviews})</span>
                         </div>
-                        ${store.discount > 0 ? `<p style="color:#FF3B30; font-size:11px; margin-top:4px; font-weight:700;">🏷 ${store.discount}% OFF — ${isArabic ? store.discountReasonAr : store.discountReason}</p>` : ''}
+                        ${store.discount > 0 ? `<p style="color:var(--color-danger); font-size:11px; margin-top:4px; font-weight:700;">🏷 ${store.discount}% OFF — ${isArabic ? store.discountReasonAr : store.discountReason}</p>` : ''}
                         <div style="margin-top:6px;">
                             <span style="
                                 background: ${store.isOpen ? 'rgba(52,199,89,0.15)' : 'rgba(100,100,100,0.15)'};
@@ -247,8 +247,8 @@ export default function GymLeafletMap({ gyms, stores, selectedGymId, selectedSto
                 html: `
                     <div style="
                         width: 20px; height: 20px; border-radius: 50%;
-                        background: #00B8FF; border: 4px solid white;
-                        box-shadow: 0 0 0 6px rgba(0,184,255,0.2), 0 4px 15px rgba(0,184,255,0.4);
+                        background: var(--color-secondary); border: 4px solid white;
+                        box-shadow: 0 0 0 6px rgba(var(--color-secondary-rgb), 0.1), 0 4px 15px rgba(var(--color-secondary-rgb), 0.1);
                     "/>
                 `,
                 iconSize: [20, 20],

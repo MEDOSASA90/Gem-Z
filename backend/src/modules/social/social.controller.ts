@@ -53,5 +53,19 @@ export class SocialController {
             return res.status(500).json({ success: false, message: 'Failed to create post' });
         }
     }
-}
 
+    static async findWorkoutBuddy(req: AuthRequest, res: Response) {
+        try {
+            const userId = req.user?.userId;
+            const { gymId, goal, preferredTime } = req.query;
+            // Mock matching logic
+            const mockMatches = [
+                { id: 'u_789', name: 'Omar Y.', matchScore: '92%', sharedGoal: goal, time: preferredTime },
+                { id: 'u_456', name: 'Sara K.', matchScore: '85%', sharedGoal: goal, time: preferredTime }
+            ];
+            return res.status(200).json({ success: true, matches: mockMatches });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: 'Server error matching buddy' });
+        }
+    }
+}

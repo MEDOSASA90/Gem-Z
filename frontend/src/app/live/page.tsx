@@ -75,18 +75,18 @@ export default function LiveVirtualClass() {
                     {/* Fake Trainer Video Feed */}
                     <div className="absolute inset-0 z-0">
                         <div className="w-full h-full bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] flex flex-col items-center justify-center relative">
-                            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at center, #00FFA3 0%, transparent 50%)' }} />
-                            <div className="w-32 h-32 rounded-full border-2 border-[#00FFA3] flex items-center justify-center mb-4 neon-glow relative">
+                            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at center, var(--color-primary) 0%, transparent 50%)' }} />
+                            <div className="w-32 h-32 rounded-full border-2 border-[var(--color-primary)] flex items-center justify-center mb-4 neon-glow relative">
                                 <span className="text-6xl">🏃‍♂️</span>
                                 {/* Sound bars animation */}
                                 <div className="absolute -bottom-6 flex gap-1">
                                     {[1, 2, 3, 4, 5].map((i) => (
-                                        <div key={i} className="w-1 bg-[#00FFA3] animate-pulse" style={{ height: `${Math.random() * 20 + 5}px`, animationDelay: `${i * 0.1}s` }} />
+                                        <div key={i} className="w-1 bg-[var(--color-primary)] animate-pulse" style={{ height: `${Math.random() * 20 + 5}px`, animationDelay: `${i * 0.1}s` }} />
                                     ))}
                                 </div>
                             </div>
                             <h2 className="text-2xl font-bold font-heading z-10">{isArabic ? 'كابتن طارق' : 'Coach Tariq'}</h2>
-                            <p className="text-sm text-[#00FFA3] z-10">{isArabic ? 'تمرين الضغط العالي' : 'High-Intensity Interval Training'}</p>
+                            <p className="text-sm text-[var(--color-primary)] z-10">{isArabic ? 'تمرين الضغط العالي' : 'High-Intensity Interval Training'}</p>
                         </div>
                     </div>
 
@@ -128,13 +128,13 @@ export default function LiveVirtualClass() {
 
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
                             {[
-                                { user: 'Sara K.', msg: isArabic ? 'تمرين ممتاز جداً!' : 'Awesome workout!', color: '#00FFA3' },
-                                { user: 'Omar Aly', msg: isArabic ? 'مش قادر أكمل 😫' : 'Legs are dead 😫', color: '#00B8FF' },
-                                { user: 'Nour', msg: '🔥 🔥 🔥', color: '#A78BFA' },
+                                { user: 'Sara K.', msg: isArabic ? 'تمرين ممتاز جداً!' : 'Awesome workout!', color: 'var(--color-primary)' },
+                                { user: 'Omar Aly', msg: isArabic ? 'مش قادر أكمل 😫' : 'Legs are dead 😫', color: 'var(--color-secondary)' },
+                                { user: 'Nour', msg: '🔥 🔥 🔥', color: 'var(--color-purple)' },
                                 { user: 'Coach Tariq', msg: isArabic ? 'عاش يا شباب 30 ثانية كمان!' : 'Keep pushing! 30 seconds left!', isCoach: true }
                             ].map((c, i) => (
                                 <div key={i} className="text-sm">
-                                    <span className="font-bold mr-2" style={{ color: c.isCoach ? '#FFCC00' : c.color }}>
+                                    <span className="font-bold mr-2" style={{ color: c.isCoach ? 'var(--color-warning)' : c.color }}>
                                         {c.isCoach && '👑 '}{c.user}:
                                     </span>
                                     <span className="text-gray-300">{c.msg}</span>
@@ -145,7 +145,7 @@ export default function LiveVirtualClass() {
                         <div className="p-3 border-t border-white/10">
                             <div className="flex items-center gap-2 bg-[#1A1A1A] rounded-full p-1 pl-4">
                                 <input type="text" placeholder={isArabic ? 'قل شيئاً...' : 'Say something...'} className="bg-transparent flex-1 outline-none text-sm text-white" />
-                                <button className="w-8 h-8 rounded-full bg-[#00FFA3] text-black flex items-center justify-center shrink-0">
+                                <button className="w-8 h-8 rounded-full bg-[var(--color-primary)] text-black flex items-center justify-center shrink-0">
                                     ↗
                                 </button>
                             </div>
@@ -174,7 +174,7 @@ export default function LiveVirtualClass() {
 
                 <button
                     onClick={() => setShowChat(!showChat)}
-                    className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-colors ${showChat ? 'bg-[#00B8FF]/20 text-[#00B8FF] border border-[#00B8FF]/50' : 'bg-white/10 text-white hover:bg-white/20'}`}>
+                    className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-colors ${showChat ? 'bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] border border-[var(--color-secondary)]/50' : 'bg-white/10 text-white hover:bg-white/20'}`}>
                     <MessageSquare size={24} />
                 </button>
             </div>

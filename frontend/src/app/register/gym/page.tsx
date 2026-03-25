@@ -1,4 +1,5 @@
 'use client';
+import GemZLogo from '../../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -38,7 +39,7 @@ const T = {
     }
 };
 
-const ACCENT = '#A78BFA';
+const ACCENT = 'var(--color-purple)';
 
 export default function GymRegisterPage() {
     const { isArabic } = useLanguage();
@@ -134,7 +135,7 @@ export default function GymRegisterPage() {
             <div className="w-full max-w-lg">
                 <Link href="/register" className="text-sm mb-6 block hover:underline" style={{ color: ACCENT }}>{t.back}</Link>
                 <div className="text-center mb-8">
-                    <img src="/gem-z-logo.png" alt="GEM Z" className="h-10 mx-auto mb-4 object-contain" />
+                    <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
                     <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
                     <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
                 </div>
@@ -171,7 +172,7 @@ export default function GymRegisterPage() {
                             { name: 'confirm', label: t.confirm, type: 'password' }].map((f, i) => (
                                 <div key={i}>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{f.label}</label>
-                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                                 </div>
                             ))}
                         </div>
@@ -180,28 +181,28 @@ export default function GymRegisterPage() {
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.gymName}</label>
-                                <input name="gymName" value={formData.gymName} onChange={handleChange} type="text" placeholder="Gold's Gym Elite" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="gymName" value={formData.gymName} onChange={handleChange} type="text" placeholder="Gold's Gym Elite" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                             </div>
                             
                             <div>
                                 <label className="text-sm font-medium block mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}><MapPin size={16} /> {t.googleMaps}</label>
-                                <input name="locationUrl" value={formData.locationUrl} onChange={handleChange} type="url" placeholder="https://maps.app.goo.gl/..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="locationUrl" value={formData.locationUrl} onChange={handleChange} type="url" placeholder="https://maps.app.goo.gl/..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.location}</label>
-                                    <input name="mainLocation" value={formData.mainLocation} onChange={handleChange} type="text" placeholder="Cairo, Nasr City" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                    <input name="mainLocation" value={formData.mainLocation} onChange={handleChange} type="text" placeholder="Cairo, Nasr City" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.branches}</label>
-                                    <input name="branches" value={formData.branches} onChange={handleChange} type="number" min="1" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                    <input name="branches" value={formData.branches} onChange={handleChange} type="number" min="1" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                                 </div>
                             </div>
                             
                             <div>
                                 <label className="text-sm font-medium block mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}><Clock size={16} /> {t.femaleHours}</label>
-                                <input name="femaleHours" value={formData.femaleHours} onChange={handleChange} type="text" placeholder={isArabic ? 'مثال: 08:00 ص - 12:00 م' : 'e.g. 08:00 AM - 12:00 PM'} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="femaleHours" value={formData.femaleHours} onChange={handleChange} type="text" placeholder={isArabic ? 'مثال: 08:00 ص - 12:00 م' : 'e.g. 08:00 AM - 12:00 PM'} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                             </div>
 
                             <div>
@@ -234,20 +235,20 @@ export default function GymRegisterPage() {
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.cr}</label>
-                                <input name="cr" value={formData.cr} onChange={handleChange} type="text" placeholder="12345-67" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="cr" value={formData.cr} onChange={handleChange} type="text" placeholder="12345-67" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.tax}</label>
-                                <input name="tax" value={formData.tax} onChange={handleChange} type="text" placeholder="XXX-XXX-XXX" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="tax" value={formData.tax} onChange={handleChange} type="text" placeholder="XXX-XXX-XXX" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.dropin}</label>
-                                <input name="dropinPrice" value={formData.dropinPrice} onChange={handleChange} type="number" placeholder="250" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#A78BFA]" />
+                                <input name="dropinPrice" value={formData.dropinPrice} onChange={handleChange} type="number" placeholder="250" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-purple)]" />
                             </div>
 
                             <div className="mt-6">
                                 <label className="flex items-start gap-3 cursor-pointer">
-                                    <input type="checkbox" className="w-4 h-4 mt-1 accent-[#A78BFA]" />
+                                    <input type="checkbox" className="w-4 h-4 mt-1 accent-[var(--color-purple)]" />
                                     <span className="text-sm leading-snug" style={{ color: 'var(--text-secondary)' }}>{t.agree}</span>
                                 </label>
                             </div>

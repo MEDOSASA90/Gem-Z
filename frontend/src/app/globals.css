@@ -13,9 +13,17 @@
   --font-arabic: 'Tajawal', sans-serif;
 }
 
-/* ===== DARK MODE (default) ===== */
-:root,
-[data-theme="dark"] {
+/* ===== GLOBAL DYNAMIC COLORS ===== */
+:root, [data-theme="dark"] {
+  --color-primary: #00FFA3;
+  --color-primary-rgb: 0, 255, 163;
+  --color-secondary: #00B8FF;
+  --color-secondary-rgb: 0, 184, 255;
+  --color-warning: #FFCC00;
+  --color-purple: #A78BFA;
+  --color-orange: #FF6B35;
+  --color-danger: #FF3B30;
+  
   --bg-primary: #0A0A0A;
   --bg-secondary: #141414;
   --bg-card: rgba(20, 20, 20, 0.8);
@@ -29,19 +37,62 @@
     radial-gradient(circle at 85% 30%, rgba(0, 184, 255, 0.04), transparent 30%);
 }
 
-/* ===== LIGHT MODE ===== */
+/* ===== LIGHT MODE (PREMIUM) ===== */
 [data-theme="light"] {
-  --bg-primary: #F4F6F9;
+  --color-primary: #10B981; /* Emerald 500 */
+  --color-primary-rgb: 16, 185, 129;
+  --color-secondary: #0EA5E9; /* Sky 500 */
+  --color-secondary-rgb: 14, 165, 233;
+  --color-warning: #D97706; /* Amber 600 */
+  --color-purple: #8B5CF6; /* Violet 500 */
+  --color-orange: #EA580C; /* Orange 600 */
+  --color-danger: #DC2626; /* Red 600 */
+
+  --bg-primary: #F8FAFC; /* Slate 50 - Premium soft cool white */
   --bg-secondary: #FFFFFF;
-  --bg-card: rgba(255, 255, 255, 0.9);
-  --bg-input: rgba(0, 0, 0, 0.04);
-  --border-subtle: rgba(0, 0, 0, 0.06);
-  --border-medium: rgba(0, 0, 0, 0.12);
-  --text-primary: #0A0A0A;
-  --text-secondary: #555555;
-  --text-muted: #999999;
-  --glow-bg: radial-gradient(circle at 15% 50%, rgba(0, 255, 163, 0.06), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(0, 184, 255, 0.06), transparent 30%);
+  --bg-card: rgba(255, 255, 255, 0.85); /* Clean glass */
+  --bg-input: #F1F5F9; /* Slate 100 */
+  --border-subtle: rgba(148, 163, 184, 0.2);
+  --border-medium: rgba(148, 163, 184, 0.4);
+  --text-primary: #0F172A; /* Slate 900 - High contrast */
+  --text-secondary: #334155; /* Slate 700 */
+  --text-muted: #64748B; /* Slate 500 */
+  
+  /* Very subtle cool gradient for white background depth */
+  --glow-bg: 
+    radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.05), transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(14, 165, 233, 0.05), transparent 40%),
+    #F8FAFC;
+}
+
+/* Light mode specific elegant overrides */
+[data-theme="light"] .neon-glow {
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25) !important;
+}
+
+[data-theme="light"] .neon-glow-blue {
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25) !important;
+}
+
+[data-theme="light"] .text-gradient {
+  background-image: linear-gradient(to right, var(--color-primary), var(--color-secondary)) !important;
+}
+
+[data-theme="light"] select,
+[data-theme="light"] input,
+[data-theme="light"] textarea {
+  background-color: #FFFFFF !important;
+  border: 1px solid var(--border-medium) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+[data-theme="light"] .glass-panel,
+[data-theme="light"] .bg-card {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 html {

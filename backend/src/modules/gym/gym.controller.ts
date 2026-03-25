@@ -23,7 +23,7 @@ export const getGymStats = async (req: AuthRequest, res: Response) => {
 
         // Fetch Active Subscribers
         const subscribersQuery = await db.query(`
-            SELECT gs.id, gs.start_date, gs.end_date, u.full_name as trainee_name
+            SELECT gs.id, gs.starts_at as start_date, gs.expires_at as end_date, u.full_name as trainee_name
             FROM gym_subscriptions gs
             JOIN users u ON gs.trainee_id = u.id
             WHERE gs.branch_id IN (SELECT id FROM gym_branches WHERE gym_id = $1)
@@ -35,11 +35,11 @@ export const getGymStats = async (req: AuthRequest, res: Response) => {
 
         // Fetch Live Visits (Check-Ins / Check-Outs for today)
         const visitsQuery = await db.query(`
-            SELECT gv.id, gv.check_in_time, gv.check_out_time, u.full_name as trainee_name
-            FROM gym_visits gv
-            JOIN users u ON gv.user_id = u.id
-            WHERE gv.gym_id = $1
-            ORDER BY gv.check_in_time DESC
+            SELECT gv.id, gv.checked_in_at as check_in_time, gv.checked_out_at as check_out_time, u.full_name as trainee_name
+            FROM attendance_logs gv
+            JOIN users u ON gv.trainee_id = u.id
+            WHERE gv.branch_id IN (SELECT id FROM gym_branches WHERE gym_id = $1)
+            ORDER BY gv.checked_in_at DESC
             LIMIT 50
         `, [gymId]);
         const visits = visitsQuery.rows;
@@ -61,76 +61,153 @@ export const getGymStats = async (req: AuthRequest, res: Response) => {
     }
 };
 
-export const scanBarcode = async (req: AuthRequest, res: Response) => {
+export const buyDailyPass = async (req: AuthRequest, res: Response) => {
+    const client = await db.connect();
     try {
-        const userId = req.user?.userId;
-        const { barcode } = req.body;
-        
-        if (!userId || !barcode) return res.status(400).json({ error: 'Invalid Request' });
+        const traineeId = req.user?.userId;
+        const { gymId, price } = req.body;
 
-        // Resolve Gym ID
-        const gymDbRes = await db.query('SELECT id FROM gyms WHERE owner_user_id = $1', [userId]);
-        if (gymDbRes.rowCount === 0) return res.status(404).json({ error: 'Gym profile not found' });
-        const gymId = gymDbRes.rows[0].id;
+        if (!gymId || !price) return res.status(400).json({ success: false, message: 'Missing gym ID or price' });
 
-        // Resolve Trainee User ID from Barcode (assuming barcode is user.id or referral_code for now)
-        const traineeRes = await db.query('SELECT id FROM users WHERE id::text = $1 OR referral_code = $1', [barcode]);
-        if (traineeRes.rowCount === 0) return res.status(404).json({ error: 'Trainee not found' });
-        const traineeId = traineeRes.rows[0].id;
+        await client.query('BEGIN');
 
-        // Check for an active OPEN visit
-        const openVisitRes = await db.query(`
-            SELECT id, check_in_time FROM gym_visits 
-            WHERE user_id = $1 AND gym_id = $2 AND check_out_time IS NULL
-        `, [traineeId, gymId]);
+        // Generate unique QR
+        const qrCode = `PASS_${Date.now()}_${Math.random().toString(36).substring(7).toUpperCase()}`;
 
-        if (openVisitRes.rowCount && openVisitRes.rowCount > 0) {
-            // Check OUT
-            const visitId = openVisitRes.rows[0].id;
-            const checkInTime = new Date(openVisitRes.rows[0].check_in_time);
-            const checkOutTime = new Date();
-            const durationMins = Math.round((checkOutTime.getTime() - checkInTime.getTime()) / 60000);
+        // Expiry = 24 hours from now
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 24);
 
-            await db.query(`
-                UPDATE gym_visits 
-                SET check_out_time = CURRENT_TIMESTAMP, duration_minutes = $1
-                WHERE id = $2
-            `, [durationMins, visitId]);
+        const { rows } = await client.query(`
+            INSERT INTO gym_daily_passes (gym_id, trainee_id, price_paid, qr_code, expires_at)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *;
+        `, [gymId, traineeId, price, qrCode, expiresAt]);
 
-            return res.status(200).json({ success: true, message: 'Checked OUT successfully', action: 'checkout' });
-        } else {
-            // Check IN
-            await db.query(`
-                INSERT INTO gym_visits (user_id, gym_id) VALUES ($1, $2)
-            `, [traineeId, gymId]);
-            return res.status(200).json({ success: true, message: 'Checked IN successfully', action: 'checkin' });
+        // Create financial transaction for the Gym (20% platform fee)
+        const platformFee = Number(price) * 0.20;
+        const netAmount = Number(price) - platformFee;
+
+        await client.query(`
+            INSERT INTO financial_transactions (user_id, buyer_id, amount, platform_fee, net_amount, type)
+            VALUES ($1, $2, $3, $4, $5, 'GYM_PASS')
+        `, [gymId, traineeId, price, platformFee, netAmount]);
+
+        await client.query('COMMIT');
+        return res.status(201).json({ success: true, pass: rows[0], message: 'Pass purchased successfully' });
+    } catch (error: any) {
+        await client.query('ROLLBACK');
+        console.error('[GymController] buyDailyPass:', error);
+        return res.status(500).json({ success: false, message: 'Failed to buy daily pass' });
+    } finally {
+        client.release();
+    }
+};
+
+export const scanDailyPass = async (req: AuthRequest, res: Response) => {
+    try {
+        const scannerUserId = req.user?.userId; // This is the Gym Owner's ID
+        const { qrCode } = req.body;
+
+        if (!qrCode) return res.status(400).json({ success: false, message: 'Missing QR Code' });
+
+        // Resolve Gym ID from scanner user ID
+        const gymRes = await db.query('SELECT user_id FROM gyms WHERE user_id = $1', [scannerUserId]);
+        const gymId = gymRes.rowCount && gymRes.rowCount > 0 ? gymRes.rows[0].user_id : scannerUserId;
+
+        // Verify Pass
+        const passRes = await db.query(`
+            SELECT * FROM gym_daily_passes
+            WHERE qr_code = $1 AND gym_id = $2
+        `, [qrCode, gymId]);
+
+        if (passRes.rowCount === 0) {
+            return res.status(404).json({ success: false, message: 'Invalid Pass for this Gym' });
         }
 
-    } catch(err) {
-        console.error('[GymController] scanBarcode Error:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    }
-}
+        const pass = passRes.rows[0];
 
-export const setOffPeakPricing = async (req: AuthRequest, res: Response) => {
-    try {
-        const gymId = req.user?.entityId || req.user?.userId;
+        if (pass.is_used) {
+            return res.status(400).json({ success: false, message: 'Pass has already been used' });
+        }
 
-        const schema = z.object({
-            isActive: z.boolean(),
-            discountPercentage: z.number().min(0).max(100).optional()
-        });
+        if (new Date() > new Date(pass.expires_at)) {
+            return res.status(400).json({ success: false, message: 'Pass has expired' });
+        }
 
-        const { isActive, discountPercentage } = schema.parse(req.body);
+        // Mark as used
+        await db.query(`
+            UPDATE gym_daily_passes
+            SET is_used = TRUE, scanned_at = NOW()
+            WHERE id = $1
+        `, [pass.id]);
 
-        res.status(200).json({
-            success: true,
-            data: { gym_id: gymId, is_off_peak_active: isActive, off_peak_discount: discountPercentage || 20.00 },
-            message: `Off-Peak pricing ${isActive ? 'activated' : 'deactivated'} (Mock)`
-        });
+        return res.status(200).json({ success: true, message: 'Access Granted! Pass consumed.' });
 
     } catch (error) {
-        console.error('[GymController] setOffPeakPricing Error:', error);
-        res.status(400).json({ error: 'Invalid payload or server error' });
+        console.error('[GymController] scanDailyPass:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+export const getTraineePasses = async (req: AuthRequest, res: Response) => {
+    try {
+        const traineeId = req.user?.userId;
+        const { rows } = await db.query(`
+            SELECT p.*, g.gym_name 
+            FROM gym_daily_passes p
+            JOIN gyms g ON p.gym_id = g.user_id
+            WHERE p.trainee_id = $1
+            ORDER BY p.created_at DESC
+        `, [traineeId]);
+        
+        return res.status(200).json({ success: true, passes: rows });
+    } catch (error) {
+        console.error('[GymController] getTraineePasses:', error);
+        return res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const unlockSmartLocker = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+        const { lockerId, gymId } = req.body;
+        if (!lockerId || !gymId) return res.status(400).json({ success: false, message: 'Missing locker ID or gym ID' });
+        // Mock unlock logic
+        return res.status(200).json({ success: true, message: `Locker ${lockerId} unlocked successfully for user ${userId}.` });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server error unlocking locker' });
+    }
+};
+
+export const getLiveCrowdTracker = async (req: AuthRequest, res: Response) => {
+    try {
+        const { gymId } = req.query;
+        if (!gymId) return res.status(400).json({ success: false, message: 'Missing gym ID' });
+        // Mock crowd data
+        return res.status(200).json({ success: true, occupancy: 75, status: 'Moderately Crowded', estimatedPeakTime: '18:00' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server error tracking crowd' });
+    }
+};
+
+export const getEquipmentTutorial = async (req: AuthRequest, res: Response) => {
+    try {
+        const { qrCode } = req.params;
+        // Mock DB fetch for equipment tutorial
+        if (!qrCode) return res.status(400).json({ success: false, message: 'Missing QR Code' });
+        
+        const mockTutorial = {
+            id: 'eq_001',
+            name: 'Pec Deck Machine',
+            qrCode,
+            videoUrl: 'https://gemz.app/tutorials/pec-deck.mp4',
+            instructions: ['Adjust seat height', 'Keep back straight', 'Squeeze chest at the center'],
+            targetedMuscles: ['Chest', 'Front Delts']
+        };
+        
+        return res.status(200).json({ success: true, tutorial: mockTutorial });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server error fetching tutorial' });
     }
 };

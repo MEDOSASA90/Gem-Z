@@ -1,7 +1,6 @@
 import webpush from 'web-push';
-import { Pool } from 'pg';
+import { db as pool } from '../core/database/db';
 
-const pool = new Pool();
 
 // VAPID keys should be generated using `webpush.generateVAPIDKeys()` and stored in ENV
 // We use placeholder keys here or check ENV variables.

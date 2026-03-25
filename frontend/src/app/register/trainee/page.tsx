@@ -1,4 +1,5 @@
 'use client';
+import GemZLogo from '../../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -44,7 +45,7 @@ const T = {
     }
 };
 
-const ACCENT = '#00FFA3';
+const ACCENT = 'var(--color-primary)';
 
 export default function TraineeRegisterPage() {
     const { isArabic } = useLanguage();
@@ -161,7 +162,7 @@ export default function TraineeRegisterPage() {
             <div className="w-full max-w-lg">
                 <Link href="/register" className="text-sm mb-6 block hover:underline" style={{ color: ACCENT }}>{t.back}</Link>
                 <div className="text-center mb-8">
-                    <img src="/gem-z-logo.png" alt="GEM Z" className="h-10 mx-auto mb-4 object-contain" />
+                    <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
                     <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
                     <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
                 </div>
@@ -310,7 +311,7 @@ export default function TraineeRegisterPage() {
                             </div>
                             
                             <label className="flex items-center gap-3 cursor-pointer pt-3">
-                                <input type="checkbox" className="w-4 h-4 accent-[#00FFA3]" />
+                                <input type="checkbox" className="w-4 h-4 accent-[var(--color-primary)]" />
                                 <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t.agree}</span>
                             </label>
                         </div>
@@ -323,11 +324,11 @@ export default function TraineeRegisterPage() {
                             </button>
                         )}
                         {step < 2 ? (
-                            <button onClick={nextStep} className="flex-1 py-3 rounded-xl text-sm font-bold text-black transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: `linear-gradient(135deg, ${ACCENT}, #00B8FF)`, boxShadow: `0 0 20px ${ACCENT}40` }}>
+                            <button onClick={nextStep} className="flex-1 py-3 rounded-xl text-sm font-bold text-black transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: `linear-gradient(135deg, ${ACCENT}, var(--color-secondary))`, boxShadow: `0 0 20px ${ACCENT}40` }}>
                                 {t.next} <ChevronRight size={16} className={isArabic ? 'rotate-180' : ''} />
                             </button>
                         ) : (
-                            <button onClick={handleRegister} disabled={loading} className="flex-1 py-3 rounded-xl text-sm font-bold text-black text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: `linear-gradient(135deg, ${ACCENT}, #00B8FF)`, boxShadow: `0 0 20px ${ACCENT}40` }}>
+                            <button onClick={handleRegister} disabled={loading} className="flex-1 py-3 rounded-xl text-sm font-bold text-black text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: `linear-gradient(135deg, ${ACCENT}, var(--color-secondary))`, boxShadow: `0 0 20px ${ACCENT}40` }}>
                                 {loading ? <Loader2 size={16} className="animate-spin" /> : <><CheckCircle size={16} /> {t.finish}</>}
                             </button>
                         )}

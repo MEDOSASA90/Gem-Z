@@ -70,7 +70,7 @@ export default function AIFormCorrectionPage() {
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
                         <h1 className="font-bold font-heading flex items-center gap-2">
-                            <Activity size={18} className="text-[#00FFA3]" />
+                            <Activity size={18} className="text-[var(--color-primary)]" />
                             {isArabic ? 'مصحح الأداء AI' : 'AI Form Correction'}
                         </h1>
                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'تحليل حركي فوري عبر الكاميرا' : 'Real-time movement analysis'}</p>
@@ -89,7 +89,7 @@ export default function AIFormCorrectionPage() {
                     {EXERCISES.map(ex => (
                         <button key={ex.id} onClick={() => { setSelectedExercise(ex); setShowResults(false); setCameraActive(false); }}
                             className="w-full flex items-center gap-3 p-4 rounded-2xl text-left transition-all"
-                            style={{ background: selectedExercise.id === ex.id ? 'rgba(0,255,163,0.1)' : 'var(--bg-card)', border: `1px solid ${selectedExercise.id === ex.id ? '#00FFA3' : 'var(--border-subtle)'}` }}>
+                            style={{ background: selectedExercise.id === ex.id ? 'rgba(var(--color-primary-rgb), 0.1)' : 'var(--bg-card)', border: `1px solid ${selectedExercise.id === ex.id ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
                             <span className="text-3xl">{ex.emoji}</span>
                             <div>
                                 <p className="font-bold">{isArabic ? ex.nameAr : ex.nameEn}</p>
@@ -99,7 +99,7 @@ export default function AIFormCorrectionPage() {
                                     ))}
                                 </div>
                             </div>
-                            {selectedExercise.id === ex.id && <CheckCircle size={16} className="text-[#00FFA3] ms-auto shrink-0" />}
+                            {selectedExercise.id === ex.id && <CheckCircle size={16} className="text-[var(--color-primary)] ms-auto shrink-0" />}
                         </button>
                     ))}
 
@@ -108,7 +108,7 @@ export default function AIFormCorrectionPage() {
                         <h4 className="font-bold text-sm mb-3">{isArabic ? 'أخطاء شائعة:' : 'Common Errors:'}</h4>
                         {selectedExercise.commonErrors.map((err, i) => (
                             <div key={i} className="flex items-center gap-2 text-sm mb-2">
-                                <AlertTriangle size={12} className="text-[#FFCC00] shrink-0" />
+                                <AlertTriangle size={12} className="text-[var(--color-warning)] shrink-0" />
                                 <span style={{ color: 'var(--text-secondary)' }}>{err}</span>
                             </div>
                         ))}
@@ -121,8 +121,8 @@ export default function AIFormCorrectionPage() {
                     <div className="relative rounded-3xl overflow-hidden bg-black" style={{ aspectRatio: '4/3', border: '1px solid var(--border-subtle)' }}>
                         {!cameraActive ? (
                             <div className="absolute inset-0 flex flex-col items-center justify-center gap-6" style={{ background: 'var(--bg-card)' }}>
-                                <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background: 'rgba(0,255,163,0.1)', border: '1px solid rgba(0,255,163,0.3)' }}>
-                                    <Camera size={40} className="text-[#00FFA3]" />
+                                <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
+                                    <Camera size={40} className="text-[var(--color-primary)]" />
                                 </div>
                                 <div className="text-center">
                                     <h3 className="font-bold text-xl mb-2">{isArabic ? 'ابدأ تحليل الحركة' : 'Start Movement Analysis'}</h3>
@@ -130,7 +130,7 @@ export default function AIFormCorrectionPage() {
                                         {isArabic ? 'سيتم استخدام كاميرا الهاتف لتحليل حركتك وتصحيحها' : 'Your camera will be used to analyze and correct your form'}
                                     </p>
                                 </div>
-                                <button onClick={startCamera} className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-black text-lg neon-glow" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
+                                <button onClick={startCamera} className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-black text-lg neon-glow" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
                                     <Play size={20} /> {isArabic ? 'تشغيل الكاميرا' : 'Start Camera'}
                                 </button>
                             </div>
@@ -141,37 +141,37 @@ export default function AIFormCorrectionPage() {
                                     {/* Skeleton body visualization */}
                                     <svg viewBox="0 0 200 350" className="h-4/5 opacity-60">
                                         {/* Head */}
-                                        <circle cx="100" cy="40" r="22" fill="none" stroke="#00FFA3" strokeWidth="2" />
+                                        <circle cx="100" cy="40" r="22" fill="none" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Neck */}
-                                        <line x1="100" y1="62" x2="100" y2="80" stroke="#00FFA3" strokeWidth="2" />
+                                        <line x1="100" y1="62" x2="100" y2="80" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Shoulders */}
-                                        <line x1="60" y1="80" x2="140" y2="80" stroke="#00FFA3" strokeWidth="2" />
+                                        <line x1="60" y1="80" x2="140" y2="80" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Torso */}
-                                        <line x1="100" y1="80" x2="100" y2="175" stroke="#00FFA3" strokeWidth="2" />
+                                        <line x1="100" y1="80" x2="100" y2="175" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Left arm */}
-                                        <line x1="60" y1="80" x2="40" y2="135" stroke="#00FFA3" strokeWidth="2" />
-                                        <line x1="40" y1="135" x2="30" y2="185" stroke="#00FFA3" strokeWidth="2" />
+                                        <line x1="60" y1="80" x2="40" y2="135" stroke="var(--color-primary)" strokeWidth="2" />
+                                        <line x1="40" y1="135" x2="30" y2="185" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Right arm */}
-                                        <line x1="140" y1="80" x2="160" y2="135" stroke="#00FFA3" strokeWidth="2" />
-                                        <line x1="160" y1="135" x2="170" y2="185" stroke="#00FFA3" strokeWidth="2" />
+                                        <line x1="140" y1="80" x2="160" y2="135" stroke="var(--color-primary)" strokeWidth="2" />
+                                        <line x1="160" y1="135" x2="170" y2="185" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Hips */}
-                                        <line x1="75" y1="175" x2="125" y2="175" stroke="#00FFA3" strokeWidth="2" />
+                                        <line x1="75" y1="175" x2="125" y2="175" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Left leg */}
-                                        <line x1="75" y1="175" x2="65" y2="265" stroke="#00FFA3" strokeWidth="2" />
-                                        <line x1="65" y1="265" x2="60" y2="330" stroke={MOCK_ANALYSIS.issues[0].severity === 'warning' ? '#FFCC00' : '#00FFA3'} strokeWidth="2" />
+                                        <line x1="75" y1="175" x2="65" y2="265" stroke="var(--color-primary)" strokeWidth="2" />
+                                        <line x1="65" y1="265" x2="60" y2="330" stroke={MOCK_ANALYSIS.issues[0].severity === 'warning' ? 'var(--color-warning)' : 'var(--color-primary)'} strokeWidth="2" />
                                         {/* Right leg */}
-                                        <line x1="125" y1="175" x2="135" y2="265" stroke="#00FFA3" strokeWidth="2" />
-                                        <line x1="135" y1="265" x2="140" y2="330" stroke="#00FFA3" strokeWidth="2" />
+                                        <line x1="125" y1="175" x2="135" y2="265" stroke="var(--color-primary)" strokeWidth="2" />
+                                        <line x1="135" y1="265" x2="140" y2="330" stroke="var(--color-primary)" strokeWidth="2" />
                                         {/* Joint dots */}
                                         {[[100, 40], [60, 80], [140, 80], [40, 135], [160, 135], [30, 185], [170, 185], [75, 175], [125, 175], [65, 265], [135, 265], [60, 330], [140, 330]].map(([x, y], i) => (
-                                            <circle key={i} cx={x} cy={y} r="4" fill="#00FFA3" />
+                                            <circle key={i} cx={x} cy={y} r="4" fill="var(--color-primary)" />
                                         ))}
                                         {/* Warning joint */}
-                                        <circle cx="60" cy="330" r="6" fill="#FFCC00" className="animate-pulse" />
-                                        <circle cx="140" cy="330" r="6" fill="#FFCC00" className="animate-pulse" />
+                                        <circle cx="60" cy="330" r="6" fill="var(--color-warning)" className="animate-pulse" />
+                                        <circle cx="140" cy="330" r="6" fill="var(--color-warning)" className="animate-pulse" />
                                         {/* Angle indicator */}
-                                        <text x="75" y="280" fill="#FFCC00" fontSize="11" fontFamily="monospace">162°</text>
-                                        <text x="130" y="280" fill="#00FFA3" fontSize="11" fontFamily="monospace">160°</text>
+                                        <text x="75" y="280" fill="var(--color-warning)" fontSize="11" fontFamily="monospace">162°</text>
+                                        <text x="130" y="280" fill="var(--color-primary)" fontSize="11" fontFamily="monospace">160°</text>
                                     </svg>
                                 </div>
 
@@ -183,20 +183,20 @@ export default function AIFormCorrectionPage() {
                                     </div>
                                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: 'rgba(0,0,0,0.7)' }}>
                                         <span className="text-white text-xs">{isArabic ? 'تكرارات:' : 'Reps:'}</span>
-                                        <span className="text-[#00FFA3] font-bold font-mono text-lg">{repCount}</span>
+                                        <span className="text-[var(--color-primary)] font-bold font-mono text-lg">{repCount}</span>
                                     </div>
                                 </div>
 
                                 {analyzing && (
                                     <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'rgba(0,0,0,0.8)' }}>
-                                        <div className="w-4 h-4 rounded-full border-2 border-[#00FFA3] border-t-transparent animate-spin" />
+                                        <div className="w-4 h-4 rounded-full border-2 border-[var(--color-primary)] border-t-transparent animate-spin" />
                                         <span className="text-white text-sm">{isArabic ? 'تحليل الحركة...' : 'Analyzing movement...'}</span>
                                     </div>
                                 )}
 
                                 {showResults && !analyzing && (
-                                    <div className="absolute bottom-4 left-4 right-4 px-4 py-3 rounded-xl" style={{ background: 'rgba(0,0,0,0.9)', border: '1px solid rgba(0,255,163,0.3)' }}>
-                                        <p className="text-[#FFCC00] text-sm font-bold">⚠️ {isArabic ? 'الركبة اليمنى: انزل أعمق!' : 'Right Knee: Go deeper!'}</p>
+                                    <div className="absolute bottom-4 left-4 right-4 px-4 py-3 rounded-xl" style={{ background: 'rgba(0,0,0,0.9)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
+                                        <p className="text-[var(--color-warning)] text-sm font-bold">⚠️ {isArabic ? 'الركبة اليمنى: انزل أعمق!' : 'Right Knee: Go deeper!'}</p>
                                         <p className="text-xs text-gray-300 mt-1">{isArabic ? 'الزاوية الحالية 162° — يجب أن تكون 90°' : 'Current angle 162° — target is 90°'}</p>
                                     </div>
                                 )}
@@ -215,17 +215,17 @@ export default function AIFormCorrectionPage() {
                                 <div className="relative w-20 h-20">
                                     <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
                                         <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--bg-input)" strokeWidth="3" />
-                                        <circle cx="18" cy="18" r="15.9" fill="none" stroke={MOCK_ANALYSIS.score >= 80 ? '#00FFA3' : '#FFCC00'} strokeWidth="3"
+                                        <circle cx="18" cy="18" r="15.9" fill="none" stroke={MOCK_ANALYSIS.score >= 80 ? 'var(--color-primary)' : 'var(--color-warning)'} strokeWidth="3"
                                             strokeDasharray={`${MOCK_ANALYSIS.score} 100`} strokeLinecap="round" />
                                     </svg>
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="font-bold text-xl" style={{ color: MOCK_ANALYSIS.score >= 80 ? '#00FFA3' : '#FFCC00' }}>{MOCK_ANALYSIS.score}</span>
+                                        <span className="font-bold text-xl" style={{ color: MOCK_ANALYSIS.score >= 80 ? 'var(--color-primary)' : 'var(--color-warning)' }}>{MOCK_ANALYSIS.score}</span>
                                     </div>
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg">{isArabic ? 'نتيجة الأداء' : 'Form Score'}</h3>
                                     <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{MOCK_ANALYSIS.reps} {isArabic ? 'تكرارات محللة' : 'reps analyzed'}</p>
-                                    <p className="text-sm font-bold" style={{ color: MOCK_ANALYSIS.score >= 80 ? '#00FFA3' : '#FFCC00' }}>
+                                    <p className="text-sm font-bold" style={{ color: MOCK_ANALYSIS.score >= 80 ? 'var(--color-primary)' : 'var(--color-warning)' }}>
                                         {MOCK_ANALYSIS.score >= 80 ? (isArabic ? '✅ أداء جيد جداً!' : '✅ Very Good Form!') : (isArabic ? '⚠️ يحتاج تحسين' : '⚠️ Needs Improvement')}
                                     </p>
                                 </div>
@@ -235,11 +235,11 @@ export default function AIFormCorrectionPage() {
                             <div className="space-y-3">
                                 {MOCK_ANALYSIS.issues.map((issue, i) => (
                                     <div key={i} className="flex items-center gap-4 p-4 rounded-2xl" style={{ background: 'var(--bg-card)', border: `1px solid ${issue.severity === 'warning' ? 'rgba(255,204,0,0.3)' : 'rgba(52,199,89,0.3)'}` }}>
-                                        {issue.severity === 'warning' ? <AlertTriangle size={20} className="text-[#FFCC00] shrink-0" /> : <CheckCircle size={20} className="text-[#34C759] shrink-0" />}
+                                        {issue.severity === 'warning' ? <AlertTriangle size={20} className="text-[var(--color-warning)] shrink-0" /> : <CheckCircle size={20} className="text-[#34C759] shrink-0" />}
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="font-bold text-sm">{isArabic ? issue.jointAr : issue.joint}</span>
-                                                <span className="font-mono text-xs px-2 py-0.5 rounded" style={{ background: issue.severity === 'warning' ? 'rgba(255,204,0,0.1)' : 'rgba(52,199,89,0.1)', color: issue.severity === 'warning' ? '#FFCC00' : '#34C759' }}>{issue.angle}</span>
+                                                <span className="font-mono text-xs px-2 py-0.5 rounded" style={{ background: issue.severity === 'warning' ? 'rgba(255,204,0,0.1)' : 'rgba(52,199,89,0.1)', color: issue.severity === 'warning' ? 'var(--color-warning)' : '#34C759' }}>{issue.angle}</span>
                                                 <span className="text-xs" style={{ color: 'var(--text-muted)' }}>→ {isArabic ? 'المثالي' : 'target'}: {issue.optimal}</span>
                                             </div>
                                             <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? issue.tipAr : issue.tip}</p>

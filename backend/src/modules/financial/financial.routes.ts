@@ -5,6 +5,6 @@ import { verifyToken as authenticate } from '../../core/middlewares/auth.middlew
 const router = express.Router();
 
 router.get('/wallet', authenticate as any, FinancialController.getWalletBalance as any);
-router.post('/subscription', authenticate as any, FinancialController.purchaseGymSubscription as any);
+router.post('/payout', authenticate as any, FinancialController.requestPayout as any);
 
 export default router;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assignPlanToClient = exports.getTrainerStats = void 0;
+exports.getChurnPrediction = exports.assignPlanToClient = exports.getTrainerStats = void 0;
 const zod_1 = __importDefault(require("zod"));
 const getTrainerStats = async (req, res) => {
     try {
@@ -46,3 +46,18 @@ const assignPlanToClient = async (req, res) => {
     }
 };
 exports.assignPlanToClient = assignPlanToClient;
+const getChurnPrediction = async (req, res) => {
+    try {
+        const trainerId = req.user?.entityId || req.user?.userId;
+        // Mock churn prediction identifying at-risk users
+        const atRiskClients = [
+            { traineeId: 'u_111', name: 'Ali M.', riskLevel: 'High', lastActiveDays: 8, aiSuggestion: 'Send a motivating message regarding their skipped leg day.' },
+            { traineeId: 'u_222', name: 'Mona Z.', riskLevel: 'Medium', lastActiveDays: 4, aiSuggestion: 'Offer a minor diet adjustment to break plateau.' }
+        ];
+        return res.status(200).json({ success: true, atRiskClients });
+    }
+    catch (error) {
+        return res.status(500).json({ error: 'Server error calculating churn' });
+    }
+};
+exports.getChurnPrediction = getChurnPrediction;

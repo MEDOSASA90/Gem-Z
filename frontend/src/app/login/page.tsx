@@ -1,4 +1,5 @@
 'use client';
+import GemZLogo from '../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff, Zap, ArrowRight, Loader2 } from 'lucide-react';
@@ -40,7 +41,7 @@ export default function LoginPage() {
     const isDark = theme === 'dark';
     const router = useRouter();
 
-    const roleColors = ['#00FFA3', '#00B8FF', '#A78BFA', '#F59E0B'];
+    const roleColors = ['var(--color-primary)', 'var(--color-secondary)', 'var(--color-purple)', '#F59E0B'];
     const roleIcons = ['🏋️', '🎯', '🏢', '🛍️'];
     const roleKeys = ['trainee', 'trainer', 'gym_admin', 'store_admin'];
 
@@ -63,8 +64,8 @@ export default function LoginPage() {
 
             if (res.user.role === 'trainee') router.push('/trainee');
             else if (res.user.role === 'trainer') router.push('/trainer');
-            else if (res.user.role === 'gym_admin') router.push('/dashboard/gym');
-            else router.push('/dashboard/store');
+            else if (res.user.role === 'gym_admin') router.push('/gym');
+            else router.push('/store/dashboard');
 
         } catch (err: any) {
             setError(err.message || (isArabic ? 'خطأ في تسجيل الدخول' : 'Login failed'));
@@ -76,8 +77,8 @@ export default function LoginPage() {
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
             {/* Background glows */}
-            <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-30" style={{ background: 'radial-gradient(circle, #00FFA3, transparent)' }} />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full blur-[180px] pointer-events-none opacity-20" style={{ background: 'radial-gradient(circle, #00B8FF, transparent)' }} />
+            <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-30" style={{ background: 'radial-gradient(circle, var(--color-primary), transparent)' }} />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full blur-[180px] pointer-events-none opacity-20" style={{ background: 'radial-gradient(circle, var(--color-secondary), transparent)' }} />
 
             {/* Theme toggle */}
             <button onClick={toggleTheme} className="absolute top-6 end-6 p-2.5 rounded-xl transition-colors" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
@@ -88,7 +89,7 @@ export default function LoginPage() {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <Link href="/">
-                        <img src="/gem-z-logo.png" alt="GEM Z" className="h-14 mx-auto mb-3 object-contain" />
+                        <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
                     </Link>
                     <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
                     <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
@@ -142,7 +143,7 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <button onClick={handleLogin} disabled={loading} className="w-full py-3.5 rounded-xl font-bold text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50 shadow-[0_0_25px_rgba(0,255,163,0.3)]" style={{ background: `linear-gradient(135deg, ${roleColors[role]}, #00B8FF)` }}>
+                        <button onClick={handleLogin} disabled={loading} className="w-full py-3.5 rounded-xl font-bold text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50 shadow-[0_0_25px_rgba(var(--color-primary-rgb), 0.3]" style={{ background: `linear-gradient(135deg, ${roleColors[role]}, var(--color-secondary))` }}>
                             {loading ? <Loader2 size={18} className="animate-spin" /> : <><Zap size={18} /> {t.login}</>}
                         </button>
 

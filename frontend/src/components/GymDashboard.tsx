@@ -87,11 +87,11 @@ export default function GymDashboard() {
                         <Globe className="w-4 h-4" /> <span className="text-sm font-medium">{isArabic ? 'EN' : 'عربي'}</span>
                     </button>
                     <div className="flex items-center gap-3 px-6 py-2.5 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                        <Clock className="w-5 h-5 text-[#A78BFA]" />
+                        <Clock className="w-5 h-5 text-[var(--color-purple)]" />
                         <span className="font-medium text-sm whitespace-nowrap">{isArabic ? 'ساعات الهدوء' : 'Quiet Hours'}</span>
                         <button
                             onClick={toggleOffPeak}
-                            className={`w-12 h-6 rounded-full transition-colors relative ${isOffPeakActive ? 'bg-[#A78BFA]' : 'bg-gray-400 dark:bg-gray-700'}`}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${isOffPeakActive ? 'bg-[var(--color-purple)]' : 'bg-gray-400 dark:bg-gray-700'}`}
                         >
                             <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${isOffPeakActive ? (isArabic ? 'right-7' : 'left-7') : (isArabic ? 'right-1' : 'left-1')}`} />
                         </button>
@@ -102,8 +102,8 @@ export default function GymDashboard() {
             {/* Top Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="p-6 rounded-3xl flex items-center gap-6 glass-panel-hover" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    <div className="p-4 rounded-2xl" style={{ background: 'rgba(0,255,163,0.1)' }}>
-                        <DollarSign className="w-8 h-8 text-[#00FFA3]" />
+                    <div className="p-4 rounded-2xl" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)' }}>
+                        <DollarSign className="w-8 h-8 text-[var(--color-primary)]" />
                     </div>
                     <div>
                         <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الرصيد المتاح' : 'Available Balance'}</p>
@@ -113,7 +113,7 @@ export default function GymDashboard() {
 
                 <div className="p-6 rounded-3xl flex items-center gap-6 glass-panel-hover" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                     <div className="p-4 rounded-2xl" style={{ background: 'rgba(167,139,250,0.1)' }}>
-                        <Activity className="w-8 h-8 text-[#A78BFA]" />
+                        <Activity className="w-8 h-8 text-[var(--color-purple)]" />
                     </div>
                     <div>
                         <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'قيد التخليص' : 'Pending Clearing'}</p>
@@ -138,7 +138,7 @@ export default function GymDashboard() {
                 {/* Check-In Action Module */}
                 <div className="rounded-3xl p-6 flex flex-col justify-center text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'rgba(167,139,250,0.1)' }}>
-                        <QrCode className="w-8 h-8 text-[#A78BFA]" />
+                        <QrCode className="w-8 h-8 text-[var(--color-purple)]" />
                     </div>
                     <h3 className="text-xl font-bold mb-2">
                         {isArabic ? 'مسح رمز الاستجابة للتدريب' : 'Scan Trainee Barcode'}
@@ -153,10 +153,10 @@ export default function GymDashboard() {
                             onChange={(e) => setBarcodeInput(e.target.value)}
                             type="text" 
                             placeholder="Trainee ID / Barcode..." 
-                            className="flex-1 px-4 py-3 rounded-xl text-sm font-mono font-bold uppercase transition-colors outline-none focus:border-[#A78BFA]"
+                            className="flex-1 px-4 py-3 rounded-xl text-sm font-mono font-bold uppercase transition-colors outline-none focus:border-[var(--color-purple)]"
                             style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
                         />
-                        <button type="submit" disabled={scanLoading} className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: '#A78BFA' }}>
+                        <button type="submit" disabled={scanLoading} className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: 'var(--color-purple)' }}>
                             {scanLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : isArabic ? 'إرسال' : 'Scan'}
                         </button>
                     </form>
@@ -165,18 +165,18 @@ export default function GymDashboard() {
                 {/* Live Check-ins Feed */}
                 <div className="lg:col-span-2 rounded-3xl p-6 flex flex-col h-full max-h-[400px]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                     <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-[#00B8FF] animate-pulse" />
+                        <div className="w-2 h-2 rounded-full bg-[var(--color-secondary)] animate-pulse" />
                         {isArabic ? 'سجل الزيارات المباشر' : 'Live Check-INs / OUTs'}
                     </h3>
                     <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2">
-                        {loading && <Loader2 className="w-6 h-6 animate-spin mx-auto mt-10 text-[#A78BFA]" />}
+                        {loading && <Loader2 className="w-6 h-6 animate-spin mx-auto mt-10 text-[var(--color-purple)]" />}
                         {!loading && stats?.visits?.length === 0 && (
                            <p className="text-center text-sm mt-10" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'لا توجد زيارات حديثة.' : 'No recent visits.'}</p> 
                         )}
                         {!loading && stats?.visits?.map((v: any, i: number) => (
                             <div key={v.id || i} className="flex items-center justify-between p-3 rounded-2xl transition-colors hover:bg-black/5 dark:hover:bg-white/5" style={{ border: '1px solid var(--border-subtle)' }}>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00FFA3] to-[#00B8FF] p-[2px]">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[var(--color-primary)] to-[var(--color-secondary)] p-[2px]">
                                         <div className="w-full h-full rounded-full flex items-center justify-center text-xs font-bold truncate p-1" style={{ background: 'var(--bg-primary)' }}>
                                             {v.trainee_name?.slice(0, 2).toUpperCase() || 'TR'}
                                         </div>
@@ -190,11 +190,11 @@ export default function GymDashboard() {
                                 </div>
                                 
                                 {v.check_out_time ? (
-                                    <span className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5" style={{ background: 'rgba(255,59,48,0.1)', color: '#FF3B30' }}>
+                                    <span className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5" style={{ background: 'rgba(255,59,48,0.1)', color: 'var(--color-danger)' }}>
                                         <LogOut className="w-3 h-3" /> {isArabic ? 'مغادرة' : 'OUT'}
                                     </span>
                                 ) : (
-                                    <span className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5" style={{ background: 'rgba(0,255,163,0.1)', color: '#00FFA3' }}>
+                                    <span className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', color: 'var(--color-primary)' }}>
                                         <LogIn className="w-3 h-3" /> {isArabic ? 'دخول' : 'IN'}
                                     </span>
                                 )}
@@ -207,7 +207,7 @@ export default function GymDashboard() {
             {/* Subscriber Roster */}
             <div className="rounded-3xl p-6 overflow-x-auto" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                 <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-[#A78BFA]" />
+                    <Users className="w-5 h-5 text-[var(--color-purple)]" />
                     {isArabic ? 'سجل المشتركين الفعالين' : 'Active Subscribers Roster'}
                 </h3>
                 
@@ -221,7 +221,7 @@ export default function GymDashboard() {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading && <tr><td colSpan={4} className="text-center py-6"><Loader2 className="w-6 h-6 animate-spin mx-auto text-[#A78BFA]" /></td></tr>}
+                        {loading && <tr><td colSpan={4} className="text-center py-6"><Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--color-purple)]" /></td></tr>}
                         {!loading && stats?.subscribers?.length === 0 && (
                             <tr><td colSpan={4} className="text-center py-6 text-sm" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'لا يوجد مشتركين حاليا.' : 'No active subscribers found.'}</td></tr>
                         )}
@@ -243,7 +243,7 @@ export default function GymDashboard() {
                                     <td className="py-4 text-sm text-center" style={{ color: 'var(--text-secondary)' }}>
                                         {endD.toLocaleDateString()}
                                     </td>
-                                    <td className="py-4 text-sm text-right font-bold" style={{ color: isLow ? '#FF3B30' : '#00FFA3' }}>
+                                    <td className="py-4 text-sm text-right font-bold" style={{ color: isLow ? 'var(--color-danger)' : 'var(--color-primary)' }}>
                                         {daysDiff} {isArabic ? 'أيام' : 'days'}
                                     </td>
                                 </tr>

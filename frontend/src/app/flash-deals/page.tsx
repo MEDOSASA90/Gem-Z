@@ -23,11 +23,11 @@ function useCountdown(endTime: number) {
 
 const now = Date.now();
 const FLASH_DEALS = [
-    { id: 1, type: 'supplement', emoji: '🥤', nameEn: 'Whey Protein 5LB — Gold Standard', nameAr: 'واي بروتين 5 باوند — الجولد ستاندرد', store: 'Muscle Pharm', storeAr: 'ماسل فارم', originalPrice: 1200, discountedPrice: 840, discount: 30, endTime: now + 3.5 * 3600 * 1000, sold: 47, total: 100, rating: 4.9, reviews: 328, color: '#00FFA3', tags: ['Beginner-friendly', 'Best Seller'], tagsAr: ['للمبتدئين', 'الأكثر مبيعاً'], badge: '🔥 HOT' },
-    { id: 2, type: 'gym', emoji: '🏋️', nameEn: 'Gold Gym — 3-Month Subscription', nameAr: 'جولد جيم — اشتراك 3 شهور', store: 'Gold Gym Elite', storeAr: 'جولد جيم إيليت', originalPrice: 2550, discountedPrice: 1785, discount: 30, endTime: now + 1.2 * 3600 * 1000, sold: 82, total: 100, rating: 4.8, reviews: 1240, color: '#FFCC00', tags: ['Limited', 'All Branches'], tagsAr: ['محدود', 'جميع الفروع'], badge: '⚡ ENDING SOON' },
-    { id: 3, type: 'supplement', emoji: '💊', nameEn: 'Creatine Monohydrate 500g', nameAr: 'كرياتين مونوهيدرات 500 جرام', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 380, discountedPrice: 228, discount: 40, endTime: now + 5.8 * 3600 * 1000, sold: 23, total: 50, rating: 4.7, reviews: 89, color: '#A78BFA', tags: ['Unflavored', 'Pure'], tagsAr: ['بدون نكهة', 'نقي 100%'], badge: null },
-    { id: 4, type: 'gear', emoji: '🩱', nameEn: 'GEM Z Training Set (Top + Shorts)', nameAr: 'طقم تدريب GEM Z (تيشيرت + شورت)', store: 'GEM Z Official', storeAr: 'جيم زد الرسمي', originalPrice: 450, discountedPrice: 270, discount: 40, endTime: now + 8 * 3600 * 1000, sold: 65, total: 200, rating: 4.6, reviews: 55, color: '#00B8FF', tags: ['Exclusive', 'Breathable'], tagsAr: ['حصري', 'شبكي مريح'], badge: '✨ EXCLUSIVE' },
-    { id: 5, type: 'supplement', emoji: '🧴', nameEn: 'BCAA 300g — Tropical Burst', nameAr: 'BCAA 300 جرام — فواكه استوائية', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 320, discountedPrice: 224, discount: 30, endTime: now + 11 * 3600 * 1000, sold: 18, total: 80, rating: 4.5, reviews: 42, color: '#FF6B35', tags: ['Tropical Flavor'], tagsAr: ['نكهة استوائية'], badge: null },
+    { id: 1, type: 'supplement', emoji: '🥤', nameEn: 'Whey Protein 5LB — Gold Standard', nameAr: 'واي بروتين 5 باوند — الجولد ستاندرد', store: 'Muscle Pharm', storeAr: 'ماسل فارم', originalPrice: 1200, discountedPrice: 840, discount: 30, endTime: now + 3.5 * 3600 * 1000, sold: 47, total: 100, rating: 4.9, reviews: 328, color: 'var(--color-primary)', tags: ['Beginner-friendly', 'Best Seller'], tagsAr: ['للمبتدئين', 'الأكثر مبيعاً'], badge: '🔥 HOT' },
+    { id: 2, type: 'gym', emoji: '🏋️', nameEn: 'Gold Gym — 3-Month Subscription', nameAr: 'جولد جيم — اشتراك 3 شهور', store: 'Gold Gym Elite', storeAr: 'جولد جيم إيليت', originalPrice: 2550, discountedPrice: 1785, discount: 30, endTime: now + 1.2 * 3600 * 1000, sold: 82, total: 100, rating: 4.8, reviews: 1240, color: 'var(--color-warning)', tags: ['Limited', 'All Branches'], tagsAr: ['محدود', 'جميع الفروع'], badge: '⚡ ENDING SOON' },
+    { id: 3, type: 'supplement', emoji: '💊', nameEn: 'Creatine Monohydrate 500g', nameAr: 'كرياتين مونوهيدرات 500 جرام', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 380, discountedPrice: 228, discount: 40, endTime: now + 5.8 * 3600 * 1000, sold: 23, total: 50, rating: 4.7, reviews: 89, color: 'var(--color-purple)', tags: ['Unflavored', 'Pure'], tagsAr: ['بدون نكهة', 'نقي 100%'], badge: null },
+    { id: 4, type: 'gear', emoji: '🩱', nameEn: 'GEM Z Training Set (Top + Shorts)', nameAr: 'طقم تدريب GEM Z (تيشيرت + شورت)', store: 'GEM Z Official', storeAr: 'جيم زد الرسمي', originalPrice: 450, discountedPrice: 270, discount: 40, endTime: now + 8 * 3600 * 1000, sold: 65, total: 200, rating: 4.6, reviews: 55, color: 'var(--color-secondary)', tags: ['Exclusive', 'Breathable'], tagsAr: ['حصري', 'شبكي مريح'], badge: '✨ EXCLUSIVE' },
+    { id: 5, type: 'supplement', emoji: '🧴', nameEn: 'BCAA 300g — Tropical Burst', nameAr: 'BCAA 300 جرام — فواكه استوائية', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 320, discountedPrice: 224, discount: 30, endTime: now + 11 * 3600 * 1000, sold: 18, total: 80, rating: 4.5, reviews: 42, color: 'var(--color-orange)', tags: ['Tropical Flavor'], tagsAr: ['نكهة استوائية'], badge: null },
     { id: 6, type: 'gym', emoji: '🧘', nameEn: 'Yoga Flow Studio — Monthly Pass', nameAr: 'يوغا فلو ستوديو — اشتراك شهري', store: 'Yoga Flow', storeAr: 'يوغا فلو', originalPrice: 600, discountedPrice: 360, discount: 40, endTime: now + 6 * 3600 * 1000, sold: 34, total: 50, rating: 4.9, reviews: 178, color: '#34C759', tags: ['Online + In-Person'], tagsAr: ['أونلاين + حضوري'], badge: '🧘 WELLNESS' },
 ];
 
@@ -59,7 +59,7 @@ function DealCard({ deal, isArabic }: { deal: typeof FLASH_DEALS[0], isArabic: b
                     <span className="text-3xl font-bold font-mono" style={{ color: deal.color }} dir="ltr">EGP {deal.discountedPrice.toLocaleString('en-US')}</span>
                     <div>
                         <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }} dir="ltr">EGP {deal.originalPrice.toLocaleString('en-US')}</span>
-                        <span className="block text-xs font-bold text-[#FF3B30]">-{deal.discount}% {isArabic ? 'خصم' : 'OFF'}</span>
+                        <span className="block text-xs font-bold text-[var(--color-danger)]">-{deal.discount}% {isArabic ? 'خصم' : 'OFF'}</span>
                     </div>
                 </div>
 
@@ -73,26 +73,26 @@ function DealCard({ deal, isArabic }: { deal: typeof FLASH_DEALS[0], isArabic: b
                 {/* Countdown */}
                 <div className={`flex items-center gap-2 p-3 rounded-xl mb-4 ${isUrgent ? 'animate-pulse' : ''}`}
                     style={{ background: isUrgent ? 'rgba(255,59,48,0.1)' : 'var(--bg-input)', border: `1px solid ${isUrgent ? 'rgba(255,59,48,0.3)' : 'var(--border-medium)'}` }}>
-                    <Clock size={14} style={{ color: isUrgent ? '#FF3B30' : deal.color }} />
+                    <Clock size={14} style={{ color: isUrgent ? 'var(--color-danger)' : deal.color }} />
                     <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'ينتهي خلال:' : 'Ends in:'}</span>
-                    <span className="font-mono font-bold text-sm" style={{ color: isUrgent ? '#FF3B30' : deal.color }}>{countdown}</span>
+                    <span className="font-mono font-bold text-sm" style={{ color: isUrgent ? 'var(--color-danger)' : deal.color }}>{countdown}</span>
                 </div>
 
                 {/* Stock Bar */}
                 <div className="mb-4">
                     <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>
                         <span>{isArabic ? 'المباع:' : 'Sold:'} {deal.sold}/{deal.total}</span>
-                        <span style={{ color: progress > 80 ? '#FF3B30' : deal.color }}>{Math.round(progress)}% {isArabic ? 'نفد' : 'gone'}</span>
+                        <span style={{ color: progress > 80 ? 'var(--color-danger)' : deal.color }}>{Math.round(progress)}% {isArabic ? 'نفد' : 'gone'}</span>
                     </div>
                     <div className="h-2 rounded-full" style={{ background: 'var(--bg-input)' }}>
-                        <div className="h-2 rounded-full transition-all" style={{ width: `${progress}%`, background: progress > 80 ? '#FF3B30' : deal.color }} />
+                        <div className="h-2 rounded-full transition-all" style={{ width: `${progress}%`, background: progress > 80 ? 'var(--color-danger)' : deal.color }} />
                     </div>
                 </div>
 
                 {/* Rating */}
                 <div className="flex items-center gap-2 mb-4 text-xs" style={{ color: 'var(--text-secondary)' }}>
                     <div className="flex">
-                        {[...Array(5)].map((_, i) => <Star key={i} size={11} className="fill-[#FFCC00] text-[#FFCC00]" />)}
+                        {[...Array(5)].map((_, i) => <Star key={i} size={11} className="fill-[var(--color-warning)] text-[var(--color-warning)]" />)}
                     </div>
                     <span className="font-bold">{deal.rating}</span>
                     <span>({deal.reviews} {isArabic ? 'تقييم' : 'reviews'})</span>
@@ -129,7 +129,7 @@ export default function FlashSalesPage() {
                 <div className="flex items-center gap-4">
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2"><Zap size={18} className="text-[#FF6B35]" />{isArabic ? 'عروض فلاش ⚡' : 'Flash Deals ⚡'}</h1>
+                        <h1 className="font-bold font-heading flex items-center gap-2"><Zap size={18} className="text-[var(--color-orange)]" />{isArabic ? 'عروض فلاش ⚡' : 'Flash Deals ⚡'}</h1>
                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'عروض لفترة محدودة — اشتري قبل انتهاء الوقت!' : 'Limited-time deals — buy before time runs out!'}</p>
                     </div>
                 </div>
@@ -141,9 +141,9 @@ export default function FlashSalesPage() {
 
             {/* Hero Banner */}
             <div className="px-6 py-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A1A0A, #0A0A1A)' }}>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#00FFA3]/5 to-[#FF6B35]/5" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)]/5 to-[var(--color-orange)]/5" />
                 <div className="max-w-4xl mx-auto text-center relative">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 text-sm font-bold" style={{ background: 'rgba(255,107,53,0.15)', border: '1px solid rgba(255,107,53,0.3)', color: '#FF6B35' }}>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 text-sm font-bold" style={{ background: 'rgba(255,107,53,0.15)', border: '1px solid rgba(255,107,53,0.3)', color: 'var(--color-orange)' }}>
                         <Flame size={14} className="animate-pulse" /> {isArabic ? 'عروض لفترة محدودة جداً' : 'Time-sensitive deals only on GEM Z'}
                     </div>
                     <h2 className="text-3xl md:text-5xl font-bold font-heading text-white mb-2">
@@ -163,7 +163,7 @@ export default function FlashSalesPage() {
                     {filters.map(f => (
                         <button key={f.id} onClick={() => setFilter(f.id)}
                             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap shrink-0 transition-all"
-                            style={{ background: filter === f.id ? '#FF6B35' : 'var(--bg-card)', color: filter === f.id ? '#fff' : 'var(--text-secondary)', border: `1px solid ${filter === f.id ? '#FF6B35' : 'var(--border-subtle)'}` }}>
+                            style={{ background: filter === f.id ? 'var(--color-orange)' : 'var(--bg-card)', color: filter === f.id ? '#fff' : 'var(--text-secondary)', border: `1px solid ${filter === f.id ? 'var(--color-orange)' : 'var(--border-subtle)'}` }}>
                             <span>{f.icon}</span> {isArabic ? f.ar : f.en}
                         </button>
                     ))}

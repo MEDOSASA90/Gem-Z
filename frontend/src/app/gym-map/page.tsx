@@ -10,11 +10,11 @@ import Link from 'next/link';
 import GemZLogo from '../../components/GemZLogo';
 
 const GYMS = [
-    { id: 1, name: 'Gold Gym Elite', nameAr: 'جولد جيم إيليت', city: 'Cairo', cityAr: 'القاهرة', area: 'Maadi', areaAr: 'المعادي', rating: 4.8, reviews: 1240, distance: '1.2 km', price: 850, priceMonthly: 850, discount: 20, discountReason: 'Off-peak 9AM–12PM', discountReasonAr: 'خصم ساعات الهدوء 9-12', features: ['Pool', 'Sauna', 'Classes', 'Parking'], open: '06:00 – 23:00', phone: '+20 100 000 0001', isOpen: true, isFeatured: true, color: '#00FFA3', emoji: '🏆' },
-    { id: 2, name: 'Platinum Fitness', nameAr: 'بلاتينيوم فيتنس', city: 'Cairo', cityAr: 'القاهرة', area: 'Zamalek', areaAr: 'الزمالك', rating: 4.6, reviews: 890, distance: '2.8 km', price: 650, priceMonthly: 650, discount: 15, discountReason: 'Weekend flash sale', discountReasonAr: 'عرض عطلة نهاية الأسبوع', features: ['Classes', 'Spa', 'Cafe'], open: '07:00 – 22:00', phone: '+20 100 000 0002', isOpen: true, isFeatured: false, color: '#A78BFA', emoji: '⚡' },
-    { id: 3, name: 'Iron House', nameAr: 'آيرون هاوس', city: 'Giza', cityAr: 'الجيزة', area: '6th of October', areaAr: '6 أكتوبر', rating: 4.5, reviews: 634, distance: '4.1 km', price: 500, priceMonthly: 500, discount: 0, discountReason: '', discountReasonAr: '', features: ['Free Weights', 'Boxing', 'Parking'], open: '06:00 – 00:00', phone: '+20 100 000 0003', isOpen: true, isFeatured: false, color: '#FF6B35', emoji: '🔥' },
-    { id: 4, name: 'FitNation', nameAr: 'فيت نيشن', city: 'Alexandria', cityAr: 'الإسكندرية', area: 'Smouha', areaAr: 'سموحة', rating: 4.3, reviews: 412, distance: '8.6 km', price: 420, priceMonthly: 420, discount: 30, discountReason: 'New member deal', discountReasonAr: 'عرض العضو الجديد', features: ['Pool', 'Cardio Zone', 'Classes'], open: '08:00 – 22:00', phone: '+20 100 000 0004', isOpen: false, isFeatured: false, color: '#00B8FF', emoji: '🏊' },
-    { id: 5, name: 'Power Zone', nameAr: 'باور زون', city: 'Cairo', cityAr: 'القاهرة', area: 'Heliopolis', areaAr: 'مصر الجديدة', rating: 4.7, reviews: 988, distance: '3.5 km', price: 720, priceMonthly: 720, discount: 10, discountReason: 'GEM Z exclusive', discountReasonAr: 'حصري GEM Z', features: ['Crossfit', 'Personal Training', 'Sauna'], open: '05:30 – 23:30', phone: '+20 100 000 0005', isOpen: true, isFeatured: true, color: '#FFCC00', emoji: '💪' },
+    { id: 1, name: 'Gold Gym Elite', nameAr: 'جولد جيم إيليت', city: 'Cairo', cityAr: 'القاهرة', area: 'Maadi', areaAr: 'المعادي', rating: 4.8, reviews: 1240, distance: '1.2 km', price: 850, priceMonthly: 850, discount: 20, discountReason: 'Off-peak 9AM–12PM', discountReasonAr: 'خصم ساعات الهدوء 9-12', features: ['Pool', 'Sauna', 'Classes', 'Parking'], open: '06:00 – 23:00', phone: '+20 100 000 0001', isOpen: true, isFeatured: true, color: 'var(--color-primary)', emoji: '🏆' },
+    { id: 2, name: 'Platinum Fitness', nameAr: 'بلاتينيوم فيتنس', city: 'Cairo', cityAr: 'القاهرة', area: 'Zamalek', areaAr: 'الزمالك', rating: 4.6, reviews: 890, distance: '2.8 km', price: 650, priceMonthly: 650, discount: 15, discountReason: 'Weekend flash sale', discountReasonAr: 'عرض عطلة نهاية الأسبوع', features: ['Classes', 'Spa', 'Cafe'], open: '07:00 – 22:00', phone: '+20 100 000 0002', isOpen: true, isFeatured: false, color: 'var(--color-purple)', emoji: '⚡' },
+    { id: 3, name: 'Iron House', nameAr: 'آيرون هاوس', city: 'Giza', cityAr: 'الجيزة', area: '6th of October', areaAr: '6 أكتوبر', rating: 4.5, reviews: 634, distance: '4.1 km', price: 500, priceMonthly: 500, discount: 0, discountReason: '', discountReasonAr: '', features: ['Free Weights', 'Boxing', 'Parking'], open: '06:00 – 00:00', phone: '+20 100 000 0003', isOpen: true, isFeatured: false, color: 'var(--color-orange)', emoji: '🔥' },
+    { id: 4, name: 'FitNation', nameAr: 'فيت نيشن', city: 'Alexandria', cityAr: 'الإسكندرية', area: 'Smouha', areaAr: 'سموحة', rating: 4.3, reviews: 412, distance: '8.6 km', price: 420, priceMonthly: 420, discount: 30, discountReason: 'New member deal', discountReasonAr: 'عرض العضو الجديد', features: ['Pool', 'Cardio Zone', 'Classes'], open: '08:00 – 22:00', phone: '+20 100 000 0004', isOpen: false, isFeatured: false, color: 'var(--color-secondary)', emoji: '🏊' },
+    { id: 5, name: 'Power Zone', nameAr: 'باور زون', city: 'Cairo', cityAr: 'القاهرة', area: 'Heliopolis', areaAr: 'مصر الجديدة', rating: 4.7, reviews: 988, distance: '3.5 km', price: 720, priceMonthly: 720, discount: 10, discountReason: 'GEM Z exclusive', discountReasonAr: 'حصري GEM Z', features: ['Crossfit', 'Personal Training', 'Sauna'], open: '05:30 – 23:30', phone: '+20 100 000 0005', isOpen: true, isFeatured: true, color: 'var(--color-warning)', emoji: '💪' },
 ];
 
 const MAP_DOTS = [
@@ -49,14 +49,14 @@ export default function GymMapPage() {
                 <div className="flex items-center gap-4">
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2"><MapPin size={18} className="text-[#00FFA3]" />{isArabic ? 'خريطة الصالات' : 'Gym Locator'}</h1>
+                        <h1 className="font-bold font-heading flex items-center gap-2"><MapPin size={18} className="text-[var(--color-primary)]" />{isArabic ? 'خريطة الصالات' : 'Gym Locator'}</h1>
                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{GYMS.length} {isArabic ? 'صالة شريكة قريبة منك' : 'partner gyms near you'}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                        <button onClick={() => setView('map')} className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all" style={{ background: view === 'map' ? '#00FFA3' : 'transparent', color: view === 'map' ? '#000' : 'var(--text-secondary)' }}>🗺 {isArabic ? 'خريطة' : 'Map'}</button>
-                        <button onClick={() => setView('list')} className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all" style={{ background: view === 'list' ? '#00FFA3' : 'transparent', color: view === 'list' ? '#000' : 'var(--text-secondary)' }}>☰ {isArabic ? 'قائمة' : 'List'}</button>
+                        <button onClick={() => setView('map')} className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all" style={{ background: view === 'map' ? 'var(--color-primary)' : 'transparent', color: view === 'map' ? '#000' : 'var(--text-secondary)' }}>🗺 {isArabic ? 'خريطة' : 'Map'}</button>
+                        <button onClick={() => setView('list')} className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all" style={{ background: view === 'list' ? 'var(--color-primary)' : 'transparent', color: view === 'list' ? '#000' : 'var(--text-secondary)' }}>☰ {isArabic ? 'قائمة' : 'List'}</button>
                     </div>
                     <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
                     <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
@@ -78,7 +78,7 @@ export default function GymMapPage() {
                 </select>
                 <button onClick={() => setShowDiscountsOnly(!showDiscountsOnly)}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition-all"
-                    style={{ background: showDiscountsOnly ? '#00FFA3' : 'var(--bg-input)', color: showDiscountsOnly ? '#000' : 'var(--text-secondary)', border: `1px solid ${showDiscountsOnly ? '#00FFA3' : 'var(--border-subtle)'}` }}>
+                    style={{ background: showDiscountsOnly ? 'var(--color-primary)' : 'var(--bg-input)', color: showDiscountsOnly ? '#000' : 'var(--text-secondary)', border: `1px solid ${showDiscountsOnly ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
                     <Tag size={14} /> {isArabic ? 'عروض فقط' : 'Deals Only'}
                 </button>
             </div>
@@ -100,17 +100,17 @@ export default function GymMapPage() {
                             </svg>
                             {/* Roads simulation */}
                             <svg className="absolute inset-0 w-full h-full opacity-20">
-                                <line x1="0" y1="40%" x2="100%" y2="40%" stroke="#00FFA3" strokeWidth="2" />
-                                <line x1="0" y1="70%" x2="100%" y2="70%" stroke="#00FFA3" strokeWidth="1.5" />
-                                <line x1="35%" y1="0" x2="35%" y2="100%" stroke="#00FFA3" strokeWidth="2" />
-                                <line x1="65%" y1="0" x2="65%" y2="100%" stroke="#00FFA3" strokeWidth="1.5" />
+                                <line x1="0" y1="40%" x2="100%" y2="40%" stroke="var(--color-primary)" strokeWidth="2" />
+                                <line x1="0" y1="70%" x2="100%" y2="70%" stroke="var(--color-primary)" strokeWidth="1.5" />
+                                <line x1="35%" y1="0" x2="35%" y2="100%" stroke="var(--color-primary)" strokeWidth="2" />
+                                <line x1="65%" y1="0" x2="65%" y2="100%" stroke="var(--color-primary)" strokeWidth="1.5" />
                             </svg>
                             {/* "You are here" pin */}
                             <div className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
-                                <div className="w-6 h-6 rounded-full bg-[#00B8FF] border-4 border-white shadow-lg flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-full bg-[var(--color-secondary)] border-4 border-white shadow-lg flex items-center justify-center">
                                     <div className="w-2 h-2 rounded-full bg-white" />
                                 </div>
-                                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold whitespace-nowrap" style={{ color: '#00B8FF' }}>
+                                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold whitespace-nowrap" style={{ color: 'var(--color-secondary)' }}>
                                     {isArabic ? 'أنت هنا' : 'You'}
                                 </div>
                             </div>
@@ -127,7 +127,7 @@ export default function GymMapPage() {
                                                 {gym.emoji}
                                             </div>
                                             {gym.discount > 0 && (
-                                                <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#FF3B30] flex items-center justify-center text-white text-[9px] font-bold">
+                                                <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[var(--color-danger)] flex items-center justify-center text-white text-[9px] font-bold">
                                                     -{gym.discount}%
                                                 </div>
                                             )}
@@ -151,10 +151,10 @@ export default function GymMapPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-1"><Star size={12} className="text-[#FFCC00] fill-[#FFCC00]" /><span className="text-sm font-bold">{hoveredGym.rating}</span></div>
+                                        <div className="flex items-center gap-1"><Star size={12} className="text-[var(--color-warning)] fill-[var(--color-warning)]" /><span className="text-sm font-bold">{hoveredGym.rating}</span></div>
                                         <div className="font-bold text-sm" style={{ color: hoveredGym.color }} dir="ltr">EGP {hoveredGym.discount > 0 ? Math.round(hoveredGym.price * (1 - hoveredGym.discount / 100)) : hoveredGym.price}/mo</div>
                                     </div>
-                                    {hoveredGym.discount > 0 && <div className="text-xs text-[#FF3B30] mb-3 font-bold">🏷 {isArabic ? hoveredGym.discountReasonAr : hoveredGym.discountReason} — {hoveredGym.discount}% OFF</div>}
+                                    {hoveredGym.discount > 0 && <div className="text-xs text-[var(--color-danger)] mb-3 font-bold">🏷 {isArabic ? hoveredGym.discountReasonAr : hoveredGym.discountReason} — {hoveredGym.discount}% OFF</div>}
                                     <button onClick={() => setSelectedGym(hoveredGym)} className="w-full py-2 rounded-xl text-sm font-bold text-black" style={{ background: hoveredGym.color }}>
                                         {isArabic ? 'عرض التفاصيل' : 'View Details'}
                                     </button>
@@ -184,9 +184,9 @@ export default function GymMapPage() {
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3 text-xs">
-                                            <span className="flex items-center gap-1"><Star size={10} className="text-[#FFCC00]" />{gym.rating} ({gym.reviews})</span>
+                                            <span className="flex items-center gap-1"><Star size={10} className="text-[var(--color-warning)]" />{gym.rating} ({gym.reviews})</span>
                                             <span className={`px-2 py-0.5 rounded-full font-bold ${gym.isOpen ? 'bg-[#34C759]/10 text-[#34C759]' : 'bg-gray-800 text-gray-500'}`}>{gym.isOpen ? (isArabic ? 'مفتوح' : 'Open') : (isArabic ? 'مغلق' : 'Closed')}</span>
-                                            {gym.discount > 0 && <span className="px-2 py-0.5 rounded-full font-bold bg-[#FF3B30]/10 text-[#FF3B30]">-{gym.discount}%</span>}
+                                            {gym.discount > 0 && <span className="px-2 py-0.5 rounded-full font-bold bg-[var(--color-danger)]/10 text-[var(--color-danger)]">-{gym.discount}%</span>}
                                         </div>
                                     </div>
                                 </div>
@@ -208,7 +208,7 @@ export default function GymMapPage() {
                                 <MapPin size={12} />{isArabic ? selectedGym.areaAr : selectedGym.area}, {isArabic ? selectedGym.cityAr : selectedGym.city}
                             </div>
                             <div className="flex items-center gap-3 mt-3">
-                                <div className="flex items-center gap-1"><Star size={14} className="text-[#FFCC00] fill-[#FFCC00]" /><span className="font-bold">{selectedGym.rating}</span><span className="text-xs" style={{ color: 'var(--text-secondary)' }}>({selectedGym.reviews})</span></div>
+                                <div className="flex items-center gap-1"><Star size={14} className="text-[var(--color-warning)] fill-[var(--color-warning)]" /><span className="font-bold">{selectedGym.rating}</span><span className="text-xs" style={{ color: 'var(--text-secondary)' }}>({selectedGym.reviews})</span></div>
                                 <span className="text-xs">{selectedGym.distance}</span>
                             </div>
                         </div>
@@ -223,8 +223,8 @@ export default function GymMapPage() {
                                 </div>
                                 {selectedGym.discount > 0 && (
                                     <div className="px-3 py-2 rounded-xl text-center" style={{ background: 'rgba(255,59,48,0.1)', border: '1px solid rgba(255,59,48,0.3)' }}>
-                                        <p className="text-xl font-bold text-[#FF3B30]">-{selectedGym.discount}%</p>
-                                        <p className="text-xs text-[#FF3B30]">{isArabic ? 'خصم' : 'OFF'}</p>
+                                        <p className="text-xl font-bold text-[var(--color-danger)]">-{selectedGym.discount}%</p>
+                                        <p className="text-xs text-[var(--color-danger)]">{isArabic ? 'خصم' : 'OFF'}</p>
                                     </div>
                                 )}
                             </div>
@@ -240,7 +240,7 @@ export default function GymMapPage() {
                                 <div className="flex flex-wrap gap-2">
                                     {selectedGym.features.map(f => (
                                         <span key={f} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style={{ background: 'var(--bg-input)', color: 'var(--text-secondary)' }}>
-                                            <CheckCircle size={10} className="text-[#00FFA3]" />{f}
+                                            <CheckCircle size={10} className="text-[var(--color-primary)]" />{f}
                                         </span>
                                     ))}
                                 </div>

@@ -1,4 +1,5 @@
 'use client';
+import GemZLogo from '../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../context/LanguageContext';
@@ -12,17 +13,17 @@ const T = {
         billingOps: [{ id: 'monthly', label: 'Monthly billing' }, { id: 'annual', label: 'Annual billing (Save 20%)' }],
         roles: [
             {
-                id: 'trainee', name: 'Trainee', color: '#00FFA3', price: 'Free', unit: 'forever',
+                id: 'trainee', name: 'Trainee', color: 'var(--color-primary)', price: 'Free', unit: 'forever',
                 desc: 'Everything you need to crush your fitness goals.',
                 features: ['AI-powered Diet Plans', 'Smart QR Check-in', 'Basic Workout Tracking', 'Social Timeline Access']
             },
             {
-                id: 'trainer', name: 'Trainer Pro', color: '#00B8FF', price: 'EGP 499', unit: '/mo',
+                id: 'trainer', name: 'Trainer Pro', color: 'var(--color-secondary)', price: 'EGP 499', unit: '/mo',
                 desc: 'Advanced tools to manage and grow your client base.',
                 features: ['Unlimited Clients', 'Custom Workout Protocols', 'Automated Revenue Splits (80/20)', 'In-app Client Messaging']
             },
             {
-                id: 'gym', name: 'Gym Elite', color: '#A78BFA', price: 'EGP 1,999', unit: '/mo',
+                id: 'gym', name: 'Gym Elite', color: 'var(--color-purple)', price: 'EGP 1,999', unit: '/mo',
                 desc: 'Complete B2B facility management solution.',
                 features: ['QR Access Control System', 'Automated Billing & Renewals', 'Dynamic Off-peak Pricing', 'Multi-branch Analytics']
             },
@@ -39,17 +40,17 @@ const T = {
         billingOps: [{ id: 'monthly', label: 'دفع شهري' }, { id: 'annual', label: 'دفع سنوي (وفر 20٪)' }],
         roles: [
             {
-                id: 'trainee', name: 'المتدرب', color: '#00FFA3', price: 'مجاناً', unit: 'دائماً',
+                id: 'trainee', name: 'المتدرب', color: 'var(--color-primary)', price: 'مجاناً', unit: 'دائماً',
                 desc: 'كل ما تحتاجه لسحق أهدافك الرياضية.',
                 features: ['خطط غذائية بالذكاء الاصطناعي', 'دخول ذكي برمز QR', 'تتبع أساسي للتمارين', 'وصول للمجتمع الاجتماعي']
             },
             {
-                id: 'trainer', name: 'المدرب المحترف', color: '#00B8FF', price: '499 ج.م', unit: '/شهرياً',
+                id: 'trainer', name: 'المدرب المحترف', color: 'var(--color-secondary)', price: '499 ج.م', unit: '/شهرياً',
                 desc: 'أدوات متقدمة لإدارة وتنمية قائمة عملائك.',
                 features: ['عدد عملاء غير محدود', 'بروتوكولات تدريب مخصصة', 'تقسيم إيرادات تلقائي (80/20)', 'مراسلة العملاء داخل التطبيق']
             },
             {
-                id: 'gym', name: 'نخبة الصالات', color: '#A78BFA', price: '1,999 ج.م', unit: '/شهرياً',
+                id: 'gym', name: 'نخبة الصالات', color: 'var(--color-purple)', price: '1,999 ج.م', unit: '/شهرياً',
                 desc: 'حل شامل لإدارة المنشآت الرياضية B2B.',
                 features: ['نظام تحكم بالدخول عبر QR', 'فوترة وتجديد تلقائي', 'تسعير ديناميكي لأوقات الهدوء', 'تحليلات متعددة الفروع']
             },
@@ -72,14 +73,14 @@ export default function PricingPage() {
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen relative overflow-hidden font-sans pb-20" style={{ backgroundColor: 'var(--bg-primary)' }}>
             {/* Background Orbs */}
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, #00B8FF, transparent)' }} />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, #00FFA3, transparent)' }} />
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-secondary), transparent)' }} />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-primary), transparent)' }} />
 
             {/* Navbar */}
             <nav className="border-b transition-colors relative z-10" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-primary)' }}>
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 font-bold hover:opacity-80 transition-opacity" style={{ color: 'var(--text-primary)' }}>
-                        <img src="/gem-z-logo.png" alt="GEM Z" className="h-8 object-contain" />
+                        <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
                     </Link>
                     <div className="flex items-center gap-4">
                         <Link href="/" className="hidden sm:flex items-center gap-2 text-sm font-medium hover:underline" style={{ color: 'var(--text-secondary)' }}>
@@ -88,7 +89,7 @@ export default function PricingPage() {
                         <button onClick={toggleTheme} className="p-2 rounded-lg transition-colors" style={{ background: 'var(--bg-input)', color: 'var(--text-secondary)' }}>
                             {isDark ? '☀️' : '🌙'}
                         </button>
-                        <Link href="/login" className="px-5 py-2 rounded-xl text-sm font-bold text-black transition-opacity hover:opacity-90" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
+                        <Link href="/login" className="px-5 py-2 rounded-xl text-sm font-bold text-black transition-opacity hover:opacity-90" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
                             {t.nav.login}
                         </Link>
                     </div>
@@ -97,7 +98,7 @@ export default function PricingPage() {
 
             {/* Header */}
             <div className="max-w-7xl mx-auto px-6 pt-20 pb-12 text-center relative z-10">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-6" style={{ background: 'rgba(0,184,255,0.1)', color: '#00B8FF', border: '1px solid rgba(0,184,255,0.2)' }}>
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-6" style={{ background: 'rgba(var(--color-secondary-rgb), 0.1)', color: 'var(--color-secondary)', border: '1px solid rgba(var(--color-secondary-rgb), 0.25)' }}>
                     <Zap size={14} /> GEM Z SUBSCRIPTIONS
                 </div>
                 <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-heading" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
@@ -161,7 +162,7 @@ export default function PricingPage() {
             <div className="max-w-4xl mx-auto px-6 mt-20 text-center relative z-10">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-8 py-8 border-y" style={{ borderColor: 'var(--border-subtle)' }}>
                     <div className="flex items-center gap-3">
-                        <Shield className="text-[#00FFA3]" size={28} />
+                        <Shield className="text-[var(--color-primary)]" size={28} />
                         <div className="text-start">
                             <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{isArabic ? 'مدفوعات آمنة' : 'Secure Payments'}</p>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'تشفير ૨56 بت' : '256-bit encryption'}</p>
@@ -169,7 +170,7 @@ export default function PricingPage() {
                     </div>
                     <div className="hidden sm:block w-px h-10" style={{ background: 'var(--border-subtle)' }} />
                     <div className="flex items-center gap-3">
-                        <Zap className="text-[#00B8FF]" size={28} />
+                        <Zap className="text-[var(--color-secondary)]" size={28} />
                         <div className="text-start">
                             <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{isArabic ? 'إعداد فوري' : 'Instant Setup'}</p>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'بدون رسوم أولية' : 'Zero onboarding fees'}</p>

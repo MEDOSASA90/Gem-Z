@@ -61,7 +61,7 @@ export default function CommunityChallengePage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center font-sans tracking-tight bg-black">
-                <Loader2 className="w-10 h-10 animate-spin text-[#00FFA3]" />
+                <Loader2 className="w-10 h-10 animate-spin text-[var(--color-primary)]" />
             </div>
         );
     }
@@ -73,7 +73,7 @@ export default function CommunityChallengePage() {
                 <div className="flex items-center gap-4">
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2"><Trophy size={18} className="text-[#FFCC00]" />{isArabic ? 'تحديات المجتمع' : 'Community Challenges'}</h1>
+                        <h1 className="font-bold font-heading flex items-center gap-2"><Trophy size={18} className="text-[var(--color-warning)]" />{isArabic ? 'تحديات المجتمع' : 'Community Challenges'}</h1>
                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'تنافس واربح جوائز حقيقية!' : 'Compete & win real prizes!'}</p>
                     </div>
                 </div>
@@ -87,10 +87,10 @@ export default function CommunityChallengePage() {
                 {/* My Stats */}
                 <div className="grid grid-cols-4 gap-4 mb-8">
                     {[
-                        { icon: Zap, label: isArabic ? 'تحديات نشطة' : 'Active Challenges', value: MY_PROGRESS.activeChallenges, color: '#00FFA3' },
+                        { icon: Zap, label: isArabic ? 'تحديات نشطة' : 'Active Challenges', value: MY_PROGRESS.activeChallenges, color: 'var(--color-primary)' },
                         { icon: CheckCircle, label: isArabic ? 'تحديات مكتملة' : 'Completed', value: MY_PROGRESS.completedChallenges, color: '#34C759' },
-                        { icon: Star, label: isArabic ? 'النقاط المكتسبة' : 'Total Points', value: MY_PROGRESS.totalPoints.toLocaleString('en-US'), color: '#FFCC00' },
-                        { icon: Flame, label: isArabic ? 'أيام متتالية' : 'Current Streak', value: `${MY_PROGRESS.currentStreak}🔥`, color: '#FF6B35' },
+                        { icon: Star, label: isArabic ? 'النقاط المكتسبة' : 'Total Points', value: MY_PROGRESS.totalPoints.toLocaleString('en-US'), color: 'var(--color-warning)' },
+                        { icon: Flame, label: isArabic ? 'أيام متتالية' : 'Current Streak', value: `${MY_PROGRESS.currentStreak}🔥`, color: 'var(--color-orange)' },
                     ].map((s, i) => (
                         <div key={i} className="rounded-2xl p-4 text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                             <s.icon size={20} className="mx-auto mb-2" style={{ color: s.color }} />
@@ -108,7 +108,7 @@ export default function CommunityChallengePage() {
                     ].map(tab => (
                         <button key={tab.id} onClick={() => setFilter(tab.id as 'all' | 'mine')}
                             className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                            style={{ background: filter === tab.id ? '#FFCC00' : 'var(--bg-card)', color: filter === tab.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${filter === tab.id ? '#FFCC00' : 'var(--border-subtle)'}` }}>
+                            style={{ background: filter === tab.id ? 'var(--color-warning)' : 'var(--bg-card)', color: filter === tab.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${filter === tab.id ? 'var(--color-warning)' : 'var(--border-subtle)'}` }}>
                             {isArabic ? tab.ar : tab.en}
                         </button>
                     ))}
@@ -126,7 +126,7 @@ export default function CommunityChallengePage() {
                                     <h3 className="font-bold text-lg font-heading">{isArabic ? challenge.titleAr : challenge.titleEn}</h3>
                                     <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? challenge.descAr : challenge.descEn}</p>
                                 </div>
-                                {challenge.joined && <span className="text-xs px-2 py-1 rounded-full font-bold shrink-0 ms-2" style={{ background: 'rgba(0,255,163,0.1)', color: '#00FFA3', border: '1px solid rgba(0,255,163,0.3)' }}>✓ {isArabic ? 'منضم' : 'Joined'}</span>}
+                                {challenge.joined && <span className="text-xs px-2 py-1 rounded-full font-bold shrink-0 ms-2" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', color: 'var(--color-primary)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>✓ {isArabic ? 'منضم' : 'Joined'}</span>}
                             </div>
 
                             {/* Progress bar for joined challenges */}

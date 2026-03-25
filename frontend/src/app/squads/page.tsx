@@ -6,9 +6,9 @@ import { useSocket } from '../../context/SocketContext';
 import { Users, Shield, Zap, Search, MessageSquare, Send, Trophy, ArrowUpRight } from 'lucide-react';
 
 const SQUADS = [
-    { id: 'sq_01', name: 'Iron Lifters', nameAr: 'رافعو الحديد', members: 42, points: 15400, rank: 1, isJoined: true, color: '#FF6B35' },
-    { id: 'sq_02', name: 'Cardio Kings', nameAr: 'ملوك الكارديو', members: 28, points: 12100, rank: 2, isJoined: false, color: '#00B8FF' },
-    { id: 'sq_03', name: 'Yoga Masters', nameAr: 'خبراء اليوجا', members: 15, points: 8900, rank: 3, isJoined: false, color: '#A78BFA' },
+    { id: 'sq_01', name: 'Iron Lifters', nameAr: 'رافعو الحديد', members: 42, points: 15400, rank: 1, isJoined: true, color: 'var(--color-orange)' },
+    { id: 'sq_02', name: 'Cardio Kings', nameAr: 'ملوك الكارديو', members: 28, points: 12100, rank: 2, isJoined: false, color: 'var(--color-secondary)' },
+    { id: 'sq_03', name: 'Yoga Masters', nameAr: 'خبراء اليوجا', members: 15, points: 8900, rank: 3, isJoined: false, color: 'var(--color-purple)' },
 ];
 
 export default function SquadsPage() {
@@ -72,8 +72,8 @@ export default function SquadsPage() {
                     </p>
                 </div>
                 {isConnected ? (
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00FFA3]/10 border border-[#00FFA3]/30 text-[#00FFA3] text-xs font-bold">
-                        <div className="w-2 h-2 rounded-full bg-[#00FFA3] animate-pulse" />
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/30 text-[var(--color-primary)] text-xs font-bold">
+                        <div className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
                         Live
                     </div>
                 ) : (
@@ -88,17 +88,17 @@ export default function SquadsPage() {
             <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-none shrink-0">
                 <button onClick={() => setActiveTab('my_squad')}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0 transition-all"
-                    style={{ background: activeTab === 'my_squad' ? '#00FFA3' : 'var(--bg-card)', color: activeTab === 'my_squad' ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === 'my_squad' ? '#00FFA3' : 'var(--border-subtle)'}` }}>
+                    style={{ background: activeTab === 'my_squad' ? 'var(--color-primary)' : 'var(--bg-card)', color: activeTab === 'my_squad' ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === 'my_squad' ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
                     <Shield size={16} /> {isArabic ? 'فريقي' : 'My Squad'}
                 </button>
                 <button onClick={() => setActiveTab('leaderboard')}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0 transition-all"
-                    style={{ background: activeTab === 'leaderboard' ? '#00FFA3' : 'var(--bg-card)', color: activeTab === 'leaderboard' ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === 'leaderboard' ? '#00FFA3' : 'var(--border-subtle)'}` }}>
+                    style={{ background: activeTab === 'leaderboard' ? 'var(--color-primary)' : 'var(--bg-card)', color: activeTab === 'leaderboard' ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === 'leaderboard' ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
                     <Trophy size={16} /> {isArabic ? 'التصنيف' : 'Leaderboard'}
                 </button>
                 <button onClick={() => setActiveTab('explore')}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0 transition-all"
-                    style={{ background: activeTab === 'explore' ? '#00FFA3' : 'var(--bg-card)', color: activeTab === 'explore' ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === 'explore' ? '#00FFA3' : 'var(--border-subtle)'}` }}>
+                    style={{ background: activeTab === 'explore' ? 'var(--color-primary)' : 'var(--bg-card)', color: activeTab === 'explore' ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === 'explore' ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
                     <Search size={16} /> {isArabic ? 'استكشاف' : 'Explore'}
                 </button>
             </div>
@@ -115,20 +115,20 @@ export default function SquadsPage() {
                             </div>
                             <h2 className="text-2xl font-bold mb-1">{isArabic ? currentSquad.nameAr : currentSquad.name}</h2>
                             <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                                {isArabic ? 'المركز:' : 'Rank:'} <span className="font-bold text-[#FFCC00]">#{currentSquad.rank} Global</span>
+                                {isArabic ? 'المركز:' : 'Rank:'} <span className="font-bold text-[var(--color-warning)]">#{currentSquad.rank} Global</span>
                             </p>
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Users size={14} className="text-[#00B8FF]" />
+                                        <Users size={14} className="text-[var(--color-secondary)]" />
                                         <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الأعضاء' : 'Members'}</span>
                                     </div>
                                     <p className="font-bold text-lg">{currentSquad.members}</p>
                                 </div>
                                 <div className="p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Zap size={14} className="text-[#FFCC00]" />
+                                        <Zap size={14} className="text-[var(--color-warning)]" />
                                         <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'النقاط' : 'Points'}</span>
                                     </div>
                                     <p className="font-bold text-lg">{currentSquad.points.toLocaleString('en-US')}</p>
@@ -145,12 +145,12 @@ export default function SquadsPage() {
                                         <span>640km</span>
                                     </div>
                                     <div className="h-2 rounded-full" style={{ background: 'var(--bg-input)' }}>
-                                        <div className="h-2 rounded-full bg-[#00FFA3]" style={{ width: '64%' }} />
+                                        <div className="h-2 rounded-full bg-[var(--color-primary)]" style={{ width: '64%' }} />
                                     </div>
                                 </div>
                                 <div className="p-3 rounded-xl flex items-center justify-between" style={{ background: 'var(--bg-input)' }}>
                                     <span className="text-sm font-medium">{isArabic ? 'مساهمتك:' : 'Your contribution:'}</span>
-                                    <span className="font-bold text-[#00FFA3]">42km</span>
+                                    <span className="font-bold text-[var(--color-primary)]">42km</span>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +159,7 @@ export default function SquadsPage() {
                     {/* Group Chat UI (Socket Driven) */}
                     <div className="flex-1 rounded-2xl flex flex-col overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <div className="p-4 border-b flex items-center gap-3" style={{ borderColor: 'var(--border-subtle)' }}>
-                            <MessageSquare size={18} className="text-[#00B8FF]" />
+                            <MessageSquare size={18} className="text-[var(--color-secondary)]" />
                             <h3 className="font-bold">{isArabic ? 'دردشة الفريق' : 'Squad Chat'}</h3>
                         </div>
 
@@ -167,12 +167,12 @@ export default function SquadsPage() {
                             {messages.map((msg, i) => (
                                 <div key={i} className={`flex flex-col ${msg.isMe ? 'items-end' : 'items-start'} max-w-[85%] ${msg.isMe ? 'self-end' : 'self-start'}`}>
                                     <div className="flex items-baseline gap-2 mb-1">
-                                        <span className="text-xs font-bold" style={{ color: msg.sender === 'System' ? '#FFCC00' : msg.isMe ? '#00FFA3' : 'var(--text-secondary)' }}>
+                                        <span className="text-xs font-bold" style={{ color: msg.sender === 'System' ? 'var(--color-warning)' : msg.isMe ? 'var(--color-primary)' : 'var(--text-secondary)' }}>
                                             {isArabic && msg.isMe ? 'أنت' : msg.sender}
                                         </span>
                                         <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{msg.time}</span>
                                     </div>
-                                    <div className={`p-3 rounded-2xl text-sm ${msg.isMe ? 'rounded-tr-sm bg-[#00FFA3] text-black font-medium' : 'rounded-tl-sm bg-[#1A1A1A] text-white border border-[#333]'}`}>
+                                    <div className={`p-3 rounded-2xl text-sm ${msg.isMe ? 'rounded-tr-sm bg-[var(--color-primary)] text-black font-medium' : 'rounded-tl-sm bg-[#1A1A1A] text-white border border-[#333]'}`}>
                                         {msg.text}
                                     </div>
                                 </div>
@@ -186,9 +186,9 @@ export default function SquadsPage() {
                                     value={chatInput}
                                     onChange={(e) => setChatInput(e.target.value)}
                                     placeholder={isArabic ? 'رسالة للفريق...' : 'Message squad...'}
-                                    className="flex-1 bg-[#1A1A1A] text-white text-sm px-4 py-3 rounded-xl outline-none border border-[#333] focus:border-[#00FFA3] transition-colors"
+                                    className="flex-1 bg-[#1A1A1A] text-white text-sm px-4 py-3 rounded-xl outline-none border border-[#333] focus:border-[var(--color-primary)] transition-colors"
                                 />
-                                <button type="submit" disabled={!chatInput.trim()} className="w-12 h-12 rounded-xl bg-[#00B8FF] text-black flex items-center justify-center shrink-0 disabled:opacity-50 transition-opacity">
+                                <button type="submit" disabled={!chatInput.trim()} className="w-12 h-12 rounded-xl bg-[var(--color-secondary)] text-black flex items-center justify-center shrink-0 disabled:opacity-50 transition-opacity">
                                     <Send size={18} className={isArabic ? "rotate-180" : ""} />
                                 </button>
                             </form>
@@ -202,8 +202,8 @@ export default function SquadsPage() {
                 <div className="space-y-4">
                     {SQUADS.sort((a, b) => b.points - a.points).map((sq, i) => (
                         <div key={sq.id} className="flex items-center gap-4 p-4 rounded-2xl transition-colors"
-                            style={{ background: sq.isJoined ? 'rgba(0,255,163,0.05)' : 'var(--bg-card)', border: sq.isJoined ? '1px solid #00FFA3' : '1px solid var(--border-subtle)' }}>
-                            <div className="w-8 text-center font-bold text-lg" style={{ color: i === 0 ? '#FFCC00' : i === 1 ? '#D7D7D7' : i === 2 ? '#B87333' : 'var(--text-muted)' }}>
+                            style={{ background: sq.isJoined ? 'rgba(var(--color-primary-rgb), 0.1)' : 'var(--bg-card)', border: sq.isJoined ? '1px solid var(--color-primary)' : '1px solid var(--border-subtle)' }}>
+                            <div className="w-8 text-center font-bold text-lg" style={{ color: i === 0 ? 'var(--color-warning)' : i === 1 ? '#D7D7D7' : i === 2 ? '#B87333' : 'var(--text-muted)' }}>
                                 #{sq.rank}
                             </div>
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white" style={{ background: sq.color }}>
@@ -212,12 +212,12 @@ export default function SquadsPage() {
                             <div className="flex-1">
                                 <h3 className="font-bold flex items-center gap-2">
                                     {isArabic ? sq.nameAr : sq.name}
-                                    {sq.isJoined && <span className="text-[10px] bg-[#00FFA3] text-black px-1.5 py-0.5 rounded font-bold uppercase">{isArabic ? 'فريقك' : 'Your Squad'}</span>}
+                                    {sq.isJoined && <span className="text-[10px] bg-[var(--color-primary)] text-black px-1.5 py-0.5 rounded font-bold uppercase">{isArabic ? 'فريقك' : 'Your Squad'}</span>}
                                 </h3>
                                 <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{sq.members} {isArabic ? 'عضو' : 'members'}</p>
                             </div>
                             <div className="text-right">
-                                <p className="font-bold font-mono text-[#00FFA3]">{sq.points.toLocaleString('en-US')}</p>
+                                <p className="font-bold font-mono text-[var(--color-primary)]">{sq.points.toLocaleString('en-US')}</p>
                                 <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>PTS</p>
                             </div>
                         </div>
@@ -241,7 +241,7 @@ export default function SquadsPage() {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-xs font-bold px-2 py-1 rounded-md" style={{ background: 'var(--bg-input)', color: '#FFCC00' }}>
+                                    <span className="text-xs font-bold px-2 py-1 rounded-md" style={{ background: 'var(--bg-input)', color: 'var(--color-warning)' }}>
                                         Rank #{sq.rank}
                                     </span>
                                 </div>

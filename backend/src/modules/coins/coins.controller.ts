@@ -70,5 +70,24 @@ export class CoinsController {
             return res.status(500).json({ success: false, message: 'Server error during redemption' });
         }
     }
-}
 
+    static async stakeCoinsForGoal(req: AuthRequest, res: Response) {
+        try {
+            const userId = req.user?.userId;
+            const { amount, goalId } = req.body;
+            if (!amount || !goalId) return res.status(400).json({ success: false, message: 'Missing amount or goalId' });
+            
+            const cost = Number(amount);
+            const balRes = await db.query(`SELECT total_points FROM trainee_profiles WHERE user_id = $1`, [userId]);
+            if (balRes.rowCount === 0 || balRes.rows[0].total_points < cost) {
+                return res.status(400).json({ success: false, message: 'Insufficient points to stake' });
+            }
+
+            await db.query(`UPDATE trainee_profiles SET total_points = total_points - $1 WHERE user_id = $2`, [cost, userId]);
+            
+            return res.status(200).json({ success: true, message: `Staked ${cost} coins successfully on goal ${goalId}. Stay committed!` });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: 'Server error during staking' });
+        }
+    }
+}

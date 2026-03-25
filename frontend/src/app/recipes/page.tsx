@@ -32,7 +32,7 @@ const RECIPES = [
         ingredientsAr: ['2 موزة', '2 بيضة', 'سكوب واي بروتين', '1 ملعقة قرفة'],
         steps: ['Mash bananas', 'Mix with eggs + protein', 'Cook on medium heat 2 min each side'],
         stepsAr: ['اهرس الموز', 'اخلطه مع البيض والبروتين', 'اطهيه على نار متوسطة دقيقتان لكل وجه'],
-        color: '#FFCC00', aiRecom: true
+        color: 'var(--color-warning)', aiRecom: true
     },
     {
         id: 2, category: 'lunch', emoji: '🍗',
@@ -46,7 +46,7 @@ const RECIPES = [
         ingredientsAr: ['150 جرام صدر دجاج', '80 جرام أرز بني', 'بروكلي', 'زيت زيتون', 'بهارات'],
         steps: ['Season and grill chicken', 'Cook rice separately', 'Steam broccoli', 'Assemble in bowl'],
         stepsAr: ['تبّل واشوِ الدجاج', 'اطهِ الأرز منفصلاً', 'بخّر البروكلي', 'رتّبهم في البول'],
-        color: '#00FFA3', aiRecom: true
+        color: 'var(--color-primary)', aiRecom: true
     },
     {
         id: 3, category: 'smoothie', emoji: '🥤',
@@ -60,7 +60,7 @@ const RECIPES = [
         ingredientsAr: ['2 موزة', '250مل حليب كامل', '2 سكوب واي', '2 ملعقة زبدة فستق', 'شوفان', 'عسل'],
         steps: ['Add all ingredients to blender', 'Blend for 60 seconds', 'Serve immediately'],
         stepsAr: ['ضع كل المكونات في الخلاط', 'اخلط لمدة 60 ثانية', 'قدّمه فوراً'],
-        color: '#A78BFA', aiRecom: false
+        color: 'var(--color-purple)', aiRecom: false
     },
     {
         id: 4, category: 'snack', emoji: '🥚',
@@ -74,7 +74,7 @@ const RECIPES = [
         ingredientsAr: ['6 بياض بيض', 'سبانخ', 'فلفل ألوان', 'جبن قليل دسم', 'ملح وفلفل'],
         steps: ['Preheat oven to 180°C', 'Mix all ingredients', 'Pour into muffin tin', 'Bake 15 minutes'],
         stepsAr: ['سخّن الفرن 180°م', 'اخلط كل المكونات', 'صبّهم في قالب الكبكيك', 'اخبِزهم 15 دقيقة'],
-        color: '#00B8FF', aiRecom: false
+        color: 'var(--color-secondary)', aiRecom: false
     },
     {
         id: 5, category: 'dinner', emoji: '🐟',
@@ -88,7 +88,7 @@ const RECIPES = [
         ingredientsAr: ['200 جرام فيليه سلمون', 'بطاطا حلوة', 'أسباراغوس', 'ليمون', 'ثوم', 'زيت زيتون'],
         steps: ['Bake sweet potato at 200°C for 20 min', 'Season salmon with lemon & garlic', 'Pan sear salmon 4 min each side', 'Serve with asparagus'],
         stepsAr: ['اخبِز البطاطا 200°م لمدة 20 دقيقة', 'تبّل السلمون بليمون وثوم', 'اشوِه 4 دقائق لكل وجه', 'قدّمه مع الأسباراغوس'],
-        color: '#FF6B35', aiRecom: true
+        color: 'var(--color-orange)', aiRecom: true
     },
     {
         id: 6, category: 'preworkout', emoji: '⚡',
@@ -127,7 +127,7 @@ export default function RecipeLibraryPage() {
                 <div className="flex items-center gap-4">
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2"><ChefHat size={18} className="text-[#FF6B35]" />{isArabic ? 'مكتبة الوصفات' : 'Recipe Library'}</h1>
+                        <h1 className="font-bold font-heading flex items-center gap-2"><ChefHat size={18} className="text-[var(--color-orange)]" />{isArabic ? 'مكتبة الوصفات' : 'Recipe Library'}</h1>
                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{RECIPES.length} {isArabic ? 'وصفة صحية' : 'healthy recipes'}</p>
                     </div>
                 </div>
@@ -149,7 +149,7 @@ export default function RecipeLibraryPage() {
                     {CATEGORIES.map(cat => (
                         <button key={cat.id} onClick={() => setCategory(cat.id)}
                             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap shrink-0 transition-all"
-                            style={{ background: category === cat.id ? '#FF6B35' : 'var(--bg-card)', color: category === cat.id ? '#fff' : 'var(--text-secondary)', border: `1px solid ${category === cat.id ? '#FF6B35' : 'var(--border-subtle)'}` }}>
+                            style={{ background: category === cat.id ? 'var(--color-orange)' : 'var(--bg-card)', color: category === cat.id ? '#fff' : 'var(--text-secondary)', border: `1px solid ${category === cat.id ? 'var(--color-orange)' : 'var(--border-subtle)'}` }}>
                             {cat.icon} {isArabic ? cat.ar : cat.en}
                         </button>
                     ))}
@@ -164,13 +164,13 @@ export default function RecipeLibraryPage() {
                             <div className="h-36 relative flex items-center justify-center overflow-hidden" style={{ background: `${r.color}12` }}>
                                 <span className="text-6xl">{r.emoji}</span>
                                 {r.aiRecom && (
-                                    <div className="absolute top-3 start-3 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold text-[#A78BFA]" style={{ background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.3)' }}>
+                                    <div className="absolute top-3 start-3 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold text-[var(--color-purple)]" style={{ background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.3)' }}>
                                         🤖 AI Pick
                                     </div>
                                 )}
                                 <button onClick={e => { e.stopPropagation(); setSaved(p => p.includes(r.id) ? p.filter(x => x !== r.id) : [...p, r.id]); }}
                                     className="absolute top-3 end-3 p-2 rounded-xl" style={{ background: 'rgba(0,0,0,0.4)' }}>
-                                    {saved.includes(r.id) ? <BookmarkCheck size={16} className="text-[#00FFA3]" /> : <Bookmark size={16} className="text-white" />}
+                                    {saved.includes(r.id) ? <BookmarkCheck size={16} className="text-[var(--color-primary)]" /> : <Bookmark size={16} className="text-white" />}
                                 </button>
                                 {/* Play button */}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center" onClick={() => setSelected(r)}>
@@ -191,7 +191,7 @@ export default function RecipeLibraryPage() {
                                     <span className="flex items-center gap-1"><Flame size={12} />{r.kcal} kcal</span>
                                     <span className="flex items-center gap-1"><Zap size={12} />{r.protein}g protein</span>
                                     <span className="flex items-center gap-1"><Clock size={12} />{r.prepMin + r.cookMin} min</span>
-                                    <span className="flex items-center gap-1"><Star size={10} className="fill-[#FFCC00] text-[#FFCC00]" />{r.rating}</span>
+                                    <span className="flex items-center gap-1"><Star size={10} className="fill-[var(--color-warning)] text-[var(--color-warning)]" />{r.rating}</span>
                                 </div>
                             </div>
                         </div>
@@ -212,7 +212,7 @@ export default function RecipeLibraryPage() {
                             <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>{isArabic ? selected.descAr : selected.descEn}</p>
                             {/* Macros */}
                             <div className="grid grid-cols-4 gap-3 mb-5">
-                                {[{ l: isArabic ? 'سعرات' : 'kcal', v: selected.kcal, c: '#FF6B35' }, { l: isArabic ? 'بروتين' : 'Protein', v: `${selected.protein}g`, c: '#00FFA3' }, { l: isArabic ? 'كارب' : 'Carbs', v: `${selected.carbs}g`, c: '#00B8FF' }, { l: isArabic ? 'دهون' : 'Fat', v: `${selected.fat}g`, c: '#A78BFA' }].map((m, i) => (
+                                {[{ l: isArabic ? 'سعرات' : 'kcal', v: selected.kcal, c: 'var(--color-orange)' }, { l: isArabic ? 'بروتين' : 'Protein', v: `${selected.protein}g`, c: 'var(--color-primary)' }, { l: isArabic ? 'كارب' : 'Carbs', v: `${selected.carbs}g`, c: 'var(--color-secondary)' }, { l: isArabic ? 'دهون' : 'Fat', v: `${selected.fat}g`, c: 'var(--color-purple)' }].map((m, i) => (
                                     <div key={i} className="text-center p-2 rounded-xl" style={{ background: 'var(--bg-input)' }}>
                                         <p className="font-bold text-sm" style={{ color: m.c }}>{m.v}</p>
                                         <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{m.l}</p>

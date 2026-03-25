@@ -19,20 +19,20 @@ export default function GemZLogo({ size = 40, className = '', variant = 'full' }
         >
             <defs>
                 <linearGradient id="gFill" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00FFA3" />
-                    <stop offset="100%" stopColor="#00B8FF" />
+                    <stop offset="0%" stopColor="var(--color-primary)" />
+                    <stop offset="100%" stopColor="var(--color-secondary)" />
                 </linearGradient>
                 <linearGradient id="gStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00FFA3" />
-                    <stop offset="100%" stopColor="#00B8FF" />
+                    <stop offset="0%" stopColor="var(--color-primary)" />
+                    <stop offset="100%" stopColor="var(--color-secondary)" />
                 </linearGradient>
                 <linearGradient id="gZ" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00B8FF" />
-                    <stop offset="100%" stopColor="#00FFA3" />
+                    <stop offset="0%" stopColor="var(--color-secondary)" />
+                    <stop offset="100%" stopColor="var(--color-primary)" />
                 </linearGradient>
                 <linearGradient id="gFacet" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00FFA3" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#00B8FF" stopOpacity="0.1" />
+                    <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="var(--color-secondary)" stopOpacity="0.1" />
                 </linearGradient>
             </defs>
 
@@ -75,7 +75,7 @@ export default function GemZLogo({ size = 40, className = '', variant = 'full' }
                     fontWeight: 800,
                     fontSize: size * 0.7,
                     letterSpacing: '-0.03em',
-                    background: 'linear-gradient(to right, #00FFA3, #00B8FF)',
+                    background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',

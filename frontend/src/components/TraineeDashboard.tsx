@@ -14,12 +14,12 @@ import { GemZApi } from '../lib/api';
 import { useRouter } from 'next/navigation';
 
 const BADGES = [
-    { icon: '🔥', name: '7-Day Streak', nameAr: 'إنجاز ٧ أيام', earned: true, color: '#FF6B35' },
-    { icon: '💪', name: 'First Rep', nameAr: 'أول تمرين', earned: true, color: '#00FFA3' },
+    { icon: '🔥', name: '7-Day Streak', nameAr: 'إنجاز ٧ أيام', earned: true, color: 'var(--color-orange)' },
+    { icon: '💪', name: 'First Rep', nameAr: 'أول تمرين', earned: true, color: 'var(--color-primary)' },
     { icon: '🥗', name: 'Clean Eater', nameAr: 'أكل صحي', earned: true, color: '#34C759' },
-    { icon: '🏆', name: 'Top 10 Leaderboard', nameAr: 'أفضل ١٠', earned: false, color: '#FFCC00' },
-    { icon: '🚀', name: '30-Day Legend', nameAr: 'أسطورة ٣٠ يوم', earned: false, color: '#A78BFA' },
-    { icon: '❤️', name: 'Cardio King', nameAr: 'ملك الكارديو', earned: false, color: '#FF3B30' },
+    { icon: '🏆', name: 'Top 10 Leaderboard', nameAr: 'أفضل ١٠', earned: false, color: 'var(--color-warning)' },
+    { icon: '🚀', name: '30-Day Legend', nameAr: 'أسطورة ٣٠ يوم', earned: false, color: 'var(--color-purple)' },
+    { icon: '❤️', name: 'Cardio King', nameAr: 'ملك الكارديو', earned: false, color: 'var(--color-danger)' },
 ];
 
 const WORKOUT = [
@@ -31,11 +31,11 @@ const WORKOUT = [
 ];
 
 const MEALS = [
-    { time: '07:00', type: 'Breakfast', typeAr: 'إفطار', kcal: 520, protein: 38, carbs: 55, fat: 12, done: true, items: 'Oats + Eggs + Banana', itemsAr: 'شوفان + بيض + موز', color: '#FFCC00' },
-    { time: '10:30', type: 'Snack', typeAr: 'سناك', kcal: 200, protein: 20, carbs: 15, fat: 5, done: true, items: 'Greek Yogurt + Almonds', itemsAr: 'يوغرت يوناني + لوز', color: '#00B8FF' },
-    { time: '13:00', type: 'Lunch', typeAr: 'غداء', kcal: 680, protein: 50, carbs: 70, fat: 15, done: false, items: 'Chicken + Rice + Broccoli', itemsAr: 'دجاج + أرز + بروكلي', color: '#00FFA3' },
-    { time: '16:00', type: 'Pre-Workout', typeAr: 'قبل التمرين', kcal: 280, protein: 25, carbs: 30, fat: 6, done: false, items: 'Protein Shake + Dates', itemsAr: 'بروتين شيك + تمر', color: '#A78BFA' },
-    { time: '20:00', type: 'Dinner', typeAr: 'عشاء', kcal: 560, protein: 45, carbs: 40, fat: 18, done: false, items: 'Salmon + Sweet Potato', itemsAr: 'سمك + بطاطا حلوة', color: '#FF6B35' },
+    { time: '07:00', type: 'Breakfast', typeAr: 'إفطار', kcal: 520, protein: 38, carbs: 55, fat: 12, done: true, items: 'Oats + Eggs + Banana', itemsAr: 'شوفان + بيض + موز', color: 'var(--color-warning)' },
+    { time: '10:30', type: 'Snack', typeAr: 'سناك', kcal: 200, protein: 20, carbs: 15, fat: 5, done: true, items: 'Greek Yogurt + Almonds', itemsAr: 'يوغرت يوناني + لوز', color: 'var(--color-secondary)' },
+    { time: '13:00', type: 'Lunch', typeAr: 'غداء', kcal: 680, protein: 50, carbs: 70, fat: 15, done: false, items: 'Chicken + Rice + Broccoli', itemsAr: 'دجاج + أرز + بروكلي', color: 'var(--color-primary)' },
+    { time: '16:00', type: 'Pre-Workout', typeAr: 'قبل التمرين', kcal: 280, protein: 25, carbs: 30, fat: 6, done: false, items: 'Protein Shake + Dates', itemsAr: 'بروتين شيك + تمر', color: 'var(--color-purple)' },
+    { time: '20:00', type: 'Dinner', typeAr: 'عشاء', kcal: 560, protein: 45, carbs: 40, fat: 18, done: false, items: 'Salmon + Sweet Potato', itemsAr: 'سمك + بطاطا حلوة', color: 'var(--color-orange)' },
 ];
 
 const TRANSACTIONS = [
@@ -112,17 +112,17 @@ export default function TraineeDashboard() {
             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
                     <div className="relative">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00FFA3] to-[#00B8FF] flex items-center justify-center text-black font-bold text-xl">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-black font-bold text-xl">
                             {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
                         </div>
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#00FFA3] border-2 border-[#0A0A0A]" />
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[var(--color-primary)] border-2 border-[#0A0A0A]" />
                     </div>
                     <div>
                         <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'أهلاً،' : 'Welcome back,'}</p>
                         <h1 className="text-xl font-bold font-heading">{user?.full_name || '...'} 💪</h1>
                         <div className="flex items-center gap-2 mt-1">
-                            <Flame size={14} className="text-[#FF6B35]" />
-                            <span className="text-xs font-bold text-[#FF6B35]">{streakDays} {isArabic ? 'يوم متتالي 🔥' : 'day streak 🔥'}</span>
+                            <Flame size={14} className="text-[var(--color-orange)]" />
+                            <span className="text-xs font-bold text-[var(--color-orange)]">{streakDays} {isArabic ? 'يوم متتالي 🔥' : 'day streak 🔥'}</span>
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,7 @@ export default function TraineeDashboard() {
                     <button onClick={toggleLanguage} className="p-2.5 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <Globe size={16} />
                     </button>
-                    <button onClick={() => setQrVisible(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm text-black neon-glow" style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
+                    <button onClick={() => setQrVisible(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm text-black neon-glow" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
                         <QrCode size={16} /> {isArabic ? 'QR الدخول' : 'Check-In QR'}
                     </button>
                 </div>
@@ -157,7 +157,7 @@ export default function TraineeDashboard() {
                                 })}
                             </div>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-[#00FFA3] font-bold text-sm shadow-lg">GZ</div>
+                                <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-[var(--color-primary)] font-bold text-sm shadow-lg">GZ</div>
                             </div>
                         </div>
                         <div className="text-center">
@@ -168,8 +168,8 @@ export default function TraineeDashboard() {
                             <div className="flex items-center justify-center gap-2 mt-3">
                                 {activeSub ? (
                                     <>
-                                        <div className="w-2 h-2 rounded-full bg-[#00FFA3] animate-pulse" />
-                                        <span className="text-xs text-[#00FFA3] font-bold">{isArabic ? 'الاشتراك نشط ✓' : 'Subscription Active ✓'}</span>
+                                        <div className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
+                                        <span className="text-xs text-[var(--color-primary)] font-bold">{isArabic ? 'الاشتراك نشط ✓' : 'Subscription Active ✓'}</span>
                                     </>
                                 ) : (
                                     <>
@@ -191,7 +191,7 @@ export default function TraineeDashboard() {
                 {tabs.map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0 transition-all"
-                        style={{ background: activeTab === tab.id ? '#00FFA3' : 'var(--bg-card)', color: activeTab === tab.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === tab.id ? '#00FFA3' : 'var(--border-subtle)'}` }}>
+                        style={{ background: activeTab === tab.id ? 'var(--color-primary)' : 'var(--bg-card)', color: activeTab === tab.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeTab === tab.id ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
                         <tab.icon size={15} /> {isArabic ? tab.labelAr : tab.labelEn}
                     </button>
                 ))}
@@ -203,10 +203,10 @@ export default function TraineeDashboard() {
                     {/* Stats Row */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {[
-                            { icon: Flame, label: isArabic ? 'السعرات اليوم' : "Today's Calories", value: `${consumedKcal} / ${totalKcal}`, color: '#FF6B35', sub: `${Math.round((consumedKcal / totalKcal) * 100)}% ${isArabic ? 'مكتمل' : 'done'}` },
-                            { icon: Droplets, label: isArabic ? 'الماء المشروب' : 'Water Intake', value: `${waterCups}/8`, color: '#00B8FF', sub: isArabic ? 'كوب اليوم' : 'cups today' },
-                            { icon: Target, label: isArabic ? 'تمارين مكتملة' : 'Exercises Done', value: `${workoutDone.filter(Boolean).length}/${workoutDone.length}`, color: '#00FFA3', sub: isArabic ? 'من التمرين' : 'of workout' },
-                            { icon: Star, label: isArabic ? 'النقاط المكتسبة' : 'Total Points', value: totalPoints.toLocaleString(), color: '#FFCC00', sub: isArabic ? 'نقطة GEM Z' : 'GEM Z pts' },
+                            { icon: Flame, label: isArabic ? 'السعرات اليوم' : "Today's Calories", value: `${consumedKcal} / ${totalKcal}`, color: 'var(--color-orange)', sub: `${Math.round((consumedKcal / totalKcal) * 100)}% ${isArabic ? 'مكتمل' : 'done'}` },
+                            { icon: Droplets, label: isArabic ? 'الماء المشروب' : 'Water Intake', value: `${waterCups}/8`, color: 'var(--color-secondary)', sub: isArabic ? 'كوب اليوم' : 'cups today' },
+                            { icon: Target, label: isArabic ? 'تمارين مكتملة' : 'Exercises Done', value: `${workoutDone.filter(Boolean).length}/${workoutDone.length}`, color: 'var(--color-primary)', sub: isArabic ? 'من التمرين' : 'of workout' },
+                            { icon: Star, label: isArabic ? 'النقاط المكتسبة' : 'Total Points', value: totalPoints.toLocaleString(), color: 'var(--color-warning)', sub: isArabic ? 'نقطة GEM Z' : 'GEM Z pts' },
                         ].map((stat, i) => (
                             <div key={i} className="rounded-2xl p-5 relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                                 <div className="absolute -bottom-4 -right-4 opacity-5" style={{ color: stat.color }}><stat.icon size={80} /></div>
@@ -220,12 +220,12 @@ export default function TraineeDashboard() {
 
                     {/* Water Tracker */}
                     <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                        <h3 className="font-bold mb-4 flex items-center gap-2"><Droplets className="text-[#00B8FF]" size={18} />{isArabic ? 'متابعة الماء' : 'Water Tracker'}</h3>
+                        <h3 className="font-bold mb-4 flex items-center gap-2"><Droplets className="text-[var(--color-secondary)]" size={18} />{isArabic ? 'متابعة الماء' : 'Water Tracker'}</h3>
                         <div className="flex gap-3 flex-wrap">
                             {Array.from({ length: 8 }).map((_, i) => (
                                 <button key={i} onClick={() => setWaterCups(i < waterCups ? i : i + 1)}
                                     className="w-10 h-10 rounded-xl text-lg transition-all hover:scale-110"
-                                    style={{ background: i < waterCups ? 'rgba(0,184,255,0.2)' : 'var(--bg-input)', border: `1px solid ${i < waterCups ? '#00B8FF' : 'var(--border-subtle)'}` }}>
+                                    style={{ background: i < waterCups ? 'rgba(var(--color-secondary-rgb), 0.1)' : 'var(--bg-input)', border: `1px solid ${i < waterCups ? 'var(--color-secondary)' : 'var(--border-subtle)'}` }}>
                                     💧
                                 </button>
                             ))}
@@ -238,12 +238,12 @@ export default function TraineeDashboard() {
                     {/* Body Stats */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <h3 className="font-bold mb-5 flex items-center gap-2"><TrendingUp className="text-[#00FFA3]" size={18} />{isArabic ? 'إحصائيات الجسم' : 'Body Stats'}</h3>
+                            <h3 className="font-bold mb-5 flex items-center gap-2"><TrendingUp className="text-[var(--color-primary)]" size={18} />{isArabic ? 'إحصائيات الجسم' : 'Body Stats'}</h3>
                             <div className="grid grid-cols-3 gap-4">
                                 {[
-                                    { label: isArabic ? 'الوزن' : 'Weight', value: `${weight} kg`, trend: '--', color: '#00FFA3' },
-                                    { label: isArabic ? 'الدهون' : 'Body Fat', value: `${bodyFat}%`, trend: '--', color: '#00B8FF' },
-                                    { label: isArabic ? 'العضلات' : 'Muscle', value: '--', trend: '--', color: '#A78BFA' },
+                                    { label: isArabic ? 'الوزن' : 'Weight', value: `${weight} kg`, trend: '--', color: 'var(--color-primary)' },
+                                    { label: isArabic ? 'الدهون' : 'Body Fat', value: `${bodyFat}%`, trend: '--', color: 'var(--color-secondary)' },
+                                    { label: isArabic ? 'العضلات' : 'Muscle', value: '--', trend: '--', color: 'var(--color-purple)' },
                                 ].map((s, i) => (
                                     <div key={i} className="text-center p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
                                         <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{s.label}</p>
@@ -256,16 +256,16 @@ export default function TraineeDashboard() {
                         <div className="rounded-2xl p-6 relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                             <div className="flex justify-between items-start mb-5">
                                 <h3 className="font-bold flex items-center gap-2">
-                                    <Watch className={wearableData.isConnected ? "text-[#00FFA3]" : "text-[#A78BFA]"} size={18} />
+                                    <Watch className={wearableData.isConnected ? "text-[var(--color-primary)]" : "text-[var(--color-purple)]"} size={18} />
                                     {isArabic ? 'بيانات الساعة الذكية' : 'Wearable Data'}
                                 </h3>
                                 <button
                                     onClick={wearableData.isConnected ? disconnectDevice : connectDevice}
                                     className="text-xs px-3 py-1 rounded-full font-bold transition-colors"
                                     style={{
-                                        background: wearableData.isConnected ? 'rgba(0,255,163,0.1)' : 'var(--bg-input)',
-                                        color: wearableData.isConnected ? '#00FFA3' : 'var(--text-secondary)',
-                                        border: `1px solid ${wearableData.isConnected ? 'rgba(0,255,163,0.3)' : 'var(--border-subtle)'}`
+                                        background: wearableData.isConnected ? 'rgba(var(--color-primary-rgb), 0.1)' : 'var(--bg-input)',
+                                        color: wearableData.isConnected ? 'var(--color-primary)' : 'var(--text-secondary)',
+                                        border: `1px solid ${wearableData.isConnected ? 'rgba(var(--color-primary-rgb), 0.1)' : 'var(--border-subtle)'}`
                                     }}
                                 >
                                     {wearableData.isConnected ? (isArabic ? 'متصل' : 'Connected') : (isArabic ? 'ربط الجهاز' : 'Connect')}
@@ -274,10 +274,10 @@ export default function TraineeDashboard() {
 
                             <div className="grid grid-cols-2 gap-3 relative z-10">
                                 {[
-                                    { icon: Heart, label: isArabic ? 'النبض' : 'Heart Rate', value: `${wearableData.heartRate} bpm`, color: '#FF3B30', highlight: wearableData.isConnected },
-                                    { icon: Target, label: isArabic ? 'الخطوات' : 'Steps', value: wearableData.steps.toLocaleString(), color: '#FFCC00', highlight: false },
-                                    { icon: Moon, label: isArabic ? 'النوم' : 'Sleep', value: `${wearableData.sleepHours} hrs`, color: '#00B8FF', highlight: false },
-                                    { icon: Flame, label: isArabic ? 'المحروق' : 'Burned', value: `${wearableData.caloriesBurned} kcal`, color: '#FF6B35', highlight: false },
+                                    { icon: Heart, label: isArabic ? 'النبض' : 'Heart Rate', value: `${wearableData.heartRate} bpm`, color: 'var(--color-danger)', highlight: wearableData.isConnected },
+                                    { icon: Target, label: isArabic ? 'الخطوات' : 'Steps', value: wearableData.steps.toLocaleString(), color: 'var(--color-warning)', highlight: false },
+                                    { icon: Moon, label: isArabic ? 'النوم' : 'Sleep', value: `${wearableData.sleepHours} hrs`, color: 'var(--color-secondary)', highlight: false },
+                                    { icon: Flame, label: isArabic ? 'المحروق' : 'Burned', value: `${wearableData.caloriesBurned} kcal`, color: 'var(--color-orange)', highlight: false },
                                 ].map((s, i) => (
                                     <div key={i} className="flex items-center gap-2 p-3 rounded-xl transition-colors duration-500" style={{ background: 'var(--bg-input)' }}>
                                         <s.icon size={16} style={{ color: s.color }} className={s.highlight ? "animate-pulse" : ""} />
@@ -289,26 +289,26 @@ export default function TraineeDashboard() {
                                 ))}
                             </div>
                             {wearableData.isConnected && (
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#00FFA3]/5 rounded-full blur-3xl pointer-events-none" />
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[var(--color-primary)]/5 rounded-full blur-3xl pointer-events-none" />
                             )}
                         </div>
                     </div>
 
                     {/* Active Subscription */}
                     {activeSub ? (
-                        <div className="rounded-2xl p-6 relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid rgba(0,255,163,0.3)', borderTop: '2px solid #00FFA3' }}>
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-[#00FFA3]/5 rounded-full blur-2xl" />
+                        <div className="rounded-2xl p-6 relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)', borderTop: '2px solid var(--color-primary)' }}>
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-[var(--color-primary)]/5 rounded-full blur-2xl" />
                             <div className="flex justify-between items-start">
                                 <div>
                                     <p className="text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الاشتراك النشط' : 'Active Subscription'}</p>
-                                    <h3 className="text-xl font-bold text-[#00FFA3]">{activeSub.gym_name} — {activeSub.plan_name}</h3>
+                                    <h3 className="text-xl font-bold text-[var(--color-primary)]">{activeSub.gym_name} — {activeSub.plan_name}</h3>
                                     <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
                                         {isArabic ? 'ينتهي في' : 'Expires'}: {new Date(activeSub.expires_at).toLocaleDateString()}
                                     </p>
                                 </div>
-                                <button onClick={() => setQrVisible(true)} className="flex flex-col items-center gap-1 p-3 rounded-xl" style={{ background: 'rgba(0,255,163,0.1)', border: '1px solid rgba(0,255,163,0.3)' }}>
-                                    <QrCode size={24} className="text-[#00FFA3]" />
-                                    <span className="text-[10px] text-[#00FFA3] font-bold">CHECK IN</span>
+                                <button onClick={() => setQrVisible(true)} className="flex flex-col items-center gap-1 p-3 rounded-xl" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
+                                    <QrCode size={24} className="text-[var(--color-primary)]" />
+                                    <span className="text-[10px] text-[var(--color-primary)] font-bold">CHECK IN</span>
                                 </button>
                             </div>
                             <div className="mt-4">
@@ -317,14 +317,14 @@ export default function TraineeDashboard() {
                                     <span>36 {isArabic ? 'يوم' : 'days'}</span>
                                 </div>
                                 <div className="h-2 rounded-full" style={{ background: 'var(--bg-input)' }}>
-                                    <div className="h-2 rounded-full bg-gradient-to-r from-[#00FFA3] to-[#00B8FF]" style={{ width: '40%' }} />
+                                    <div className="h-2 rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]" style={{ width: '40%' }} />
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <div className="rounded-2xl p-6 relative overflow-hidden text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                             <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'ليس لديك اشتراك حالي' : 'No active subscription'}</p>
-                            <button className="px-5 py-2 rounded-xl text-sm font-bold text-black neon-glow" style={{ background: '#00FFA3' }}>
+                            <button className="px-5 py-2 rounded-xl text-sm font-bold text-black neon-glow" style={{ background: 'var(--color-primary)' }}>
                                 {isArabic ? 'تصفح الجيمات المتاحة' : 'Browse Gyms'}
                             </button>
                         </div>
@@ -341,23 +341,23 @@ export default function TraineeDashboard() {
                             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'الثلاثاء، ١٠ مارس' : 'Tuesday, March 10'}</p>
                         </div>
                         <div className="text-center px-4 py-2 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <p className="text-2xl font-bold font-mono text-[#00FFA3]">{workoutDone.filter(Boolean).length}/{workoutDone.length}</p>
+                            <p className="text-2xl font-bold font-mono text-[var(--color-primary)]">{workoutDone.filter(Boolean).length}/{workoutDone.length}</p>
                             <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'مكتمل' : 'done'}</p>
                         </div>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="h-3 rounded-full" style={{ background: 'var(--bg-card)' }}>
-                        <div className="h-3 rounded-full bg-gradient-to-r from-[#00FFA3] to-[#00B8FF] transition-all"
+                        <div className="h-3 rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] transition-all"
                             style={{ width: `${(workoutDone.filter(Boolean).length / workoutDone.length) * 100}%` }} />
                     </div>
 
                     {WORKOUT.map((ex, i) => (
                         <div key={i} className="rounded-2xl p-5 flex items-center gap-4 transition-all"
-                            style={{ background: 'var(--bg-card)', border: `1px solid ${workoutDone[i] ? 'rgba(0,255,163,0.3)' : 'var(--border-subtle)'}`, opacity: workoutDone[i] ? 0.85 : 1 }}>
+                            style={{ background: 'var(--bg-card)', border: `1px solid ${workoutDone[i] ? 'rgba(var(--color-primary-rgb), 0.1)' : 'var(--border-subtle)'}`, opacity: workoutDone[i] ? 0.85 : 1 }}>
                             <button onClick={() => { const next = [...workoutDone]; next[i] = !next[i]; setWorkoutDone(next); }}
                                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all"
-                                style={{ background: workoutDone[i] ? '#00FFA3' : 'var(--bg-input)', border: `1px solid ${workoutDone[i] ? '#00FFA3' : 'var(--border-medium)'}` }}>
+                                style={{ background: workoutDone[i] ? 'var(--color-primary)' : 'var(--bg-input)', border: `1px solid ${workoutDone[i] ? 'var(--color-primary)' : 'var(--border-medium)'}` }}>
                                 {workoutDone[i] ? <CheckCircle size={20} className="text-black" /> : <div className="w-3 h-3 rounded-full" style={{ background: 'var(--border-medium)' }} />}
                             </button>
                             <div className="flex-1">
@@ -371,14 +371,14 @@ export default function TraineeDashboard() {
                                     {ex.sets} {isArabic ? 'سيت' : 'sets'} × {ex.reps} {isArabic ? 'تكرار' : 'reps'} • {ex.weight}
                                 </p>
                             </div>
-                            {workoutDone[i] && <CheckCircle size={16} className="text-[#00FFA3] shrink-0" />}
+                            {workoutDone[i] && <CheckCircle size={16} className="text-[var(--color-primary)] shrink-0" />}
                         </div>
                     ))}
 
                     <div className="rounded-2xl p-5 text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                         <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'تمرين مكتمل؟ احصل على نقاطك!' : 'Workout complete? Claim your points!'}</p>
                         <button className="px-8 py-3 rounded-xl font-bold text-black transition-opacity hover:opacity-90 neon-glow"
-                            style={{ background: 'linear-gradient(to right, #00FFA3, #00B8FF)' }}>
+                            style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
                             {isArabic ? '🏆 إنهاء التمرين (+120 نقطة)' : '🏆 Complete Workout (+120 pts)'}
                         </button>
                     </div>
@@ -393,10 +393,10 @@ export default function TraineeDashboard() {
                         <h3 className="font-bold mb-4">{isArabic ? 'ملخص المغذيات اليومية' : 'Daily Macro Summary'}</h3>
                         <div className="grid grid-cols-4 gap-4">
                             {[
-                                { label: isArabic ? 'سعرات' : 'Calories', value: `${consumedKcal}`, total: totalKcal, color: '#FF6B35', unit: 'kcal' },
-                                { label: isArabic ? 'بروتين' : 'Protein', value: '133', total: totalProtein, color: '#00FFA3', unit: 'g' },
-                                { label: isArabic ? 'كارب' : 'Carbs', value: '155', total: 210, color: '#00B8FF', unit: 'g' },
-                                { label: isArabic ? 'دهون' : 'Fat', value: '38', total: 56, color: '#A78BFA', unit: 'g' },
+                                { label: isArabic ? 'سعرات' : 'Calories', value: `${consumedKcal}`, total: totalKcal, color: 'var(--color-orange)', unit: 'kcal' },
+                                { label: isArabic ? 'بروتين' : 'Protein', value: '133', total: totalProtein, color: 'var(--color-primary)', unit: 'g' },
+                                { label: isArabic ? 'كارب' : 'Carbs', value: '155', total: 210, color: 'var(--color-secondary)', unit: 'g' },
+                                { label: isArabic ? 'دهون' : 'Fat', value: '38', total: 56, color: 'var(--color-purple)', unit: 'g' },
                             ].map((m, i) => (
                                 <div key={i} className="text-center">
                                     <div className="relative w-16 h-16 mx-auto mb-2">
@@ -451,14 +451,14 @@ export default function TraineeDashboard() {
             {activeTab === 'wallet' && (
                 <div className="space-y-5">
                     {/* Balance Card */}
-                    <div className="rounded-3xl p-7 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A1A0F, #0A0F1A)', border: '1px solid rgba(0,255,163,0.3)' }}>
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-[#00FFA3]/8 rounded-full blur-3xl" />
-                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#00B8FF]/8 rounded-full blur-2xl" />
+                    <div className="rounded-3xl p-7 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A1A0F, #0A0F1A)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--color-primary)]/8 rounded-full blur-3xl" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-[var(--color-secondary)]/8 rounded-full blur-2xl" />
                         <p className="text-sm font-medium mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{isArabic ? 'رصيد المحفظة' : 'Wallet Balance'}</p>
                         <p className="text-5xl font-bold font-mono text-white mb-1" dir="ltr">EGP {walletBalance.toLocaleString()}</p>
-                        <p className="text-sm text-[#00FFA3]">≈ ${(walletBalance / 50).toFixed(0)} USD</p>
+                        <p className="text-sm text-[var(--color-primary)]">≈ ${(walletBalance / 50).toFixed(0)} USD</p>
                         <div className="flex gap-3 mt-6">
-                            <button className="flex-1 py-3 rounded-xl font-bold text-black text-sm" style={{ background: '#00FFA3' }}>
+                            <button className="flex-1 py-3 rounded-xl font-bold text-black text-sm" style={{ background: 'var(--color-primary)' }}>
                                 💳 {isArabic ? 'شحن' : 'Top Up'}
                             </button>
                             <button className="flex-1 py-3 rounded-xl font-bold text-sm" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}>
@@ -495,15 +495,15 @@ export default function TraineeDashboard() {
                             <div key={i} className="flex items-center justify-between p-5 border-b hover:bg-white/2 transition-colors" style={{ borderColor: 'var(--border-subtle)' }}>
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center`}
-                                        style={{ background: tx.type === 'in' ? 'rgba(0,255,163,0.1)' : 'rgba(255,59,48,0.1)' }}>
-                                        {tx.type === 'in' ? <ArrowDownLeft size={18} className="text-[#00FFA3]" /> : <ArrowUpRight size={18} className="text-[#FF3B30]" />}
+                                        style={{ background: tx.type === 'in' ? 'rgba(var(--color-primary-rgb), 0.1)' : 'rgba(255,59,48,0.1)' }}>
+                                        {tx.type === 'in' ? <ArrowDownLeft size={18} className="text-[var(--color-primary)]" /> : <ArrowUpRight size={18} className="text-[var(--color-danger)]" />}
                                     </div>
                                     <div>
                                         <p className="font-bold text-sm">{isArabic ? tx.descAr : tx.desc}</p>
                                         <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? tx.timeAr : tx.time}</p>
                                     </div>
                                 </div>
-                                <p className="font-bold font-mono" style={{ color: tx.type === 'in' ? '#00FFA3' : '#FF3B30' }} dir="ltr">
+                                <p className="font-bold font-mono" style={{ color: tx.type === 'in' ? 'var(--color-primary)' : 'var(--color-danger)' }} dir="ltr">
                                     {tx.type === 'in' ? '+' : ''}{tx.amount} EGP
                                 </p>
                             </div>
@@ -516,13 +516,13 @@ export default function TraineeDashboard() {
             {activeTab === 'badges' && (
                 <div className="space-y-6">
                     <div className="rounded-2xl p-5 flex items-center gap-4" style={{ background: 'var(--bg-card)', border: '1px solid rgba(255,204,0,0.3)' }}>
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFCC00] to-[#FF6B35] flex items-center justify-center text-3xl">🏆</div>
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-warning)] to-[var(--color-orange)] flex items-center justify-center text-3xl">🏆</div>
                         <div>
                             <p className="text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'المستوى الحالي' : 'Current Level'}</p>
-                            <h2 className="text-xl font-bold text-[#FFCC00]">{isArabic ? 'المحارب الذهبي' : 'Gold Warrior'}</h2>
+                            <h2 className="text-xl font-bold text-[var(--color-warning)]">{isArabic ? 'المحارب الذهبي' : 'Gold Warrior'}</h2>
                             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{totalPoints} / 5000 {isArabic ? 'نقطة للمستوى التالي' : 'pts to next level'}</p>
                             <div className="h-2 mt-2 rounded-full w-48" style={{ background: 'var(--bg-input)' }}>
-                                <div className="h-2 rounded-full" style={{ background: 'linear-gradient(to right, #FFCC00, #FF6B35)', width: `${(totalPoints / 5000) * 100}%` }} />
+                                <div className="h-2 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-warning), var(--color-orange))', width: `${(totalPoints / 5000) * 100}%` }} />
                             </div>
                         </div>
                     </div>
@@ -570,11 +570,11 @@ export default function TraineeDashboard() {
                             { rank: 7, name: isArabic ? 'أنت (أحمد)' : 'You (Ahmed)', pts: totalPoints, medal: '⭐', isMe: true },
                         ].map((entry, i) => (
                             <div key={i} className="flex items-center gap-4 p-4 border-b transition-colors"
-                                style={{ borderColor: 'var(--border-subtle)', background: entry.isMe ? 'rgba(0,255,163,0.05)' : 'transparent', borderLeft: entry.isMe ? '3px solid #00FFA3' : '3px solid transparent' }}>
+                                style={{ borderColor: 'var(--border-subtle)', background: entry.isMe ? 'rgba(var(--color-primary-rgb), 0.1)' : 'transparent', borderLeft: entry.isMe ? '3px solid var(--color-primary)' : '3px solid transparent' }}>
                                 <span className="text-2xl w-8 text-center">{entry.medal}</span>
                                 <span className="font-mono text-sm w-6" style={{ color: 'var(--text-muted)' }}>#{entry.rank}</span>
                                 <p className="flex-1 font-bold text-sm">{entry.name}</p>
-                                <p className="font-mono font-bold" style={{ color: entry.isMe ? '#00FFA3' : 'var(--text-primary)' }}>{entry.pts.toLocaleString()} pts</p>
+                                <p className="font-mono font-bold" style={{ color: entry.isMe ? 'var(--color-primary)' : 'var(--text-primary)' }}>{entry.pts.toLocaleString()} pts</p>
                             </div>
                         ))}
                     </div>

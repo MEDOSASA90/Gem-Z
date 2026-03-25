@@ -7,8 +7,6 @@
 -- Enable extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-CREATE EXTENSION IF NOT EXISTS "postgis";   -- geolocation
-
 -- ============================================================
 -- MODULE 1: USERS & ROLES
 -- ============================================================
@@ -106,7 +104,8 @@ CREATE TABLE gym_branches (
     name                VARCHAR(255)    NOT NULL,
     address             TEXT            NOT NULL,
     city                VARCHAR(100),
-    location            GEOGRAPHY(POINT, 4326),   -- PostGIS point (lat/lng)
+    latitude            DECIMAL(10, 8),
+    longitude           DECIMAL(11, 8),
     phone               VARCHAR(20),
     capacity            INTEGER,
     opens_at            TIME,
@@ -117,7 +116,7 @@ CREATE TABLE gym_branches (
     created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_gym_branches_location ON gym_branches USING GIST(location);
+CREATE INDEX idx_gym_branches_location ON gym_branches(latitude, longitude);
 
 -- Off-peak / flash pricing rules per branch
 CREATE TABLE gym_pricing_rules (

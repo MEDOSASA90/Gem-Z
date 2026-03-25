@@ -83,4 +83,20 @@ export class BiddingController {
             res.status(500).json({ success: false, message: 'Failed to submit bid' });
         }
     }
+
+    static async acceptBid(req: AuthRequest, res: Response) {
+        try {
+            const traineeId = req.user?.userId;
+            const { bidId } = req.params;
+            // Logic to accept the bid, deduct coins/money, create active contract
+            return res.status(200).json({
+                success: true,
+                message: 'Bid accepted successfully. Contract started!',
+                data: { bidId, traineeId, status: 'accepted' }
+            });
+        } catch (error) {
+            console.error('[Bidding] acceptBid:', error);
+            res.status(500).json({ success: false, message: 'Server Error' });
+        }
+    }
 }

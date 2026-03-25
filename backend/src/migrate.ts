@@ -22,6 +22,7 @@ async function migrate() {
             '../../database/schema.sql',
             '../../database/schema_v2_additions.sql',
             '../../database/schema_v4_additions.sql',
+            '../../database/schema_v5_ecosystem.sql',
             '../../database/seed_pricing.sql'
         ];
 

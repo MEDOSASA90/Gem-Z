@@ -1,4 +1,5 @@
 'use client';
+import GemZLogo from '../../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -132,7 +133,7 @@ export default function StoreRegisterPage() {
             <div className="w-full max-w-lg">
                 <Link href="/register" className="text-sm mb-6 block hover:underline" style={{ color: ACCENT }}>{t.back}</Link>
                 <div className="text-center mb-8">
-                    <img src="/gem-z-logo.png" alt="GEM Z" className="h-10 mx-auto mb-4 object-contain" />
+                    <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
                     <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
                     <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
                 </div>

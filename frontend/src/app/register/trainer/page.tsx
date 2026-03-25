@@ -1,4 +1,5 @@
 'use client';
+import GemZLogo from '../../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -40,7 +41,7 @@ const T = {
     }
 };
 
-const ACCENT = '#00B8FF';
+const ACCENT = 'var(--color-secondary)';
 
 export default function TrainerRegisterPage() {
     const { isArabic } = useLanguage();
@@ -152,7 +153,7 @@ export default function TrainerRegisterPage() {
             <div className="w-full max-w-lg">
                 <Link href="/register" className="text-sm mb-6 block hover:underline" style={{ color: ACCENT }}>{t.back}</Link>
                 <div className="text-center mb-8">
-                    <img src="/gem-z-logo.png" alt="GEM Z" className="h-10 mx-auto mb-4 object-contain" />
+                    <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
                     <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
                     <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
                 </div>
@@ -188,7 +189,7 @@ export default function TrainerRegisterPage() {
                             { name: 'confirm', label: t.confirm, type: 'password', ph: '••••••••' }].map((f, i) => (
                                 <div key={i}>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{f.label}</label>
-                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} placeholder={f.ph} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#00B8FF]" />
+                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} placeholder={f.ph} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
                                 </div>
                             ))}
                         </div>
@@ -197,17 +198,17 @@ export default function TrainerRegisterPage() {
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.specialization}</label>
-                                <select name="specialization" value={formData.specialization} onChange={handleChange} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#00B8FF] appearance-none" style={{ background: 'var(--bg-input)' }}>
+                                <select name="specialization" value={formData.specialization} onChange={handleChange} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)] appearance-none" style={{ background: 'var(--bg-input)' }}>
                                     {t.specOps.map((op, i) => <option key={i} value={op}>{op}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.experience}</label>
-                                <input name="experience" value={formData.experience} onChange={handleChange} type="number" min="0" placeholder="e.g. 5" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#00B8FF]" />
+                                <input name="experience" value={formData.experience} onChange={handleChange} type="number" min="0" placeholder="e.g. 5" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
                             </div>
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.certs}</label>
-                                <input name="certs" value={formData.certs} onChange={handleChange} type="text" placeholder="ISSA, NASM, ACE..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#00B8FF]" />
+                                <input name="certs" value={formData.certs} onChange={handleChange} type="text" placeholder="ISSA, NASM, ACE..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
                             </div>
                         </div>
                     )}
@@ -215,16 +216,16 @@ export default function TrainerRegisterPage() {
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                             <div>
                                 <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.bio}</label>
-                                <textarea name="bio" value={formData.bio} onChange={handleChange} className="w-full px-4 py-3 rounded-xl text-sm input-base resize-none h-24 focus:border-[#00B8FF]" placeholder={t.bioPh} />
+                                <textarea name="bio" value={formData.bio} onChange={handleChange} className="w-full px-4 py-3 rounded-xl text-sm input-base resize-none h-24 focus:border-[var(--color-secondary)]" placeholder={t.bioPh} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.rate}</label>
-                                    <input name="rate" value={formData.rate} onChange={handleChange} type="number" placeholder="1500" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#00B8FF]" />
+                                    <input name="rate" value={formData.rate} onChange={handleChange} type="number" placeholder="1500" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.social}</label>
-                                    <input name="social" value={formData.social} onChange={handleChange} type="text" placeholder="@username" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#00B8FF]" />
+                                    <input name="social" value={formData.social} onChange={handleChange} type="text" placeholder="@username" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
                                 </div>
                             </div>
                             
@@ -256,7 +257,7 @@ export default function TrainerRegisterPage() {
                             </div>
 
                             <label className="flex items-start gap-3 cursor-pointer mt-4">
-                                <input type="checkbox" className="w-4 h-4 mt-1 accent-[#00B8FF]" />
+                                <input type="checkbox" className="w-4 h-4 mt-1 accent-[var(--color-secondary)]" />
                                 <span className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{t.agree}</span>
                             </label>
                         </div>

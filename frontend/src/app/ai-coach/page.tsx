@@ -96,7 +96,7 @@ export default function CoachAIChatPage() {
                     <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
                     <div>
                         <h1 className="font-bold font-heading flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-[#A78BFA] flex items-center justify-center"><Bot size={14} className="text-black" /></div>
+                            <div className="w-6 h-6 rounded-full bg-[var(--color-purple)] flex items-center justify-center"><Bot size={14} className="text-black" /></div>
                             {isArabic ? 'المساعد الرياضي AI' : 'AI Fitness Coach'}
                         </h1>
                         <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export default function CoachAIChatPage() {
                     <div className="flex flex-wrap gap-2">
                         {SUGGESTED_QUESTIONS.map((q, i) => (
                             <button key={i} onClick={() => sendMessage(isArabic ? q.ar : q.en)}
-                                className="text-xs px-3 py-2 rounded-xl transition-all hover:bg-[#A78BFA] hover:text-white font-medium"
+                                className="text-xs px-3 py-2 rounded-xl transition-all hover:bg-[var(--color-purple)] hover:text-white font-medium"
                                 style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
                                 {isArabic ? q.ar : q.en}
                             </button>
@@ -132,12 +132,12 @@ export default function CoachAIChatPage() {
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
                 {messages.map(msg => (
                     <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-gradient-to-br from-[#00FFA3] to-[#00B8FF]' : 'bg-[#A78BFA]'}`}>
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]' : 'bg-[var(--color-purple)]'}`}>
                             {msg.role === 'user' ? <User size={16} className="text-black" /> : <Bot size={16} className="text-white" />}
                         </div>
                         <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user' ? 'text-black' : ''}`}
                             style={{
-                                background: msg.role === 'user' ? 'linear-gradient(to right, #00FFA3, #00B8FF)' : 'var(--bg-card)',
+                                background: msg.role === 'user' ? 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' : 'var(--bg-card)',
                                 border: msg.role === 'assistant' ? '1px solid var(--border-subtle)' : 'none',
                                 color: msg.role === 'user' ? '#000' : 'inherit',
                                 borderRadius: msg.role === 'user' ? (isArabic ? '20px 4px 20px 20px' : '4px 20px 20px 20px') : (isArabic ? '4px 20px 20px 20px' : '20px 4px 20px 20px'),
@@ -149,9 +149,9 @@ export default function CoachAIChatPage() {
                 ))}
                 {typing && (
                     <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[#A78BFA] flex items-center justify-center shrink-0"><Bot size={16} className="text-white" /></div>
+                        <div className="w-8 h-8 rounded-xl bg-[var(--color-purple)] flex items-center justify-center shrink-0"><Bot size={16} className="text-white" /></div>
                         <div className="px-4 py-3 rounded-2xl flex items-center gap-1" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            {[0, 1, 2].map(i => <div key={i} className="w-2 h-2 rounded-full bg-[#A78BFA] animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />)}
+                            {[0, 1, 2].map(i => <div key={i} className="w-2 h-2 rounded-full bg-[var(--color-purple)] animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />)}
                         </div>
                     </div>
                 )}
@@ -166,7 +166,7 @@ export default function CoachAIChatPage() {
                         className="flex-1 px-4 py-3 rounded-2xl text-sm input-base resize-none" />
                     <button onClick={() => sendMessage()} disabled={!input.trim() || typing}
                         className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 font-bold transition-all disabled:opacity-40"
-                        style={{ background: input.trim() ? '#A78BFA' : 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
+                        style={{ background: input.trim() ? 'var(--color-purple)' : 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
                         <Send size={18} style={{ color: input.trim() ? '#fff' : 'var(--text-muted)' }} />
                     </button>
                 </div>

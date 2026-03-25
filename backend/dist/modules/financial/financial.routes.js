@@ -8,5 +8,5 @@ const financial_controller_1 = require("./financial.controller");
 const auth_middleware_1 = require("../../core/middlewares/auth.middleware");
 const router = express_1.default.Router();
 router.get('/wallet', auth_middleware_1.verifyToken, financial_controller_1.FinancialController.getWalletBalance);
-router.post('/subscription', auth_middleware_1.verifyToken, financial_controller_1.FinancialController.purchaseGymSubscription);
+router.post('/payout', auth_middleware_1.verifyToken, financial_controller_1.FinancialController.requestPayout);
 exports.default = router;
