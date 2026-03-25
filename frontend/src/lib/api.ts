@@ -105,7 +105,8 @@ export const GemZApi = {
         getDashboard: () => GemZApi.request('/gym/stats'),
         buyPass: (gymId: string, price: number) => GemZApi.request('/gym/passes/buy', { method: 'POST', body: JSON.stringify({ gymId, price }) }),
         scanPass: (qrCode: string) => GemZApi.request('/gym/passes/scan', { method: 'POST', body: JSON.stringify({ qrCode }) }),
-        getTraineePasses: () => GemZApi.request('/trainee/passes')
+        getTraineePasses: () => GemZApi.request('/trainee/passes'),
+        setOffPeak: (isActive: boolean, discountPercentage: number) => GemZApi.request('/gym/off-peak', { method: 'POST', body: JSON.stringify({ isActive, discountPercentage }) })
     },
 
     Coins: {
