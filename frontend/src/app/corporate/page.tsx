@@ -68,6 +68,7 @@ const FAQS = [
 ];
 
 export default function CorporatePage() {
+    const { t } = useLanguage();
     const { isArabic, toggleLanguage } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const isDark = theme === 'dark';
@@ -104,7 +105,7 @@ export default function CorporatePage() {
                         {isArabic ? (
                             <><span className="text-[var(--color-primary)]">موظفون أصحاء.</span><br />شركة أقوى.</>
                         ) : (
-                            <><span className="text-[var(--color-primary)]">Healthier Teams.</span><br />Stronger Business.</>
+                            <><span className="text-[var(--color-primary)]">{t("Healthier Teams.")}</span><br />{t("Stronger Business.")}</>
                         )}
                     </h1>
                     <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
@@ -195,9 +196,9 @@ export default function CorporatePage() {
                                         </li>
                                     ))}
                                 </ul>
-                                <button className="w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90" style={{ background: plan.best ? plan.color : 'var(--bg-input)', color: plan.best ? '#000' : 'var(--text-primary)', border: `1px solid ${plan.best ? plan.color : 'var(--border-medium)'}` }}>
+                                <Link href="/register" className="w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90" style={{ background: plan.best ? plan.color : 'var(--bg-input)', color: plan.best ? '#000' : 'var(--text-primary)', border: `1px solid ${plan.best ? plan.color : 'var(--border-medium)'}` }}>
                                     {isArabic ? 'ابدأ الآن' : 'Get Started'}
-                                </button>
+                                </Link>
                             </div>
                         ))}
                     </div>

@@ -1,179 +1,229 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import {
-    Send, Bot, User, Zap, RotateCcw, Globe, Sparkles, Copy
-} from 'lucide-react';
-import { useLanguage } from '../../context/LanguageContext';
-import { useTheme } from '../../context/ThemeContext';
 import Link from 'next/link';
-import GemZLogo from '../../components/GemZLogo';
+import { useLanguage } from '../../context/LanguageContext';
 
-type Message = { id: number; role: 'user' | 'assistant'; text: string; time: string };
-
-const SUGGESTED_QUESTIONS = [
-    { en: 'How much protein do I need daily?', ar: 'كم برتوين أحتاج يومياً؟' },
-    { en: 'What\'s a good substitute for chicken?', ar: 'ما هو بديل جيد للدجاج؟' },
-    { en: 'How do I fix knee pain during squats?', ar: 'كيف أعالج ألم الركبة أثناء السكوات؟' },
-    { en: 'Best time to take creatine?', ar: 'أفضل وقت لأخذ الكرياتين؟' },
-    { en: 'How many rest days per week?', ar: 'كم يوم راحة في الأسبوع؟' },
-    { en: 'Build a 3-day beginner workout plan', ar: 'ابنِ لي خطة مبتدئ 3 أيام' },
-];
-
-const BOT_RESPONSES: Record<string, string> = {
-    'protein': 'Based on your profile (82kg, muscle gain goal), you need **1.8–2.2g of protein per kg of body weight**, which means **148–180g of protein daily**.\n\n🍗 Top sources:\n• Chicken breast (31g/100g)\n• Eggs (6g each)\n• Tuna (30g/100g)\n• Greek Yogurt (10g/100g)\n\n💡 Spread protein over 4-5 meals for optimal muscle protein synthesis.',
-    'بروتين': '**بناءً على ملفك الشخصي (82 كيلو، هدف بناء عضل)**، تحتاج إلى **1.8–2.2 جرام بروتين لكل كيلوجرام من وزنك**، أي **148–180 جرام يومياً**.\n\n🍗 أفضل المصادر:\n• صدر الدجاج (31 جرام/100 جرام)\n• البيض (6 جرام للبيضة)\n• التونة (30 جرام/100 جرام)\n• يوغرت يوناني (10 جرام/100 جرام)\n\n💡 وزّع البروتين على 4-5 وجبات للحصول على أقصى استفادة.',
-    'chicken': '**Great alternatives to chicken (equal protein):**\n\n🐟 **Tuna** — 30g protein/100g, very similar macros\n🥚 **Eggs** — 3 eggs ≈ same protein as 100g chicken\n🫘 **Lentils** — 18g protein/100g, iron-rich bonus\n🐄 **Lean beef** — 26g protein/100g, higher iron\n🐟 **Salmon** — 25g + healthy omega-3 fats\n\n💡 Any of these work as 1:1 swaps in your current AI meal plan.',
-    'دجاج': '**بدائل ممتازة للدجاج بنفس البروتين:**\n\n🐟 **التونة** — 30 جرام بروتين/100 جرام\n🥚 **البيض** — 3 بيضات = بروتين 100 جرام دجاج\n🫘 **العدس** — 18 جرام بروتين + حديد ممتاز\n🐄 **اللحم الفيليه** — 26 جرام بروتين، حديد عالٍ\n🐟 **السلمون** — 25 جرام + أوميجا 3\n\n💡 أي منها يعمل كبديل مباشر في خطتك الغذائية الحالية.',
-    'knee': '**Knee pain during squats — common causes & fixes:**\n\n❌ **Issue:** Knees caving inward\n✅ **Fix:** Push knees outward, use a band for feedback\n\n❌ **Issue:** Heels rising\n✅ **Fix:** Elevate heels with plates, or wear squat shoes\n\n❌ **Issue:** Going too deep too fast\n✅ **Fix:** Start with box squats, build depth gradually\n\n⚠️ If pain persists, rest for 48 hours and consult a physio.\n\n💡 Try the AI Form Correction for a live analysis of your squat!',
-    'ركبة': '**ألم الركبة أثناء السكوات — الأسباب والحلول:**\n\n❌ **المشكلة:** الركب تنهار للداخل\n✅ **الحل:** ادفع الركبتين للخارج، استخدم المطاط للمساعدة\n\n❌ **المشكلة:** رفع الكعب\n✅ **الحل:** ضع أوزان تحت الكعب أو استخدم أحذية سكوات\n\n⚠️ إذا استمر الألم، ارتاح 48 ساعة واستشر طبيب علاج طبيعي',
-    'creatine': '**Best timing for creatine:**\n\n🏋️ **On training days:** Take 3-5g **post-workout** with your protein shake (slightly better absorption)\n\n😴 **On rest days:** Any time with food is fine\n\n📋 **Loading phase (optional):** 20g/day for 5-7 days to saturate faster\n\n💧 **Important:** Drink extra 2-3 cups of water daily when taking creatine\n\n✅ Creatine monohydrate is the most researched form — no need for expensive alternatives.',
-    'كرياتين': '**أفضل وقت للكرياتين:**\n\n🏋️ **أيام التمرين:** 3-5 جرام **بعد التمرين** مع مشروب البروتين (امتصاص أفضل)\n\n😴 **أيام الراحة:** في أي وقت مع الطعام\n\n📋 **مرحلة التحميل (اختيارية):** 20 جرام/يوم لمدة 5-7 أيام\n\n💧 **مهم:** اشرب 2-3 أكواب ماء إضافية يومياً عند أخذ الكرياتين',
-    'rest': '**Optimal rest days per week:**\n\n**Beginner (0-1 year):** 2-3 rest days\n**Intermediate (1-3 years):** 1-2 rest days \n**Advanced (3+ years):** 1 rest day minimum\n\n💡 **Signs you need more rest:**\n• Strength decreasing\n• Mood changes / irritability\n• Poor sleep\n• Persistent muscle soreness\n\n🔄 Active recovery (walking, light yoga) is better than complete rest on off-days.',
-    'راحة': '**أيام الراحة المثالية في الأسبوع:**\n\n**مبتدئ:** 2-3 أيام راحة\n**متوسط:** 1-2 يوم راحة\n**متقدم:** يوم راحة واحد على الأقل\n\n💡 **علامات تحتاج راحة أكثر:**\n• انخفاض القوة\n• مزاج سيء\n• نوم سيئ\n• ألم عضلي مستمر',
-    'workout plan': '**3-Day Beginner Workout Plan:**\n\n📅 **Day 1 — Push (Chest/Shoulders)**\n• Bench Press: 3×10\n• Shoulder Press: 3×10\n• Lateral Raise: 3×15\n\n📅 **Day 2 — Pull (Back/Biceps)**\n• Pull-downs: 3×10\n• Cable Row: 3×10\n• Bicep Curl: 3×12\n\n📅 **Day 3 — Legs**\n• Squat: 4×10\n• Leg Press: 3×12\n• Calf Raise: 3×20\n\n⏰ Rest 48h between sessions. Add it to your GEM Z workout planner! 💪',
-    'خطة': '**خطة تمرين مبتدئ 3 أيام:**\n\n📅 **اليوم 1 — دفع (صدر/أكتاف)**\n• ضغط صدر: 3×10\n• ضغط أكتاف: 3×10\n• رفع جانبي: 3×15\n\n📅 **اليوم 2 — سحب (ظهر/بايسبس)**\n• لات بول داون: 3×10\n• كيبل رو: 3×10\n• كيرل بايسبس: 3×12\n\n📅 **اليوم 3 — أرجل**\n• سكوات: 4×10\n• ضغط رجل: 3×12\n• رفع كعب: 3×20\n\n⏰ ارتاح 48 ساعة بين الجلسات. أضفها لمخطط تمارين GEM Z! 💪',
+type Message = {
+    id: number;
+    text: string;
+    sender: 'user' | 'ai';
+    time: string;
+    isCard?: boolean;
 };
 
-function getBotResponse(q: string, isAr: boolean): string {
-    const lower = q.toLowerCase();
-    for (const key of Object.keys(BOT_RESPONSES)) {
-        if (lower.includes(key)) return BOT_RESPONSES[key];
-    }
-    return isAr
-        ? '🤖 سؤال ممتاز! للحصول على إجابة دقيقة موثوقة، يُنصح باستشارة خبير تغذية أو مدرب متخصص على المنصة. يمكنني مساعدتك في أسئلة عامة عن التغذية والتمرين.'
-        : '🤖 Great question! For a precise, trusted answer I recommend consulting a certified nutritionist or trainer on the platform. I can help with general nutrition and training questions!';
-}
-
-export default function CoachAIChatPage() {
-    const { isArabic, toggleLanguage } = useLanguage();
-    const { theme, toggleTheme } = useTheme();
-    const isDark = theme === 'dark';
+export default function Page() {
+    const { t, isArabic } = useLanguage();
     const [messages, setMessages] = useState<Message[]>([
-        { id: 0, role: 'assistant', text: isArabic ? 'مرحباً! أنا مساعد GEM Z الذكي 🤖💪\n\nاسألني أي سؤال عن:\n• التغذية والوجبات\n• برامج التمارين\n• المكملات الغذائية\n• الإصابات والوقاية منها\n\nكيف يمكنني مساعدتك اليوم؟' : 'Hey! I\'m your GEM Z AI Coach 🤖💪\n\nAsk me anything about:\n• Nutrition & meal planning\n• Workout programs\n• Supplements\n• Injury prevention & recovery\n\nHow can I help you today?', time: 'now' }
+        {
+            id: 1,
+            text: isArabic 
+                ? "قم وعُد للعمل! بيانات الأداء الحيوي من جلسة الأمس تظهر زيادة بنسبة 12% في الإجهاد العضلي. هل يجب أن نغير تمرين اليوم إلى الإطالة والتعافي؟" 
+                : "Rise and grind! Your biomechanics data from yesterday's session shows a 12% fatigue increase in your kinetic chain. Should we pivot today's workout to focused mobility and recovery?",
+            sender: 'ai',
+            time: '08:42 AM'
+        },
+        {
+            id: 2,
+            text: isArabic 
+                ? "في الواقع، أشعر بطاقة عالية اليوم. هل يمكننا الالتزام بروتين القوة الانفجارية؟ أريد كسر رقمي القياسي في القرفصاء." 
+                : "Actually, I feel high energy today. Can we stick to the explosive power routine? I want to hit that PR on squats.",
+            sender: 'user',
+            time: '08:44 AM'
+        },
+        {
+            id: 3,
+            text: isArabic 
+                ? "مفهوم. سأقوم بتعديل البرنامج لزيادة القوة الانفجارية مع الحفاظ على فترات راحة أطول لضمان التعافي. هل أنت مستعد للبدء بالإحماء؟" 
+                : "Understood. I will adjust the program to maximize explosive power while maintaining longer rest periods to guarantee recovery. Are you ready to start warm-ups?",
+            sender: 'ai',
+            time: '08:45 AM'
+        },
+        {
+            id: 4,
+            text: "card",
+            sender: 'ai',
+            time: '08:45 AM',
+            isCard: true
+        }
     ]);
-    const [input, setInput] = useState('');
-    const [typing, setTyping] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    
+    const [inputValue, setInputValue] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+        }
+    }, [messages, isTyping]);
 
-    const sendMessage = (text?: string) => {
-        const q = text || input.trim();
-        if (!q) return;
-        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const newMsg: Message = { id: Date.now(), role: 'user', text: q, time: now };
+    const handleSend = () => {
+        if (!inputValue.trim()) return;
+        
+        const newMsg: Message = {
+            id: Date.now(),
+            text: inputValue,
+            sender: 'user',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        
         setMessages(prev => [...prev, newMsg]);
-        setInput('');
-        setTyping(true);
-        setTimeout(() => {
-            const response = getBotResponse(q, isArabic);
-            setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', text: response, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
-            setTyping(false);
-        }, 1200 + Math.random() * 800);
-    };
+        setInputValue('');
+        setIsTyping(true);
 
-    const formatText = (text: string) => {
-        return text.split('\n').map((line, i) => {
-            if (line.startsWith('**') && line.endsWith('**')) {
-                return <p key={i} className="font-bold mb-1">{line.slice(2, -2)}</p>;
-            }
-            if (line.includes('**')) {
-                const parts = line.split('**');
-                return <p key={i} className="mb-0.5">{parts.map((p, j) => j % 2 === 1 ? <strong key={j}>{p}</strong> : p)}</p>;
-            }
-            if (line.startsWith('•') || line.startsWith('✅') || line.startsWith('❌') || line.startsWith('💡') || line.startsWith('📅') || line.startsWith('⏰') || line.startsWith('⚠️')) {
-                return <p key={i} className="mb-0.5 text-sm">{line}</p>;
-            }
-            return line ? <p key={i} className="mb-0.5">{line}</p> : <div key={i} className="mb-2" />;
-        });
+        setTimeout(() => {
+            const aiReply: Message = {
+                id: Date.now() + 1,
+                text: isArabic ? "لقد تم تحليل هدفك بدقة. جاري إعداد وتخصيص الخطة الفورية لك..." : "Your goal has been analyzed precisely. I'm preparing an immediate customized plan for you...",
+                sender: 'ai',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            setMessages(prev => [...prev, aiReply]);
+            setIsTyping(false);
+        }, 1500);
     };
 
     return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="h-screen flex flex-col font-sans" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            {/* Nav */}
-            <nav className="shrink-0 px-6 py-4 flex items-center justify-between border-b" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+        <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-surface-container-lowest text-on-surface h-screen flex flex-col font-body">
+            
+            <header className="bg-black/60 backdrop-blur-xl text-[#ff7b00] font-headline font-bold tracking-tight border-b border-white/5 shadow-[0_4px_20px_rgba(255,123,0,0.1)] flex justify-between items-center px-6 py-4 w-full z-50 shrink-0">
                 <div className="flex items-center gap-4">
-                    <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
-                    <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-[var(--color-purple)] flex items-center justify-center"><Bot size={14} className="text-black" /></div>
-                            {isArabic ? 'المساعد الرياضي AI' : 'AI Fitness Coach'}
-                        </h1>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[#34C759] animate-pulse" />
-                            <p className="text-xs text-[#34C759]">{isArabic ? 'متصل الآن' : 'Online now'}</p>
-                        </div>
+                    <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+                        <Link href="/trainee" className="w-full h-full block">
+                            <img alt="User Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTZS2sO9u1Hm_aDgWY2kbdYTC6Zn4rXC8j6mgSYmP3zu1d_hY7tMuvRWMnbAg7a1xBoJ62ntG0FSEslQycbVHRwWAGz6xCVB-YSC7hXT-XRkdMuVcvYJEAfSTHk90FWmW9xDD3GDTSRwU1rAgfAgmnsfihMPFRJgehPoSpn6y2vGAZ-7V4XNkl7GiELbqfvdmhCoyu2A7retsCAgEkhuiGrmvbODWIVJt6GBjcUFEPFHkiKtEOGx4Cvjc30_EIjof-1WUBkicAGdya"/>
+                        </Link>
                     </div>
+                    <Link href="/">
+                        <h1 className="text-2xl font-black italic text-[#ff7b00] tracking-tighter">{t("GEM Z")}</h1>
+                    </Link>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => setMessages(msgs => msgs.slice(0, 1))} className="p-2 rounded-xl" title={isArabic ? 'محادثة جديدة' : 'New chat'} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><RotateCcw size={16} /></button>
-                    <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
-                    <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
-                </div>
-            </nav>
-
-            {/* Suggested prompts (only visible when empty) */}
-            {messages.length <= 1 && (
-                <div className="shrink-0 px-6 py-4">
-                    <p className="text-xs uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'أسئلة مقترحة' : 'Try asking'}</p>
-                    <div className="flex flex-wrap gap-2">
-                        {SUGGESTED_QUESTIONS.map((q, i) => (
-                            <button key={i} onClick={() => sendMessage(isArabic ? q.ar : q.en)}
-                                className="text-xs px-3 py-2 rounded-xl transition-all hover:bg-[var(--color-purple)] hover:text-white font-medium"
-                                style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
-                                {isArabic ? q.ar : q.en}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-                {messages.map(msg => (
-                    <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]' : 'bg-[var(--color-purple)]'}`}>
-                            {msg.role === 'user' ? <User size={16} className="text-black" /> : <Bot size={16} className="text-white" />}
-                        </div>
-                        <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user' ? 'text-black' : ''}`}
-                            style={{
-                                background: msg.role === 'user' ? 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' : 'var(--bg-card)',
-                                border: msg.role === 'assistant' ? '1px solid var(--border-subtle)' : 'none',
-                                color: msg.role === 'user' ? '#000' : 'inherit',
-                                borderRadius: msg.role === 'user' ? (isArabic ? '20px 4px 20px 20px' : '4px 20px 20px 20px') : (isArabic ? '4px 20px 20px 20px' : '20px 4px 20px 20px'),
-                            }}>
-                            {msg.role === 'assistant' ? formatText(msg.text) : msg.text}
-                            <p className="text-xs mt-2 opacity-60">{msg.time}</p>
-                        </div>
-                    </div>
-                ))}
-                {typing && (
-                    <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[var(--color-purple)] flex items-center justify-center shrink-0"><Bot size={16} className="text-white" /></div>
-                        <div className="px-4 py-3 rounded-2xl flex items-center gap-1" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            {[0, 1, 2].map(i => <div key={i} className="w-2 h-2 rounded-full bg-[var(--color-purple)] animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />)}
-                        </div>
-                    </div>
-                )}
-                <div ref={messagesEndRef} />
-            </div>
-
-            {/* Input */}
-            <div className="shrink-0 px-6 py-4 border-t" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-card)' }}>
-                <div className="flex gap-3 items-end">
-                    <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                        placeholder={isArabic ? 'اسألني أي شيء عن التغذية والتمرين...' : 'Ask me anything about fitness & nutrition...'}
-                        className="flex-1 px-4 py-3 rounded-2xl text-sm input-base resize-none" />
-                    <button onClick={() => sendMessage()} disabled={!input.trim() || typing}
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 font-bold transition-all disabled:opacity-40"
-                        style={{ background: input.trim() ? 'var(--color-purple)' : 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                        <Send size={18} style={{ color: input.trim() ? '#fff' : 'var(--text-muted)' }} />
+                <div className="flex items-center gap-6">
+                    <button onClick={() => alert(isArabic ? 'سجل المحادثات قديماً سيكون متاحاً قريباً ⏳' : 'Chat history coming soon ⏳')} className="text-on-surface-variant hover:text-[#ff7b00] transition-colors active:scale-90">
+                        <span translate="no" className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
+                    </button>
+                    <button onClick={() => alert(isArabic ? 'إعدادات الجلسة ⚙️' : 'Session Settings ⚙️')} className="text-on-surface-variant hover:text-[#ff7b00] transition-colors active:scale-90">
+                        <span translate="no" className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>more_vert</span>
                     </button>
                 </div>
-                <p className="text-xs text-center mt-3" style={{ color: 'var(--text-muted)' }}>
-                    {isArabic ? '⚠️ للحصول على استشارة طبية دقيقة، تواصل مع أحد مدربينا المعتمدين' : '⚠️ For medical advice, consult one of our certified trainers'}
-                </p>
-            </div>
+            </header>
+
+            <main className="flex flex-1 overflow-hidden relative">
+                
+                {/* Chat Area */}
+                <section className="flex-grow flex flex-col relative w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-surface-container-lowest to-[#0a0a0a]">
+                    
+                    {/* Header bar for Z-COACH AI */}
+                    <div className="absolute top-4 left-4 right-4 z-20 pointer-events-none">
+                        <div className="glass-card rounded-2xl p-4 flex items-center justify-between border border-primary-fixed/20 bg-black/40 backdrop-blur-xl shadow-[0_0_20px_rgba(255,123,0,0.15)] pointer-events-auto">
+                            <div className="flex items-center gap-3">
+                                <div className="relative">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7b00] to-[#ffb300] flex items-center justify-center text-black shadow-[0_0_15px_rgba(255,123,0,0.4)] animate-pulse">
+                                        <span className="material-symbols-outlined font-black" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                                    </div>
+                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-black rounded-full"></div>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black font-headline text-on-surface uppercase tracking-widest">{t("Z-COACH AI")}</p>
+                                    <p className="text-[10px] text-primary-dim uppercase tracking-[0.2em] font-bold">{t("Optimal Performance Engine")}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ref={scrollRef} className="flex-grow overflow-y-auto px-6 pt-28 pb-40 flex flex-col gap-6 scrollbar-hide">
+                        {messages.map((msg) => (
+                            <div key={msg.id} className={`flex items-start gap-4 w-full md:max-w-[70%] ${msg.sender === 'user' ? 'self-end justify-end' : 'self-start justify-start'}`}>
+                                {msg.isCard ? (
+                                    <div className="w-[85%] sm:w-80 glass-card rounded-[2rem] p-1 overflow-hidden border border-[#ff7b00]/30 shadow-[0_0_30px_rgba(255,123,0,0.1)]">
+                                        <div className="relative h-48 md:h-56 rounded-[1.5rem] overflow-hidden">
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10 flex flex-col justify-end p-6">
+                                                <span className="text-[#ff7b00] font-black text-xs uppercase tracking-widest mb-2 drop-shadow-md">{isArabic ? 'المهارة الموصى بها اليوم' : 'Recommended Skill'}</span>
+                                                <h3 className="font-headline font-black text-white text-xl drop-shadow-lg">{isArabic ? 'ميكانيكا القرفصاء التفصيلية' : 'Explosive Squat Mechanics'}</h3>
+                                            </div>
+                                            <img alt="Workout Preview" className="w-full h-full object-cover mix-blend-overlay opacity-80" data-alt="Modern high-tech gym interior with neon orange lighting and professional squat rack, dark atmospheric background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBoksrLwFJ3jwR17w5kvA7-ZuxAeQlxH8veHdrD9QSzt4z6jqGyw7LkdBE7jPgVLpazXkcwfKi0dJ0VW3klafZbZIYfmELQYwLwr1z-jHeRwVk07z3fr7gqbnDfvluEZRw1Nfwic2n6z8GRjl4xCP9yuiDuNsmwuUHfrZdEQtaZ6FvMVIeitnu8-AWNMYCrEs84he4eFN-EvY1b4QWfpMtChRsMdUg1YDjFK-U4mvi3gK36kpCuIA5qqltdJVb-ztXOcgTS1yjLSFZ"/>
+                                        </div>
+                                        <div className="p-4 flex justify-between items-center bg-surface-container-highest/50">
+                                            <div className="flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-[#ff7b00]" style={{ fontVariationSettings: "'FILL' 1" }}>timer</span>
+                                                <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">15 {isArabic ? 'دقيقة تدريب' : 'min module'}</span>
+                                            </div>
+                                            <Link href="/ai-coach" className="bg-gradient-to-r from-[#ff7b00] to-[#ffb300] text-black px-5 py-2 rounded-full text-[10px] font-black hover:scale-105 shadow-[0_0_15px_rgba(255,123,0,0.3)] transition-all uppercase tracking-widest whitespace-nowrap">{isArabic ? 'استعد' : 'Watch'}</Link>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className={`max-w-[85%] ${msg.sender === 'user' ? 'bg-[#ff7b00]/10 border border-[#ff7b00]/30 shadow-[0_0_20px_rgba(255,123,0,0.15)] rounded-2xl p-5 rounded-tl-none' : 'glass-card border border-white/10 rounded-2xl p-5 rounded-tr-none'}`}>
+                                        <p className={`text-[15px] leading-relaxed font-medium ${msg.sender === 'user' ? 'text-white' : 'text-on-surface-variant'}`}>
+                                            {msg.text}
+                                        </p>
+                                        <p className={`text-[10px] mt-3 font-mono font-bold uppercase tracking-widest text-[#ff7b00]`}>
+                                            {msg.time}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+
+                        {isTyping && (
+                            <div className="flex items-start gap-4 max-w-[85%] self-start animate-fade-in">
+                                <div className="glass-card border border-[#ff7b00]/30 rounded-2xl p-4 rounded-tr-none flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-[#ff7b00] animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                    <div className="w-2 h-2 rounded-full bg-[#ff7b00] animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                    <div className="w-2 h-2 rounded-full bg-[#ff7b00] animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Input Area */}
+                    <div className="absolute bottom-[80px] md:bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black via-black/80 to-transparent z-30">
+                        <div className="max-w-4xl mx-auto glass-card border border-[#ff7b00]/20 bg-surface-container-highest/60 backdrop-blur-2xl rounded-[2rem] p-2 flex items-center gap-2 group focus-within:border-[#ff7b00] focus-within:shadow-[0_0_30px_rgba(255,123,0,0.15)] transition-all">
+                            <button onClick={() => alert(isArabic ? 'إرفاق ملفات القياس قريباً 📎' : 'File attachments coming soon 📎')} className="p-3 md:p-4 rounded-full hover:bg-white/10 text-on-surface-variant hover:text-white transition-colors shrink-0 active:scale-90">
+                                <span translate="no" className="material-symbols-outlined text-xl">attachment</span>
+                            </button>
+                            <input 
+                                className="flex-grow bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/50 font-bold py-3 px-2 md:px-4 w-full" 
+                                placeholder={isArabic ? 'أخبر مدربك بما تريده اليوم...' : 'Tell Z-Coach your goal...'}
+                                type="text"
+                                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                                value={inputValue}
+                                onChange={e => setInputValue(e.target.value)}
+                            />
+                            <button onClick={() => alert(isArabic ? 'الأوامر الصوتية قريباً 🎙️' : 'Voice commands coming soon 🎙️')} className="p-3 md:p-4 rounded-full hover:bg-white/10 text-on-surface-variant hover:text-white transition-colors shrink-0 active:scale-90">
+                                <span translate="no" className="material-symbols-outlined text-xl">mic</span>
+                            </button>
+                            <button 
+                                onClick={handleSend}
+                                className="w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full bg-[#ff7b00] flex items-center justify-center text-black shadow-[0_0_20px_rgba(255,123,0,0.4)] hover:scale-105 hover:bg-[#ffb300] active:scale-95 transition-all">
+                                <span className="material-symbols-outlined text-xl font-black" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            {/* Bottom Nav */}
+            <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/90 backdrop-blur-3xl rounded-t-[2rem] z-[100] border-t border-white/5 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]">
+                <Link className="flex flex-col items-center justify-center text-[#ff7b00] hover:scale-110 drop-shadow-[0_0_15px_rgba(255,123,0,0.5)] transition-transform" href="/ai-coach">
+                    <span className="material-symbols-outlined mb-1" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                    <span className="font-body text-[10px] uppercase tracking-widest font-black">{t("Coach")}</span>
+                </Link>
+                <Link className="flex flex-col items-center justify-center text-on-surface-variant hover:text-white hover:scale-110 transition-all" href="/shop">
+                    <span className="material-symbols-outlined mb-1">shopping_bag</span>
+                    <span className="font-body text-[10px] uppercase tracking-widest font-bold">{t("Shop")}</span>
+                </Link>
+                <Link className="flex flex-col items-center justify-center text-on-surface-variant hover:text-white hover:scale-110 transition-all" href="/social">
+                    <span className="material-symbols-outlined mb-1">dynamic_feed</span>
+                    <span className="font-body text-[10px] uppercase tracking-widest font-bold">{t("Feed")}</span>
+                </Link>
+                <Link className="flex flex-col items-center justify-center text-on-surface-variant hover:text-white hover:scale-110 transition-all" href="/wallet">
+                    <span className="material-symbols-outlined mb-1">account_balance_wallet</span>
+                    <span className="font-body text-[10px] uppercase tracking-widest font-bold">{t("Wallet")}</span>
+                </Link>
+                <Link className="flex flex-col items-center justify-center text-on-surface-variant hover:text-white hover:scale-110 transition-all" href="/squads">
+                    <span className="material-symbols-outlined mb-1">groups</span>
+                    <span className="font-body text-[10px] uppercase tracking-widest font-bold">{t("Squads")}</span>
+                </Link>
+            </nav>
         </div>
     );
 }

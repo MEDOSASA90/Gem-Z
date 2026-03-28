@@ -1,148 +1,154 @@
 'use client';
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '../../context/LanguageContext';
-import { useTheme } from '../../context/ThemeContext';
 import { GemZApi } from '../../lib/api';
-import { ShoppingBag, ShoppingCart, Loader2, CheckCircle2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
-export default function ShopPage() {
-    const { isArabic } = useLanguage();
+export default function Page() {
+    const { t } = useLanguage();
+    const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState<any[]>([]);
-    const [cart, setCart] = useState<any[]>([]);
-    const [checkoutLoading, setCheckoutLoading] = useState(false);
-    const [checkedOut, setCheckedOut] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+    const [cartCount, setCartCount] = useState(3); // Mock cart state
 
     useEffect(() => {
-        GemZApi.Store.getProducts().then(res => setProducts(res.products || [])).catch(console.error);
+        const fetchProducts = async () => {
+            try {
+                const res = await GemZApi.Store.getProducts();
+                if (res.success && res.products) {
+                    setProducts(res.products);
+                }
+            } catch (err) {
+                console.error("Failed to load products:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
     }, []);
 
-    const addToCart = (product: any) => {
-        setCart(prev => {
-            const existing = prev.find(i => i.productId === product.id);
-            if (existing) {
-                return prev.map(i => i.productId === product.id ? { ...i, quantity: i.quantity + 1, total: (i.quantity + 1) * Number(product.price) } : i);
-            }
-            return [...prev, { productId: product.id, name: product.name, price: Number(product.price), quantity: 1, total: Number(product.price) }];
-        });
-    };
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-surface-container-lowest flex flex-col items-center justify-center text-primary-fixed">
+                <Loader2 className="animate-spin w-16 h-16 mb-4" />
+                <span className="font-headline font-bold uppercase tracking-widest">{t("Loading Arsenal...")}</span>
+            </div>
+        );
+    }
 
-    const handleCheckout = async () => {
-        if (cart.length === 0) return;
-        setCheckoutLoading(true);
-        try {
-            await GemZApi.Store.checkout(cart);
-            setCheckedOut(true);
-            setCart([]);
-            // Refresh products
-            GemZApi.Store.getProducts().then(res => setProducts(res.products || []));
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setCheckoutLoading(false);
-        }
-    };
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body pb-32">
+      
+<header className="bg-black/60 backdrop-blur-xl text-[#ff7b00] font-headline font-bold tracking-tight docked full-width top-0 sticky z-50 no-border tonal-transition-bg shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<a href="#" className="cursor-pointer hover:opacity-80 transition-opacity w-full h-full block" onClick={(e) => { e.preventDefault(); try { const r=JSON.parse(localStorage.getItem('gemz_user')||'{}').role; window.location.href=r==='trainer'?'/trainer':r==='gym_admin'?'/gym':(r==='store_owner'||r==='store_admin')?'/store/dashboard':'/trainee'; } catch(err) { window.location.href='/login'; } }}><img alt="User Profile" className="w-full h-full object-cover" data-alt="close-up portrait of a professional athlete with intense focus, dramatic low-key lighting against a dark studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyX59C94BGaUXy6YNgSL6_IufhunaqnsvzbEHV93oUgdRWlgThVQGvHBH6v5MLtZuCxk2SVZA8OW-inPPaRjqRsT72d4py37GenzbRJ-6ccq5z8dTYYQO__6-Qr9OaTn-wUYjIYu180pNLmToXBFrjUNnF8jqxl7__UBxGfWoYeviMv20sI3JXVznEvfEXBjUQALHyHobwnZWwKZfqxRz3AgPXlu371zTbHC1oI8O2JR1nettI1-0T2Gba4L716O4ZejyoQPccM5IC"/></a>
+</div>
+<a href="https://gem-z.shop/"><span className="text-2xl font-black italic text-[#ff7b00] tracking-tighter uppercase">{t("GEM Z")}</span></a>
+</div>
+<div className="flex items-center gap-4">
+<button className="material-symbols-outlined text-[#ff7b00] hover:text-[#ff7b00] transition-colors scale-95 active:duration-150">notifications</button>
+</div>
+</header>
+<main className="px-6 pt-8">
 
-    const cartTotal = cart.reduce((acc, item) => acc + item.total, 0);
+<div className="mb-12">
+<h1 className="font-headline text-5xl md:text-7xl font-black text-on-surface leading-none tracking-tighter mb-4">{t("ELITE")}<br/><span className="text-primary-fixed">{t("EQUIPMENT")}</span>
+</h1>
+<p className="max-w-md text-on-surface-variant/70 text-lg">{t("Fuel your performance with the latest gear. Exclusive drops available only for high-tier athletes.")}</p>
+</div>
 
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen pb-32" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            <header className="py-12 text-center" style={{ background: 'var(--bg-card)' }}>
-                <ShoppingBag size={48} className="mx-auto text-[var(--color-primary)] mb-4" />
-                <h1 className="text-4xl font-black">{isArabic ? 'متجر GEM Z' : 'GEM Z Shop'}</h1>
-                <p className="text-gray-400 mt-2">{isArabic ? 'أفضل المكملات والمعدات من صالاتك المفضلة' : 'Top supplements and gear from your favorite stores'}</p>
-            </header>
+<div className="flex gap-4 overflow-x-auto pb-8 no-scrollbar">
+<button className="whitespace-nowrap px-6 py-2 rounded-full bg-primary-fixed text-on-primary-fixed font-bold text-sm uppercase tracking-widest neon-glow">{t("All Gear")}</button>
+<button className="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-bold text-sm uppercase tracking-widest">{t("Wearables")}</button>
+<Link href="/ai-nutritionist" className="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-bold text-sm uppercase tracking-widest">{t("Nutrition")}</Link>
+<button className="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-bold text-sm uppercase tracking-widest">{t("Digital")}</button>
+<button className="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-bold text-sm uppercase tracking-widest">{t("Footwear")}</button>
+</div>
 
-            <main className="max-w-6xl mx-auto px-6 py-12">
-                {checkedOut && (
-                    <div className="mb-12 p-6 rounded-2xl flex items-center justify-center gap-3 shadow-xl border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10">
-                        <CheckCircle2 size={32} className="text-[var(--color-primary)]" />
-                        <h2 className="text-2xl font-bold text-[var(--color-primary)]">{isArabic ? 'تمت عملية الدفع بنجاح!' : 'Checkout Complete!'}</h2>
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {products.map(p => (
-                        <div key={p.id} onClick={() => setSelectedProduct(p)} className="p-5 rounded-3xl glass-panel hover:scale-105 transition-transform cursor-pointer relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            {Number(p.discount) > 0 && (
-                                <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg z-10">
-                                    -{p.discount}%
-                                </div>
-                            )}
-                            <div className="w-full h-40 rounded-2xl mb-4 flex items-center justify-center overflow-hidden bg-black/5 dark:bg-black/40">
-                                {p.images && p.images.length > 0 ? (
-                                    <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{isArabic ? 'صورة المنتج' : 'Product Image'}</span>
-                                )}
-                            </div>
-                            <h3 className="font-bold text-lg mb-1">{p.name}</h3>
-                            <p className="text-xs text-[var(--color-secondary)] mb-3">{p.store_name || 'STORE'}</p>
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <span className="font-black text-xl text-[var(--color-primary)]">
-                                        {(Number(p.price) * (1 - Number(p.discount || 0) / 100)).toFixed(2)} EGP
-                                    </span>
-                                    {Number(p.discount) > 0 && <span className="text-xs line-through ml-2" style={{ color: 'var(--text-muted)' }}>{Number(p.price).toFixed(2)}</span>}
-                                </div>
-                                <button onClick={(e) => { e.stopPropagation(); addToCart(p); }} className="p-2 rounded-xl transition hover:scale-110" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', color: 'var(--color-primary)' }}>
-                                    <ShoppingCart size={20} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Product Detail Modal */}
-                {selectedProduct && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedProduct(null)}>
-                        <div className="rounded-3xl p-6 md:p-8 flex flex-col gap-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }} onClick={e => e.stopPropagation()}>
-                            <div className="flex justify-between items-start">
-                                <h2 className="text-2xl font-black">{selectedProduct.name}</h2>
-                                <button onClick={() => setSelectedProduct(null)} className="w-8 h-8 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20 transition">×</button>
-                            </div>
-                            
-                            {selectedProduct.images && selectedProduct.images.length > 0 && (
-                                <img src={selectedProduct.images[0]} alt={selectedProduct.name} className="w-full h-64 object-cover rounded-2xl" />
-                            )}
-                            
-                            {/* Rich HTML Description */}
-                            <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none font-medium leading-relaxed" dangerouslySetInnerHTML={{ __html: selectedProduct.description }} />
-                            
-                            <div className="flex justify-between items-center mt-4 pt-6 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
-                                <div>
-                                    <span className="font-black text-3xl text-[var(--color-primary)]">
-                                        {(Number(selectedProduct.price) * (1 - Number(selectedProduct.discount || 0) / 100)).toFixed(2)} EGP
-                                    </span>
-                                    {Number(selectedProduct.discount) > 0 && <span className="text-sm line-through ml-2" style={{ color: 'var(--text-muted)' }}>{Number(selectedProduct.price).toFixed(2)} EGP</span>}
-                                </div>
-                                <button onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }} className="px-8 py-3 rounded-xl font-bold text-black flex items-center gap-2 transition hover:scale-105" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
-                                    <ShoppingCart size={20} /> {isArabic ? 'أضف للسلة' : 'Add to Cart'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </main>
-
-            {/* Floating Cart */}
-            {cart.length > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 p-6 z-50 flex justify-center pointer-events-none">
-                    <div className="pointer-events-auto bg-black border border-white/10 shadow-2xl rounded-full p-4 flex items-center gap-6 backdrop-blur-xl">
-                        <div className="flex items-center gap-3">
-                            <ShoppingCart className="text-[var(--color-secondary)]" />
-                            <span className="font-bold">{cart.length} {isArabic ? 'منتجات' : 'Items'}</span>
-                        </div>
-                        <div className="font-black text-[var(--color-primary)] text-xl">
-                            {cartTotal.toFixed(2)} EGP
-                        </div>
-                        <button disabled={checkoutLoading} onClick={handleCheckout} className="px-8 py-3 rounded-full font-bold text-black flex items-center gap-2 transition hover:scale-105" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
-                            {checkoutLoading ? <Loader2 className="animate-spin" /> : (isArabic ? 'إتمام الشراء' : 'Checkout')}
-                        </button>
-                    </div>
+{products.length === 0 ? (
+    <div className="flex flex-col items-center justify-center p-12 text-center">
+        <span className="material-symbols-outlined text-6xl text-surface-container-highest mb-4">inventory_2</span>
+        <p className="text-on-surface-variant font-bold text-lg">{t("No gear available in the armory yet.")}</p>
+    </div>
+) : (
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    
+    {products.map((product, index) => (
+        <div key={product.id || index} className={`${index === 0 ? 'md:col-span-2 flex-col md:flex-row' : 'flex-col'} glass-card rounded-lg overflow-hidden flex border border-outline-variant/10 p-6`}>
+            {index === 0 && (
+                <div className="md:w-3/5 h-64 md:h-auto overflow-hidden -m-6 mr-6 mb-6 md:mb-0 relative">
+                    <img alt={product.name} className="absolute inset-0 w-full h-full object-cover" src={product.images?.[0] || "https://lh3.googleusercontent.com/aida-public/AB6AXuA-vEa3FYH6WrE5ofM_g4k0hBhk7nmWSzhP1LSYFDYLa0mlB_REw5yKGNcqafK3fARnYPNFOadz9gOMBZsKYkaXR4cHVsjf--Iol86p4dIL3tmE0e88RGTd4-JMqZrC8b9fDZLJARfUQ3kBRqt6AN55PI7wZf5zD62IvYerVuluZDsJ8R0kbzJDM7svUioXw4kbJWpSqXgThx6KDAJsx7BrODtGFWpfLhyedEzDYyM2eRHDdpT0L1aw2IQdATGmzSPj-EEr6QNK6ruV"}/>
                 </div>
             )}
+            {index !== 0 && (
+                <div className="h-48 rounded-lg overflow-hidden mb-6 relative">
+                    <img alt={product.name} className="absolute inset-0 w-full h-full object-cover" src={product.images?.[0] || "https://lh3.googleusercontent.com/aida-public/AB6AXuAxgJ3Oz_oMEq3rjFiwOIl2UwP7SD2azHZqwLCfe7SYAPq_V5xhtd-gPHc_H9tWG9gAzJy1LHrqilzl8hTTifuNBXdaM0MmWTAfBkYTa1Fa_mYArfHvrSUqvKn4PDf-y6ydrKhPt0xIBjbjdLqJxxislb8gsbgH6PkXGkC-ODANrR_5fjKqSc4SwSRbyq9yW2lKWmywQ8NFYMU7vKaVd8v060YxFUuhk5dw4plUU1_ziMC8-i0d1fgs1HliokJLbWemVWUxp8WewTzj"}/>
+                </div>
+            )}
+            
+            <div className={index === 0 ? "flex flex-col justify-between md:w-2/5" : "flex flex-col justify-between flex-1"}>
+                <div>
+                    {index === 0 && <span className="text-primary-fixed font-bold text-xs uppercase tracking-[0.3em] mb-2 block">{t("Premium Drop")}</span>}
+                    <h3 className={`font-headline font-bold text-on-surface ${index === 0 ? 'text-3xl mb-2' : 'text-xl mb-1'}`}>{product.name}</h3>
+                    <p className={`text-on-surface-variant ${index === 0 ? 'text-sm mb-6' : 'text-xs mb-4 uppercase tracking-widest opacity-70'}`}>
+                        {index === 0 ? product.description : product.category}
+                    </p>
+                </div>
+                
+                <div className={index === 0 ? "flex flex-col gap-4" : "mt-auto pt-4 flex justify-between items-center"}>
+                    <div className="flex items-center gap-1">
+                        <span className="material-symbols-outlined text-secondary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>diamond</span>
+                        <span className={`${index === 0 ? 'text-2xl tracking-tighter' : ''} font-black text-on-surface`}>
+                            {product.price} {index === 0 && <span className="text-xs text-on-surface-variant font-normal uppercase tracking-widest">{t("Gems")}</span>}
+                        </span>
+                    </div>
+                    {index === 0 ? (
+                        <button onClick={() => setCartCount(c => c+1)} className="w-full py-4 rounded-xl bg-primary-fixed text-on-primary-fixed font-black uppercase tracking-widest text-sm hover:scale-105 active:scale-95 transition-all neon-glow">{t("Add to Cart")}</button>
+                    ) : (
+                        <button onClick={() => setCartCount(c => c+1)} className="p-3 rounded-full bg-surface-container-highest text-primary-fixed border border-primary-fixed/30 hover:bg-primary-fixed hover:text-on-primary-fixed transition-all active:scale-90">
+                            <span className="material-symbols-outlined">shopping_cart</span>
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
-    );
+    ))}
+
+</div>
+)}
+</main>
+
+<nav className="bg-[#1f1f1f]/70 backdrop-blur-2xl fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 rounded-t-[2rem] z-50 no-border glassmorphism-surface shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/ai-coach">
+<span className="material-symbols-outlined">psychology</span>
+<span className="font-label text-[10px] uppercase tracking-widest font-bold">{t("Coach")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] hover:scale-110 transition-transform" href="/shop">
+<span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_bag</span>
+<span className="font-label text-[10px] uppercase tracking-widest font-bold">{t("Shop")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/social">
+<span className="material-symbols-outlined">dynamic_feed</span>
+<span className="font-label text-[10px] uppercase tracking-widest font-bold">{t("Feed")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/wallet">
+<span className="material-symbols-outlined">account_balance_wallet</span>
+<span className="font-label text-[10px] uppercase tracking-widest font-bold">{t("Wallet")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/squads">
+<span className="material-symbols-outlined">groups</span>
+<span className="font-label text-[10px] uppercase tracking-widest font-bold">{t("Squads")}</span>
+</Link>
+</nav>
+
+<div className="fixed bottom-32 end-6 z-[60]">
+<Link href="/shop" className="w-16 h-16 rounded-full bg-black/80 backdrop-blur-xl border border-primary-fixed/30 text-primary-fixed flex items-center justify-center shadow-[0_0_25px_rgba(255,123,0,0.5)] hover:shadow-[0_0_35px_rgba(255,123,0,0.8)] hover:scale-110 active:scale-95 transition-all duration-300 group">
+<span className="material-symbols-outlined text-3xl font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_cart</span>
+{cartCount > 0 && <span className="absolute -top-1 -right-1 bg-primary-fixed text-on-primary-fixed text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-black group-hover:animate-bounce">{cartCount}</span>}
+</Link>
+</div>
+    </div>
+  );
 }

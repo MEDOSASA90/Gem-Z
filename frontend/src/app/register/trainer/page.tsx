@@ -1,289 +1,185 @@
 'use client';
-import GemZLogo from '../../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useLanguage } from '../../../context/LanguageContext';
-import { useTheme } from '../../../context/ThemeContext';
-import { CheckCircle, ChevronRight, UploadCloud, Loader2 } from 'lucide-react';
-import { GemZApi } from '../../../lib/api';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../../../context/LanguageContext';
+import { GemZApi } from '../../../lib/api';
+import { Loader2 } from 'lucide-react';
 
-const T = {
-    en: {
-        back: '← Back to role selection',
-        title: 'Trainer Application', subtitle: 'Join the GEM Z elite coaching network',
-        step1: 'Account Details', step2: 'Professional Info', step3: 'Profile & Uploads',
-        name: 'Full Name', email: 'Email', phone: 'Phone Number', password: 'Password', confirm: 'Confirm Password',
-        specialization: 'Core Specialization', specOps: ['Bodybuilding', 'Powerlifting', 'CrossFit', 'Weight Loss', 'Rehabilitation'],
-        experience: 'Years of Experience', certs: 'Certifications (comma separated)',
-        bio: 'Short Bio', bioPh: 'Tell clients about your coaching style...',
-        rate: 'Monthly Online Plan Rate (EGP)', social: 'Instagram Handle (Optional)',
-        idFront: 'ID Card (Front)', idBack: 'ID Card (Back)', personalPhoto: 'Personal Photo (Mandatory)', dropzone: 'Upload',
-        next: 'Next', back2: 'Back', finish: 'Submit Application',
-        loginLink: 'Already have an account?', login: 'Sign In',
-        agree: 'I agree to the Terms & Privacy Policy, and understand that my ID uploads will be securely analyzed by AI to extract identity data according to platform policies.',
-        errRequired: 'Please fill all required fields.',
-    },
-    ar: {
-        back: '→ العودة لاختيار الدور',
-        title: 'طلب انضمام كمدرب', subtitle: 'انضم لشبكة GEM Z لنخبة المدربين',
-        step1: 'بيانات الحساب', step2: 'المعلومات المهنية', step3: 'الملف والرفع',
-        name: 'الاسم الكامل', email: 'البريد الإلكتروني', phone: 'رقم الهاتف', password: 'كلمة المرور', confirm: 'تأكيد كلمة المرور',
-        specialization: 'التخصص الأساسي', specOps: ['كمال الأجسام', 'رفع الأثقال', 'كروس فيت', 'إنقاص الوزن', 'تأهيل إصابات'],
-        experience: 'سنوات الخبرة', certs: 'الشهادات المعتمدة (مفصولة بفاصلة)',
-        bio: 'نبذة شخصية', bioPh: 'أخبر العملاء عن أسلوبك في التدريب...',
-        rate: 'سعر الخطة الشهرية أونلاين (ج.م)', social: 'حساب انستجرام (اختياري)',
-        idFront: 'صورة البطاقة (الوجه)', idBack: 'صورة البطاقة (الظهر)', personalPhoto: 'صورة شخصية (إلزامية)', dropzone: 'رفع',
-        next: 'التالي', back2: 'السابق', finish: 'تقديم الطلب',
-        loginLink: 'لديك حساب أونلاين؟', login: 'تسجيل الدخول',
-        agree: 'أوافق على الشروط وسياسة الخصوصية، وأتفهم أنه سيتم تحليل صور الهوية بشكل آمن بواسطة الذكاء الاصطناعي لاستخراج البيانات وتخزينها حسب سياسات المنصة.',
-        errRequired: 'يرجى ملء كافة الحقول المطلوبة.',
-    }
-};
-
-const ACCENT = 'var(--color-secondary)';
-
-export default function TrainerRegisterPage() {
-    const { isArabic } = useLanguage();
-    const { theme } = useTheme();
-    const t = isArabic ? T.ar : T.en;
-    const [step, setStep] = useState(0);
-
-    const [formData, setFormData] = useState({
-        fullName: '', email: '', phone: '', password: '', confirm: '',
-        specialization: t.specOps[0], experience: '', certs: '',
-        bio: '', rate: '', social: ''
-    });
-
-    const [idFrontBase64, setIdFrontBase64] = useState('');
-    const [idBackBase64, setIdBackBase64] = useState('');
-    const [avatarBase64, setAvatarBase64] = useState('');
+export default function Page() {
+    const { t } = useLanguage();
+    const router = useRouter();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const router = useRouter();
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'front' | 'back' | 'avatar') => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (type === 'front') setIdFrontBase64(reader.result as string);
-            else if (type === 'back') setIdBackBase64(reader.result as string);
-            else setAvatarBase64(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const validateStep = (currentStep: number) => {
-        setError('');
-        if (currentStep === 0) {
-            if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirm) {
-                setError(t.errRequired);
-                return false;
-            }
-            if (formData.password !== formData.confirm) {
-                setError(isArabic ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
-                return false;
-            }
-        }
-        if (currentStep === 1) {
-            if (!formData.specialization || !formData.experience) {
-                setError(t.errRequired);
-                return false;
-            }
-        }
-        if (currentStep === 2) {
-            if (!formData.bio || !formData.rate || !idFrontBase64 || !idBackBase64 || !avatarBase64) {
-                setError(t.errRequired);
-                return false;
-            }
-        }
-        return true;
-    };
-
-    const nextStep = () => {
-        if (validateStep(step)) setStep(s => s + 1);
-    };
+    const [cert, setCert] = useState('');
+    const [rate, setRate] = useState<number>(85);
+    const [specialty, setSpecialty] = useState('Weightloss');
 
     const handleRegister = async () => {
-        if (!validateStep(2)) return;
+        if (!email || !password || !fullName) {
+            setError(t('Please complete your core account details.'));
+            return;
+        }
         setLoading(true);
         setError('');
-
         try {
-            const payload = {
-                email: formData.email,
-                password: formData.password,
-                fullName: formData.fullName,
-                phone: formData.phone,
-                role: 'trainer',
-                idFrontBase64,
-                idBackBase64,
-                avatarBase64,
-                trainerData: {
-                    specialization: formData.specialization,
-                    experience: Number(formData.experience) || 0,
-                    certs: formData.certs.split(',').map(c => c.trim()).filter(Boolean),
-                    bio: formData.bio,
-                    rate: Number(formData.rate) || 0,
-                    social: formData.social
-                }
-            };
-            
-            const res: any = await GemZApi.Auth.register(payload);
+            const res: any = await GemZApi.Auth.register({ 
+                email, 
+                password, 
+                fullName, 
+                role: 'trainer', 
+                trainerData: { 
+                    certs: [cert], 
+                    rate: Number(rate), 
+                    specialization: specialty 
+                } 
+            });
             localStorage.setItem('gemz_access_token', res.accessToken);
             localStorage.setItem('gemz_user', JSON.stringify(res.user));
-            router.push('/trainer');
+            router.push('/trainer');  // Or wherever the trainer dashboard is
         } catch (err: any) {
-            setError(err.message || (isArabic ? 'فشل إنشاء الحساب' : 'Registration failed'));
+            setError(err.message || t('Registration failed'));
         } finally {
             setLoading(false);
         }
     };
 
-    const steps = [t.step1, t.step2, t.step3];
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body pb-32">
+      
+<header className="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_24px_rgba(255,123,0,0.12)]">
+<Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+<span className="text-2xl font-black italic text-[#ff7b00] tracking-tighter">Gem Z</span>
+</Link>
+<button className="text-[#ff7b00] font-headline font-bold tracking-tight hover:text-white transition-colors active:scale-95 duration-200">
+            العربية
+        </button>
+</header>
 
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col items-center justify-center p-6" style={{ backgroundColor: 'var(--bg-primary)' }}>
-            <div className="w-full max-w-lg">
-                <Link href="/register" className="text-sm mb-6 block hover:underline" style={{ color: ACCENT }}>{t.back}</Link>
-                <div className="text-center mb-8">
-                    <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
-                    <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
-                    <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
-                </div>
+<main className="pt-24 pb-32 px-6 max-w-4xl mx-auto">
+<div className="mb-12 flex items-center justify-between">
+<div className="flex flex-col gap-1">
+<span className="text-primary-fixed text-xs font-bold tracking-[0.2em] uppercase">{t("Step 02 / 04")}</span>
+<h1 className="text-4xl md:text-6xl font-black italic font-headline tracking-tighter text-white">{t("ELITE STATUS")}</h1>
+</div>
+<div className="hidden md:flex gap-2">
+<div className="h-1 w-12 bg-primary-fixed rounded-full shadow-[0_0_10px_rgba(255,123,0,0.5)]"></div>
+<div className="h-1 w-12 bg-primary-fixed rounded-full shadow-[0_0_15px_rgba(255,123,0,0.6)]"></div>
+<div className="h-1 w-12 bg-surface-container-highest rounded-full"></div>
+<div className="h-1 w-12 bg-surface-container-highest rounded-full"></div>
+</div>
+</div>
 
-                <div className="flex items-center gap-2 mb-8">
-                    {steps.map((s, i) => (
-                        <React.Fragment key={i}>
-                            <div className="flex items-center gap-2">
-                                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all"
-                                    style={{ background: i <= step ? ACCENT : 'var(--bg-card)', color: i <= step ? '#000' : 'var(--text-muted)', border: `1px solid ${i <= step ? ACCENT : 'var(--border-subtle)'}` }}>
-                                    {i < step ? <CheckCircle size={14} /> : i + 1}
-                                </div>
-                                <span className="text-xs hidden sm:block" style={{ color: i === step ? 'var(--text-primary)' : 'var(--text-muted)' }}>{s}</span>
-                            </div>
-                            {i < 2 && <div className="flex-1 h-px" style={{ background: i < step ? ACCENT : 'var(--border-subtle)' }} />}
-                        </React.Fragment>
-                    ))}
-                </div>
+{error && <div className="mb-8 p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm font-bold text-center">{error}</div>}
 
-                <div className="p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    {error && (
-                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm font-bold text-center">
-                            {error}
-                        </div>
-                    )}
-                    
-                    {step === 0 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                            {[{ name: 'fullName', label: t.name, type: 'text', ph: isArabic ? 'كابتن محمد' : 'Coach John' },
-                            { name: 'email', label: t.email, type: 'email', ph: 'coach@example.com' },
-                            { name: 'phone', label: t.phone, type: 'tel', ph: isArabic ? '+20 1XX XXX XXXX' : '+1 XXX XXX XXXX' },
-                            { name: 'password', label: t.password, type: 'password', ph: '••••••••' },
-                            { name: 'confirm', label: t.confirm, type: 'password', ph: '••••••••' }].map((f, i) => (
-                                <div key={i}>
-                                    <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{f.label}</label>
-                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} placeholder={f.ph} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {step === 1 && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.specialization}</label>
-                                <select name="specialization" value={formData.specialization} onChange={handleChange} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)] appearance-none" style={{ background: 'var(--bg-input)' }}>
-                                    {t.specOps.map((op, i) => <option key={i} value={op}>{op}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.experience}</label>
-                                <input name="experience" value={formData.experience} onChange={handleChange} type="number" min="0" placeholder="e.g. 5" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.certs}</label>
-                                <input name="certs" value={formData.certs} onChange={handleChange} type="text" placeholder="ISSA, NASM, ACE..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
-                            </div>
-                        </div>
-                    )}
-                    {step === 2 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.bio}</label>
-                                <textarea name="bio" value={formData.bio} onChange={handleChange} className="w-full px-4 py-3 rounded-xl text-sm input-base resize-none h-24 focus:border-[var(--color-secondary)]" placeholder={t.bioPh} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.rate}</label>
-                                    <input name="rate" value={formData.rate} onChange={handleChange} type="number" placeholder="1500" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.social}</label>
-                                    <input name="social" value={formData.social} onChange={handleChange} type="text" placeholder="@username" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[var(--color-secondary)]" />
-                                </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-3 gap-3">
-                                <div>
-                                    <label className="text-xs font-bold block mb-1 text-center" style={{ color: 'var(--text-secondary)' }}>{t.idFront}</label>
-                                    <label className="border-2 border-dashed rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer relative h-24 overflow-hidden" style={{ borderColor: idFrontBase64 ? ACCENT : 'var(--border-medium)', background: 'var(--bg-input)' }}>
-                                        {idFrontBase64 ? <img src={idFrontBase64} className="absolute inset-0 w-full h-full object-cover" /> : <UploadCloud size={20} className="mb-1 text-gray-400" />}
-                                        <span className="text-[10px] relative z-10 font-bold" style={{ color: idFrontBase64 ? 'transparent' : 'var(--text-muted)' }}>{t.dropzone}</span>
-                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'front')} />
-                                    </label>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold block mb-1 text-center" style={{ color: 'var(--text-secondary)' }}>{t.idBack}</label>
-                                    <label className="border-2 border-dashed rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer relative h-24 overflow-hidden" style={{ borderColor: idBackBase64 ? ACCENT : 'var(--border-medium)', background: 'var(--bg-input)' }}>
-                                        {idBackBase64 ? <img src={idBackBase64} className="absolute inset-0 w-full h-full object-cover" /> : <UploadCloud size={20} className="mb-1 text-gray-400" />}
-                                        <span className="text-[10px] relative z-10 font-bold" style={{ color: idBackBase64 ? 'transparent' : 'var(--text-muted)' }}>{t.dropzone}</span>
-                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'back')} />
-                                    </label>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold block mb-1 text-center" style={{ color: 'var(--text-secondary)' }}>{t.personalPhoto}</label>
-                                    <label className="border-2 border-dashed rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer relative h-24 overflow-hidden" style={{ borderColor: avatarBase64 ? ACCENT : 'var(--border-medium)', background: 'var(--bg-input)' }}>
-                                        {avatarBase64 ? <img src={avatarBase64} className="absolute inset-0 w-full h-full object-cover" /> : <UploadCloud size={20} className="mb-1 text-gray-400" />}
-                                        <span className="text-[10px] relative z-10 font-bold" style={{ color: avatarBase64 ? 'transparent' : 'var(--text-muted)' }}>{t.dropzone}</span>
-                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'avatar')} />
-                                    </label>
-                                </div>
-                            </div>
+<section className="mb-12">
+    <h2 className="text-xl font-headline font-bold text-on-surface mb-4 uppercase tracking-widest">{t("Account Credentials")}</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input value={fullName} onChange={(e) => setFullName(e.target.value)} type="text" placeholder={t("Full Name")} className="bg-surface-container p-4 rounded-xl border border-white/5 focus:border-primary-fixed focus:ring-0 transition-all outline-none" />
+        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder={t("Email Address")} className="bg-surface-container p-4 rounded-xl border border-white/5 focus:border-primary-fixed focus:ring-0 transition-all outline-none" />
+        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder={t("Password (min 8 chars)")} className="bg-surface-container p-4 rounded-xl border border-white/5 focus:border-primary-fixed focus:ring-0 transition-all outline-none" />
+    </div>
+</section>
 
-                            <label className="flex items-start gap-3 cursor-pointer mt-4">
-                                <input type="checkbox" className="w-4 h-4 mt-1 accent-[var(--color-secondary)]" />
-                                <span className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{t.agree}</span>
-                            </label>
-                        </div>
-                    )}
+<div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+<div className="md:col-span-7 space-y-10">
 
-                    <div className={`flex justify-between mt-8 gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
-                        {step > 0 && (
-                            <button onClick={() => { setError(''); setStep(s => s - 1); }} className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors hover:bg-white/5" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>
-                                {t.back2}
-                            </button>
-                        )}
-                        {step < 2 ? (
-                            <button onClick={nextStep} className="flex-1 py-3 rounded-xl text-sm font-bold text-black transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
-                                {t.next} <ChevronRight size={16} className={isArabic ? 'rotate-180' : ''} />
-                            </button>
-                        ) : (
-                            <button onClick={handleRegister} disabled={loading} className="flex-1 py-3 rounded-xl text-sm font-bold text-black text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
-                                {loading ? <Loader2 size={16} className="animate-spin" /> : <><CheckCircle size={16} /> {t.finish}</>}
-                            </button>
-                        )}
-                    </div>
-                </div>
-                <p className="text-center mt-5 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    {t.loginLink} <Link href="/login" className="font-bold hover:underline" style={{ color: ACCENT }}>{t.login}</Link>
-                </p>
-            </div>
-        </div>
-    );
+<section>
+<div className="flex items-center gap-2 mb-6">
+<span className="material-symbols-outlined text-primary-fixed" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+<h2 className="text-xl font-bold font-headline uppercase tracking-widest text-on-surface">{t("Certifications")}</h2>
+</div>
+<div className="grid grid-cols-1 gap-4">
+<div className="glass-panel p-6 rounded-lg border-l-4 border-primary-fixed transition-all hover:translate-x-1">
+<label className="text-[10px] text-primary-fixed font-bold tracking-widest uppercase block mb-2">{t("Certification Name")}</label>
+<input value={cert} onChange={e => setCert(e.target.value)} className="w-full bg-transparent border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-primary-fixed text-white placeholder:text-surface-container-highest font-medium py-2 transition-all outline-none" placeholder="NASM Certified Personal Trainer" type="text"/>
+</div>
+<div className="grid grid-cols-2 gap-4">
+<div className="glass-panel p-6 rounded-lg border-l-4 border-secondary transition-all hover:translate-x-1">
+<label className="text-[10px] text-secondary font-bold tracking-widest uppercase block mb-2">{t("Issue Date")}</label>
+<input className="w-full bg-transparent border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-secondary text-white py-2 transition-all outline-none" type="month"/>
+</div>
+<div className="glass-panel p-6 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-outline-variant hover:border-primary-fixed hover:bg-primary-fixed/5 transition-all group cursor-pointer">
+<span className="material-symbols-outlined text-outline-variant group-hover:text-primary-fixed text-3xl mb-2">add_a_photo</span>
+<span className="text-[10px] font-bold uppercase tracking-widest text-outline-variant group-hover:text-primary-fixed">{t("Upload PDF")}</span>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div className="flex items-center gap-2 mb-6">
+<span className="material-symbols-outlined text-primary-fixed" style={{ fontVariationSettings: "'FILL' 1" }}>payments</span>
+<h2 className="text-xl font-bold font-headline uppercase tracking-widest text-on-surface">{t("Pricing Strategy")}</h2>
+</div>
+<div className="bg-surface-container-low p-8 rounded-lg relative overflow-hidden group">
+<div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span className="material-symbols-outlined text-9xl">monitoring</span>
+</div>
+<div className="relative z-10 flex flex-col md:flex-row items-end gap-6">
+<div className="flex-1">
+<label className="text-[10px] text-primary-fixed font-bold tracking-widest uppercase block mb-4">{t("Base Hourly Rate")}</label>
+<div className="flex items-baseline gap-2">
+<span className="text-4xl font-black italic text-white">$</span>
+<input value={rate} onChange={e => setRate(Number(e.target.value))} className="text-6xl md:text-8xl w-full bg-transparent border-0 focus:ring-0 text-white font-black italic p-0 placeholder:text-surface-container-highest outline-none" placeholder="85" type="number"/>
+</div>
+</div>
+<div className="bg-primary-fixed text-black px-4 py-2 rounded-full font-bold text-xs uppercase tracking-tighter">{t("Market High")}</div>
+</div>
+</div>
+</section>
+</div>
+
+<div className="md:col-span-5">
+<div className="flex items-center gap-2 mb-6">
+<span className="material-symbols-outlined text-primary-fixed" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+<h2 className="text-xl font-bold font-headline uppercase tracking-widest text-on-surface">{t("Specialties")}</h2>
+</div>
+<div className="space-y-4">
+
+<div onClick={() => setSpecialty('Weightloss')} className={`group relative rounded-lg overflow-hidden bg-surface-container cursor-pointer transition-all hover:shadow-[0_0_30px_rgba(255,123,0,0.2)] ${specialty === 'Weightloss' ? 'ring-2 ring-primary-fixed' : ''}`}>
+<div className="h-32 w-full relative">
+<img alt="Weightloss" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-40 group-hover:opacity-100" data-alt="close-up of focused athlete mid-workout with sweat beads and dark moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOD-8k1r8JGoaxDxQCWswGll2gVa-sVIuRbKWJcPqXqwndzz9XWsehUiu8sCfEzH3NZsctaN-YCXDw50VebdwRMhQaP7kJpQ4KdQ_gYE_OlEqkukiAbLnVwqLDeO6-e9oOKYtmfpYxLPC8eSznQzFoZtF9ZLEvsDJZAXk1XtwzwI9ZeNTjYnZ9GXJrHfG7wLh04hVaebKxuZePJte62lazX4FKSp9BV7apN6gnUeryQ2itsGQv1Ax9KHLdJsaZ7qYhEEhduZqxFpju"/>
+<div className="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent"></div>
+</div>
+<div className="p-6 absolute bottom-0 w-full flex justify-between items-center">
+<div><h3 className="font-headline font-black italic text-xl tracking-tighter text-white uppercase">{t("Weightloss")}</h3></div>
+<div className={`w-8 h-8 rounded-full border border-primary-fixed flex items-center justify-center transition-colors ${specialty === 'Weightloss' ? 'bg-primary-fixed' : ''}`}>
+<span className="material-symbols-outlined text-primary-fixed group-hover:text-black text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check</span></div>
+</div>
+</div>
+
+<div onClick={() => setSpecialty('Strength')} className={`group relative rounded-lg overflow-hidden bg-surface-container cursor-pointer transition-all hover:shadow-[0_0_30px_rgba(255,123,0,0.2)] ${specialty === 'Strength' ? 'ring-2 ring-primary-fixed' : ''}`}>
+<div className="h-32 w-full relative">
+<img alt="Strength" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-40 group-hover:opacity-100" data-alt="extreme close up of heavy barbell iron plates in a dark gym with harsh rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR_QpShry91-ZFaCT4unPrgsT1dBsftPIkPSqSkxMI93Bmz58OKIEvIq-Ctsux97jmXSLL6imdlBF-_efy-K04YK_fT9oVfdkIGZ88RK3peUGMk89wls5iJNEj7HV3hWfP0H9NAIJhxhhPQESx2DAqq4OHuBEosu-qgr2_2fyhzjt7UcMRcsTDw2vc5t6TLfJpLkfAQW4lZTf5M5HiunG1Xe5uvTiZC5t_8rNoOqMOBM8ahKIKB6W8aaZEsElwv8u8p-jLpE4ev9vS"/>
+<div className="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+</div>
+<div className="p-6 absolute bottom-0 w-full flex justify-between items-center">
+<div><h3 className="font-headline font-black italic text-xl tracking-tighter text-white uppercase">{t("Strength")}</h3></div>
+<div className={`w-8 h-8 rounded-full border border-white/20 flex items-center justify-center transition-colors ${specialty === 'Strength' ? 'bg-primary-fixed' : ''}`}>
+<span className="material-symbols-outlined text-white/20 text-sm">add</span></div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<button onClick={handleRegister} disabled={loading} className="fixed bottom-24 right-6 w-16 h-16 rounded-full bg-primary-fixed text-black shadow-[0_0_25px_rgba(255,123,0,0.5)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group disabled:opacity-50 outline-none">
+{loading ? <Loader2 className="animate-spin" /> : <span className="material-symbols-outlined text-3xl transition-transform group-hover:translate-x-1" style={{ fontVariationSettings: "'FILL' 1" }}>arrow_forward</span>}
+</button>
+
+<div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden pointer-events-none">
+<div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px]"></div>
+<div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[100px]"></div>
+</div>
+
+    </div>
+  );
 }

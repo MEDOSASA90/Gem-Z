@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme } from '../../../context/ThemeContext';
 import { GemZApi } from '../../../lib/api';
@@ -8,6 +9,7 @@ import { BrainCircuit, Loader2, Save, FileText, Dumbbell, Activity, ShieldAlert,
 import { useRouter } from 'next/navigation';
 
 export default function AIGeneratorPage() {
+    const { t } = useLanguage();
     const { isArabic } = useLanguage();
     const { theme } = useTheme();
     const router = useRouter();

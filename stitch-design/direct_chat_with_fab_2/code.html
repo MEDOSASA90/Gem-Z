@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&amp;family=Inter:wght@400;600;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#ffc32d",
+              "surface": "#1b0a00",
+              "primary-container": "#ff7b00",
+              "tertiary-fixed": "#ffc32d",
+              "surface-container-lowest": "#000000",
+              "tertiary-dim": "#efb51c",
+              "primary-dim": "#fb7900",
+              "on-surface": "#ffe0c8",
+              "on-tertiary-container": "#584000",
+              "on-secondary-fixed-variant": "#7a4200",
+              "on-tertiary-fixed-variant": "#634900",
+              "surface-tint": "#ff9247",
+              "inverse-surface": "#fff8f5",
+              "error": "#ff7351",
+              "error-dim": "#d53d18",
+              "on-primary-fixed": "#000000",
+              "surface-container-low": "#220e00",
+              "on-primary": "#4f2100",
+              "surface-variant": "#3d1e00",
+              "on-tertiary-fixed": "#402d00",
+              "on-error-container": "#ffd2c8",
+              "inverse-on-surface": "#754c25",
+              "inverse-primary": "#9a4800",
+              "outline": "#9a6b41",
+              "primary": "#ff9247",
+              "on-tertiary": "#634800",
+              "on-error": "#450900",
+              "surface-container-high": "#341900",
+              "surface-container-highest": "#3d1e00",
+              "primary-fixed-dim": "#ea7100",
+              "on-secondary-container": "#fff6f1",
+              "background": "#1b0a00",
+              "on-secondary-fixed": "#512a00",
+              "surface-container": "#2b1400",
+              "secondary-container": "#8e4e00",
+              "on-primary-fixed-variant": "#4b2000",
+              "outline-variant": "#663f19",
+              "surface-dim": "#1b0a00",
+              "secondary-fixed": "#ffc697",
+              "tertiary-fixed-dim": "#efb51c",
+              "primary-fixed": "#ff7b00",
+              "secondary": "#fd9831",
+              "on-primary-container": "#3d1800",
+              "error-container": "#b92902",
+              "on-secondary": "#4c2700",
+              "tertiary": "#ffd47c",
+              "on-background": "#ffe0c8",
+              "on-surface-variant": "#d6a072",
+              "secondary-fixed-dim": "#ffb471",
+              "surface-bright": "#462300",
+              "secondary-dim": "#ec8b23"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"],
+              "arabic": ["IBM Plex Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #000000; color: #ffe0c8; font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .kinetic-shadow { box-shadow: 0 8px 24px rgba(255, 123, 0, 0.12); }
+        .neon-glow { filter: drop-shadow(0 0 8px rgba(255, 123, 0, 0.4)); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar from JSON -->
+<header class="bg-black/60 backdrop-blur-xl text-[#ff7b00] font-['Be_Vietnam_Pro'] font-bold tracking-tight docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a high-performance athlete with determined expression, cinematic lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoGCSACSiCrx0iooakyhJ_ND3s_ptZSU8Yi1WpmAoW8vrzTgD1oL1LXNmU_dEJoW7ZqC4synz91uGqxQxGfz8XjrcrIHHLiN4AR5DuP1jNdBRxO91pV5mvpgu6QqgiVH93TQrYLCqucQquQwv8w8YI1Flh1m87pIRVhim9qkE4XS7F0S9EzY2LtiDfGmjZR1uxaQXHd0myeOIIqUNgL6xjkR35UOiiFy9L6bQskCPXIhrEhET9mm3orKHTFUNDgiQurrVjreZChdxD"/>
+</div>
+<span class="text-2xl font-black italic text-[#ff7b00] tracking-tighter">GEM Z</span>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8 text-sm uppercase tracking-widest font-bold">
+<a class="text-[#ff7b00]" href="#">Coach</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors" href="#">Shop</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors" href="#">Feed</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors" href="#">Wallet</a>
+</nav>
+<button class="material-symbols-outlined text-[#ff7b00] scale-95 active:duration-150">notifications</button>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<!-- Sidebar: Chat List -->
+<aside class="w-20 md:w-80 bg-[#0e0e0e] flex flex-col border-r border-outline-variant/10">
+<div class="p-6 hidden md:block">
+<h2 class="text-display-lg font-headline font-black text-on-background tracking-tighter mb-2">MESSAGES</h2>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-3 pl-10 text-sm focus:ring-1 focus:ring-primary/50 text-on-surface" placeholder="Search athletes..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1 py-2 md:px-4">
+<!-- Active Chat Item -->
+<div class="flex items-center gap-4 p-3 md:p-4 rounded-xl bg-gradient-to-r from-[#ff7b00]/10 to-transparent border-l-4 border-[#ff7b00] cursor-pointer group transition-all duration-300">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover ring-2 ring-primary" data-alt="portrait of an athletic man, studio lighting, dramatic shadows, urban fitness aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4ZVdvL6EiSzjVV0_3f1V26e6anjcoVdPB1nQ-8lynG_sz7q4HiE5Odr8NyVtSDWHvxqIc83NbMM6orCjcdm7TUTyjo5B0mlPx8AkV38dyjwO-dEUSWB05YpzKKyduDkhnJ7AgNbHkdYAtThubaCyrXRl1tGqF7wjpFjIwYdvNfcXmJk7q6s5G1fWL9AC1d6Xp0RzTBpo3LibkGcqQxpzPApeM--NpExTu5aaNpdckcQCLSOvWtn1YCM_NBV9lzGd8e8TW7cybpqSY"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-primary rounded-full border-2 border-[#0e0e0e]"></span>
+</div>
+<div class="hidden md:block flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="font-bold text-primary truncate">Coach Marcus</h3>
+<span class="text-[10px] text-primary/70 font-bold">LIVE</span>
+</div>
+<p class="text-xs text-on-surface-variant truncate">Your form on the last set was elite.</p>
+</div>
+</div>
+<!-- Chat Item 2 -->
+<div class="flex items-center gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-container-high cursor-pointer transition-all duration-300">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="professional woman in fitness gear, smiling, soft ambient gym lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0nIfoh9_7g5iYMPvCHdLQun4VKrOXKWheX6w-ItxAJl4-uKU5LcFi1srj9h_V3xIczNJOqX3d5AkGhv5puh79JJrtGZevMXPo_ejZC96RusnA-krTKf2ZAfjINrqbVj1KaZ765V-UWY7rDDavx1FKAxVdEsF3d5-zI8ENFxsa8FqDcacxpEb05phndC8CkU9K18jcgMoUeMWNSTcCAOpFuRTchGpRif1O7ThRDYPKfs57fNEMPlX_jOrUXbYch6lCD6ZydTSIRAv1"/>
+</div>
+<div class="hidden md:block flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="font-bold text-on-surface truncate">Sarah Squad</h3>
+<span class="text-[10px] text-on-surface-variant">2m</span>
+</div>
+<p class="text-xs text-on-surface-variant truncate">Did you see the new challenge?</p>
+</div>
+</div>
+<!-- Chat Item 3 (Arabic Support) -->
+<div class="flex items-center gap-4 p-3 md:p-4 rounded-xl hover:bg-surface-container-high cursor-pointer transition-all duration-300">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="portrait of an athlete in a high-tech gym environment, neon accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHpQYfDFha1M8akujkgkv1u-vY49rFU5AheTml4yj6vP0YuuU3SRskz4I89nvQI2SErdayH82d1ONHNcv10DBhNfXFHyqZAtUtS1oYcXLh14Wp8b-5XxteOEUTg2hofkib_YmqiEw_NkhpguW2xt2Kq3N5BW1kSXW1qS_6AEse0wEU_QxGKc6X6_DWuP2Zhs46XPVYM5zBP516ISDtDZwTIVCnk0KNjC9eq8wS6ytjq9ZAvTPdDqYmxDl-7u6e9ZXPGcRsifdDrbAx"/>
+</div>
+<div class="hidden md:block flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="font-bold text-on-surface truncate font-arabic" dir="rtl">أحمد كابتن</h3>
+<span class="text-[10px] text-on-surface-variant">1h</span>
+</div>
+<p class="text-xs text-on-surface-variant truncate font-arabic" dir="rtl">تم تحليل الحركة بنجاح اليوم</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Conversation Panel -->
+<section class="flex-1 flex flex-col bg-surface-container-lowest relative">
+<!-- Chat Header -->
+<div class="p-6 flex items-center justify-between border-b border-outline-variant/5 bg-surface/40 backdrop-blur-md">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="coach profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHXjLsjFARnwaewDuE58rqfvwwNfQeQsFY6BuKlQmctkBsRSw0H1SsPrxin5b1FXPHN2Ng2eUqW5bY7TkjYrp5SheVVTprmiPHmIOcm9t2aA7wHCzy_ZByMz2VadlzO0Uwgff1vWFVh5C_aXccwpvylm4rosVMr6On6U2RAeN3pL5CQp9mQRsl2xv-ttcn2VRVJBZVI7bc2h3K6vZNyMqaXftf0-s3OIqlv-hnzXBFQI86KgRlE86uOyx2_m4BZr99TXqIYJuzHmTC"/>
+<div class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-[8px] flex items-center justify-center rounded-full text-on-primary font-black">AI</div>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg text-primary tracking-tight">Coach Marcus</h3>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Active Analysis Mode</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</div>
+<!-- Messages Area -->
+<div class="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
+<!-- Timestamp -->
+<div class="flex justify-center">
+<span class="px-4 py-1 rounded-full bg-surface-container text-[10px] font-bold tracking-tighter text-on-surface-variant uppercase">Today, 14:20</span>
+</div>
+<!-- Incoming Message -->
+<div class="flex gap-4 max-w-2xl">
+<img class="w-8 h-8 rounded-full object-cover mt-auto" data-alt="coach avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcaamj3teT3ubBoLCTaT0t4Ot8k_Ybvm1ePAgUAOhA-kKaLNo3OlwkPxYARrd-waT7pVRfO0X3m_-vwk5PYXcVzorbVYGaeWKLSqtzZgo3-G1aIspBSZxj_4WIfvOUcqvQuMr8fzVJ0oI2vgU_o7XwH6GRzfzZr1vgR8UpvvZpJP47v86gTlBoajG67m3HpjW2MRfCHbSVyRPehgZuNE2flpU8A3b5A5KmDl7v9QgIK4u_hhV7GZTMf0uMEAH6YWMH1iKxNH79W1-u"/>
+<div class="space-y-2">
+<div class="bg-surface-container-high p-4 rounded-2xl rounded-bl-none text-on-surface-variant leading-relaxed text-sm">
+                            Hey Elite Athlete! Your form on those deadlifts was incredible today. I noticed your lumbar stability has improved by 12% since last week.
+                        </div>
+<p class="text-[10px] text-on-surface-variant/50 font-bold ml-1">14:22</p>
+</div>
+</div>
+<!-- Outgoing Message -->
+<div class="flex gap-4 max-w-2xl ml-auto flex-row-reverse">
+<div class="space-y-2 flex flex-col items-end">
+<div class="bg-gradient-to-br from-primary to-secondary p-4 rounded-2xl rounded-br-none text-on-primary-fixed font-semibold leading-relaxed text-sm shadow-[0_4px_20px_rgba(255,123,0,0.2)]">
+                            Thanks Coach! Feeling the kinetic flow today. Ready for the next phase.
+                        </div>
+<p class="text-[10px] text-on-surface-variant/50 font-bold mr-1">14:25 • Read</p>
+</div>
+</div>
+<!-- Incoming Message with Data Card -->
+<div class="flex gap-4 max-w-2xl">
+<img class="w-8 h-8 rounded-full object-cover mt-auto" data-alt="coach avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWg6QY7WNLBq9HMtOGRkGVm5B5pAPfa_mv9JPNYZ8Xa17UvBpCKY8mqOndbRQHrarjsBToui9jOgZBKZSlj-ef2cCHep_E72V30S4q32_w9ZpLvluADmMNbyuhkyR91mXqHliyRh4Vc3RRRTkuqIX6OMws26r8SxhHSqV6vtp6PbRqClns3bdTvwBD893BkyYw5tcXDqy8FG_LHHyYXI1bTYVSLhACgx3IM6QfblAebp5Aox-7sh2JwgfFL_sTqJH3hdLAJ7IYj_Qx"/>
+<div class="space-y-4">
+<div class="bg-surface-container-high p-4 rounded-2xl rounded-bl-none text-on-surface-variant leading-relaxed text-sm">
+                            Excellent. Check out your intensity heatmap from the session:
+                        </div>
+<!-- Fitness Component: Intensity Heatmap -->
+<div class="w-64 h-32 rounded-xl bg-surface-container overflow-hidden p-4 flex items-end gap-1 border border-outline-variant/10">
+<div class="flex-1 bg-surface-variant h-[20%] rounded-t-sm"></div>
+<div class="flex-1 bg-secondary-container h-[45%] rounded-t-sm"></div>
+<div class="flex-1 bg-secondary h-[65%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-[95%] rounded-t-sm animate-pulse"></div>
+<div class="flex-1 bg-secondary h-[70%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-variant h-[30%] rounded-t-sm"></div>
+</div>
+</div>
+</div>
+<!-- Arabic Message Example -->
+<div class="flex gap-4 max-w-2xl" dir="rtl">
+<img class="w-8 h-8 rounded-full object-cover mt-auto" data-alt="athlete avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwKOV4KhAwg6-1q8Pxf3XGiSNF9abAw3tzOz9j0Zw0GsBI4Cq-M9IP1oX-68_2uj4O-dVid2fDBGixBZIR9XYPHrNOWmat2fZS3H6KWMEDUXXkJRnvKx0qJiOP3OALbdCbH0ZUJCAaSSMZ9MKZOA2vk4sxOUKx_weSFXI6iVcVTLlzAZeLo1sr_FFxlyOppJSEhTVZaquV-6JV_LbDLXXMCn54WhbvQHJfF7_ikc0xzWI-utebMi4PAEdDOV45vfFotHU37aCQL6LI"/>
+<div class="space-y-2">
+<div class="bg-surface-container-high p-4 rounded-2xl rounded-br-none text-on-surface-variant leading-relaxed text-sm font-arabic">
+                            هل سنقوم بزيادة الأوزان في جلسة الغد؟
+                        </div>
+<p class="text-[10px] text-on-surface-variant/50 font-bold mr-1">15:01</p>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-6 bg-surface/80 backdrop-blur-xl">
+<div class="max-w-4xl mx-auto relative flex items-center gap-4">
+<button class="shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+<div class="flex-1 relative">
+<input class="w-full bg-surface-container-high border-none border-b-2 border-outline-variant/20 focus:border-primary focus:ring-0 rounded-2xl py-4 px-6 text-on-surface placeholder:text-on-surface-variant/40 transition-all" placeholder="Type a message to Coach..." type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">mic</button>
+</div>
+</div>
+<button class="shrink-0 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-on-primary-fixed shadow-[0_0_20px_rgba(255,123,0,0.4)] group active:scale-95 transition-all">
+<span class="material-symbols-outlined font-black group-hover:translate-x-1 transition-transform">send</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<div class="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] animate-pulse-on-click">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Coach</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Shop</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">dynamic_feed</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Feed</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Wallet</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Squads</span>
+</div>
+</nav>
+<button class="fixed bottom-28 right-6 z-40 w-16 h-16 rounded-full bg-black/80 backdrop-blur-xl border border-[#ff7b00]/30 flex items-center justify-center text-[#ff7b00] shadow-[0_0_25px_rgba(255,123,0,0.5)] hover:shadow-[0_0_40px_rgba(255,123,0,0.8)] hover:scale-110 active:scale-95 transition-all duration-300 group rtl:left-6 rtl:right-auto">
+<span class="material-symbols-outlined text-3xl font-bold group-hover:rotate-90 transition-transform duration-300">add</span>
+</button></body></html>

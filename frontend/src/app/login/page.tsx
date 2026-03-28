@@ -41,7 +41,7 @@ export default function LoginPage() {
     const isDark = theme === 'dark';
     const router = useRouter();
 
-    const roleColors = ['var(--color-primary)', 'var(--color-secondary)', 'var(--color-purple)', '#F59E0B'];
+    const roleColors = ['#ff7b00', '#ff8c00', '#ff9e00', '#ffb300'];
     const roleIcons = ['🏋️', '🎯', '🏢', '🛍️'];
     const roleKeys = ['trainee', 'trainer', 'gym_admin', 'store_admin'];
 
@@ -77,19 +77,16 @@ export default function LoginPage() {
     return (
         <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
             {/* Background glows */}
-            <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-30" style={{ background: 'radial-gradient(circle, var(--color-primary), transparent)' }} />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full blur-[180px] pointer-events-none opacity-20" style={{ background: 'radial-gradient(circle, var(--color-secondary), transparent)' }} />
-
-            {/* Theme toggle */}
-            <button onClick={toggleTheme} className="absolute top-6 end-6 p-2.5 rounded-xl transition-colors" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
-                {isDark ? '☀️' : '🌙'}
-            </button>
+            <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-20 bg-[#ff7b00]" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full blur-[180px] pointer-events-none opacity-10 bg-[#ffb300]" />
 
             <div className="w-full max-w-md relative z-10">
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <Link href="/">
-                        <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
+                        <div className="flex justify-center w-full mb-4">
+                            <span className="text-4xl font-black italic text-[#ff7b00] tracking-tighter drop-shadow-[0_0_15px_rgba(255,123,0,0.2)]">Gem Z</span>
+                        </div>
                     </Link>
                     <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
                     <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
@@ -99,7 +96,7 @@ export default function LoginPage() {
                 <div className="mb-6">
                     <p className="text-sm mb-3 font-medium" style={{ color: 'var(--text-secondary)' }}>{t.roleLabel}</p>
                     <div className="grid grid-cols-4 gap-2">
-                        {t.roles.map((r, i) => (
+                        {t.roles.map((r: string, i: number) => (
                             <button
                                 key={i}
                                 onClick={() => setRole(i)}
@@ -133,7 +130,7 @@ export default function LoginPage() {
                         <div>
                             <div className="flex justify-between mb-2">
                                 <label className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{t.password}</label>
-                                <a href="#" className="text-sm" style={{ color: roleColors[role] }}>{t.forgot}</a>
+                                <Link href="/forgot-password" className="text-sm" style={{ color: roleColors[role] }}>{t.forgot}</Link>
                             </div>
                             <div className="relative">
                                 <input value={password} onChange={(e) => setPassword(e.target.value)} type={showPass ? 'text' : 'password'} className="w-full px-4 py-3 rounded-xl text-sm transition-colors input-base pe-12" placeholder="••••••••" />
@@ -143,7 +140,7 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <button onClick={handleLogin} disabled={loading} className="w-full py-3.5 rounded-xl font-bold text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50 shadow-[0_0_25px_rgba(var(--color-primary-rgb), 0.3]" style={{ background: `linear-gradient(135deg, ${roleColors[role]}, var(--color-secondary))` }}>
+                        <button onClick={handleLogin} disabled={loading} className="w-full py-3.5 rounded-xl font-bold text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50 shadow-[0_0_25px_rgba(255,123,0,0.3)]" style={{ background: `linear-gradient(135deg, ${roleColors[role]}, #ffb300)` }}>
                             {loading ? <Loader2 size={18} className="animate-spin" /> : <><Zap size={18} /> {t.login}</>}
                         </button>
 

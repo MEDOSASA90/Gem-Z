@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800;900&amp;family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#262626",
+              "background": "#0e0e0e",
+              "secondary-fixed": "#00fbfb",
+              "on-error": "#450900",
+              "surface-container-low": "#131313",
+              "primary-fixed": "#ff7b00",
+              "on-surface": "#ffffff",
+              "on-secondary": "#005c5c",
+              "primary-container": "#ff7b00",
+              "error-dim": "#d53d18",
+              "tertiary-fixed-dim": "#f3f0ef",
+              "inverse-surface": "#f9f9f9",
+              "tertiary-fixed": "#ffffff",
+              "error-container": "#b92902",
+              "surface-container-lowest": "#000000",
+              "on-tertiary": "#605f5f",
+              "error": "#ff7351",
+              "surface-container": "#191919",
+              "on-surface-variant": "#ababab",
+              "surface-container-highest": "#262626",
+              "on-primary": "#ffffff",
+              "surface": "#0e0e0e",
+              "surface-tint": "#ff7b00",
+              "outline-variant": "#484848",
+              "secondary": "#00fbfb",
+              "on-primary-fixed-variant": "#ff7b00",
+              "surface-dim": "#0e0e0e",
+              "secondary-fixed-dim": "#00ecec",
+              "on-secondary-container": "#d9fffe",
+              "outline": "#757575",
+              "inverse-primary": "#ff7b00",
+              "surface-bright": "#2c2c2c",
+              "on-primary-fixed": "#ffffff",
+              "on-primary-container": "#ffffff",
+              "on-tertiary-fixed-variant": "#6e6d6d",
+              "on-tertiary-fixed": "#515050",
+              "secondary-container": "#006a6a",
+              "inverse-on-surface": "#555555",
+              "on-error-container": "#ffd2c8",
+              "on-secondary-fixed": "#004747",
+              "secondary-dim": "#00ecec",
+              "on-tertiary-container": "#575656",
+              "primary": "#ff7b00",
+              "primary-dim": "#ff7b00",
+              "surface-container-high": "#1f1f1f",
+              "on-secondary-fixed-variant": "#006666",
+              "tertiary": "#fcf9f8",
+              "on-background": "#ffffff",
+              "primary-fixed-dim": "#ff7b00",
+              "tertiary-container": "#edeaea",
+              "tertiary-dim": "#edeaea"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(38, 38, 38, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .kinetic-ring {
+            transform: rotate(-90deg);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full h-16 shadow-[0_8px_24px_rgba(255,123,0,0.12)]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="User Profile" class="w-full h-auto" data-alt="close up professional portrait of a fit young athlete with focused expression in high contrast moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0vVn1Vab_yFqkLNaShPoOmwVP8gu87aDklWZLul7CseTTHl1cGx7c91e8Y8vPEic5R9K7by2gha9CqVUvcz1F-da0uKRAn9Jtxr_nOlrKNZ6b74nUHgxoGPWcSwQTF5g01ChkSpEoUMvhsXHYP4K03dUotzqHBIHUh_1XswRK16fkpJt0tXXe0CtTMQepIw4gkWNOrFhuG_ZOT8NZz1GlLjVdQOzWcLmR_Dzan19zawQ3Cb-jE8piEeaVhLDUBZbKtphH6zA-V1_X"/>
+</div>
+<span class="text-2xl font-black italic tracking-tighter text-[#ff7b00] uppercase font-headline">Gem Z</span>
+</div>
+<div class="flex items-center gap-3">
+<!-- Arabic/English Toggle -->
+<button class="bg-surface-container-high px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold font-headline border border-outline-variant/20">
+<span class="text-primary-fixed">EN</span>
+<span class="text-on-surface-variant opacity-30">|</span>
+<span class="text-on-surface-variant">عربي</span>
+</button>
+<div class="bg-surface-container-high px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed text-sm" data-icon="payments">payments</span>
+<span class="font-bold tracking-tight text-[#ff7b00] font-headline">$240.50</span>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-lg mx-auto space-y-10">
+<!-- Welcome Header -->
+<section class="space-y-1">
+<p class="text-on-surface-variant text-xs uppercase tracking-[0.2em] font-bold">Good morning, Trainee</p>
+<h1 class="text-5xl font-black font-headline tracking-tighter leading-none uppercase">PUSH YOUR <span class="text-primary-fixed">LIMITS.</span></h1>
+</section>
+<!-- Kinetic Progress Rings - Bento Style -->
+<section class="grid grid-cols-2 gap-4">
+<!-- Large Main Ring: Calories -->
+<div class="col-span-2 glass-panel p-8 rounded-lg flex items-center justify-between overflow-hidden relative group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest font-bold mb-1">Daily Energy</p>
+<h2 class="text-4xl font-black font-headline">1,842</h2>
+<p class="text-primary-fixed font-bold">kCal burned</p>
+</div>
+<div class="relative flex items-center justify-center w-32 h-32">
+<svg class="w-full h-full kinetic-ring">
+<circle class="text-surface-container-highest/20" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary-fixed drop-shadow-[0_0_12px_rgba(255,123,0,0.4)]" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="100" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed text-3xl" data-icon="local_fire_department">local_fire_department</span>
+</div>
+</div>
+</div>
+<!-- Smaller Ring: Water -->
+<div class="glass-panel p-6 rounded-lg space-y-4">
+<div class="relative w-20 h-20 mx-auto">
+<svg class="w-full h-full kinetic-ring">
+<circle class="text-surface-container-highest/20" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary-fixed drop-shadow-[0_0_12px_rgba(255,123,0,0.4)]" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213.6" stroke-dashoffset="80" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="water_drop">water_drop</span>
+</div>
+</div>
+<div class="text-center">
+<p class="text-2xl font-black font-headline tracking-tight leading-none">2.4<span class="text-sm font-bold text-on-surface-variant">L</span></p>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1">Hydration</p>
+</div>
+</div>
+<!-- Smaller Ring: Steps -->
+<div class="glass-panel p-6 rounded-lg space-y-4">
+<div class="relative w-20 h-20 mx-auto">
+<svg class="w-full h-full kinetic-ring">
+<circle class="text-surface-container-highest/20" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary-fixed drop-shadow-[0_0_12px_rgba(255,123,0,0.4)]" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213.6" stroke-dashoffset="40" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="directions_run">directions_run</span>
+</div>
+</div>
+<div class="text-center">
+<p class="text-2xl font-black font-headline tracking-tight leading-none">8.2<span class="text-sm font-bold text-on-surface-variant">k</span></p>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1">Steps</p>
+</div>
+</div>
+</section>
+<!-- Main CTA -->
+<button class="w-full group relative overflow-hidden rounded-lg p-1 bg-gradient-to-r from-primary-fixed to-[#ff4d00]">
+<div class="bg-black/80 backdrop-blur-xl group-active:bg-black/60 transition-all rounded-[calc(2rem-4px)] flex items-center justify-between px-8 py-6">
+<div class="text-left">
+<p class="text-primary-fixed text-xs font-bold uppercase tracking-widest">Today's Session</p>
+<h3 class="text-2xl font-black font-headline text-white tracking-tight">START DAILY WORKOUT</h3>
+</div>
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-black shadow-[0_0_20px_rgba(255,123,0,0.5)]">
+<span class="material-symbols-outlined font-black" data-icon="play_arrow">play_arrow</span>
+</div>
+</div>
+</button>
+<!-- Quick Access / Gym Passes -->
+<section class="space-y-4">
+<div class="flex justify-between items-end">
+<h4 class="text-lg font-black font-headline uppercase tracking-tighter">My Gym Passes</h4>
+<a class="text-primary-fixed text-xs font-bold uppercase tracking-widest border-b border-primary-fixed/30 pb-1" href="#">View All</a>
+</div>
+<div class="bg-surface-container-low rounded-lg p-6 relative overflow-hidden group">
+<!-- Background Image Decoration -->
+<div class="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity">
+<img alt="Gym" class="w-full h-full object-cover" data-alt="ultra modern luxury gym interior with dark equipment, neon ambient lighting, and floor to ceiling windows showing city skyline" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoqwW0MQH57-GstAwV1QyW3FyvnMUxwdNaD83wWVgtIcN8PK0M0y6Jt_kBaH0lHKYieMkcfDiXnMTXwc5PLwODwbb5qRPTEzvqCAMVE-2-bzAROlcigB3GxzkOomIIYQwhIyzZUwdGx7otoermLViK0FL7mmXJK7KOpQEh6iXLLj3OOWLRNUUwOXj8xmYymR9tanQDytrzQ3zd5qNfeuSA44U1thvDwuxrEsj7Ew-a3lBCAfDr230MUJ9WDehE-bFkCaWWKKMQWtz2"/>
+</div>
+<div class="relative z-10 flex items-center gap-6">
+<div class="w-16 h-16 bg-white/10 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/20">
+<span class="material-symbols-outlined text-primary-fixed text-3xl" data-icon="qr_code_2">qr_code_2</span>
+</div>
+<div>
+<p class="text-white font-black text-xl font-headline tracking-tight">Elite Performance Center</p>
+<p class="text-on-surface-variant text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="location_on">location_on</span>
+                        Downtown District
+                    </p>
+</div>
+</div>
+<div class="mt-6 flex gap-2">
+<span class="px-3 py-1 bg-primary-fixed/20 text-primary-fixed text-[10px] font-bold uppercase rounded-full border border-primary-fixed/30">Active Now</span>
+<span class="px-3 py-1 bg-white/5 text-on-surface-variant text-[10px] font-bold uppercase rounded-full">Renews in 12 days</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-6 px-4 bg-zinc-900/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-primary-fixed drop-shadow-[0_0_10px_rgba(255,123,0,0.6)] scale-110 active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Home</span>
+</a>
+<!-- Workouts -->
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-primary-fixed active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Workouts</span>
+</a>
+<!-- Social -->
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-primary-fixed active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Social</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-primary-fixed active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#ffd47c",
+              "on-surface-variant": "#d6a072",
+              "error-dim": "#d53d18",
+              "error-container": "#b92902",
+              "surface-bright": "#462300",
+              "surface-variant": "#3d1e00",
+              "secondary-container": "#8e4e00",
+              "inverse-surface": "#fff8f5",
+              "on-secondary": "#4c2700",
+              "on-primary": "#4f2100",
+              "on-error-container": "#ffd2c8",
+              "on-secondary-fixed": "#512a00",
+              "surface-container-lowest": "#000000",
+              "primary-dim": "#fb7900",
+              "on-primary-fixed": "#000000",
+              "on-error": "#450900",
+              "on-secondary-fixed-variant": "#7a4200",
+              "surface-container-highest": "#3d1e00",
+              "tertiary-fixed-dim": "#efb51c",
+              "surface-container": "#2b1400",
+              "outline-variant": "#663f19",
+              "outline": "#9a6b41",
+              "primary-fixed": "#ff7b00",
+              "surface": "#1b0a00",
+              "on-tertiary-container": "#584000",
+              "tertiary-dim": "#efb51c",
+              "error": "#ff7351",
+              "secondary-dim": "#ec8b23",
+              "surface-tint": "#ff9247",
+              "surface-container-high": "#341900",
+              "primary": "#ff9247",
+              "tertiary-fixed": "#ffc32d",
+              "on-surface": "#ffe0c8",
+              "on-tertiary": "#634800",
+              "on-tertiary-fixed-variant": "#634900",
+              "tertiary-container": "#ffc32d",
+              "surface-dim": "#1b0a00",
+              "background": "#1b0a00",
+              "inverse-on-surface": "#754c25",
+              "primary-container": "#ff7b00",
+              "secondary-fixed-dim": "#ffb471",
+              "primary-fixed-dim": "#ea7100",
+              "on-background": "#ffe0c8",
+              "surface-container-low": "#220e00",
+              "on-primary-fixed-variant": "#4b2000",
+              "inverse-primary": "#9a4800",
+              "on-primary-container": "#3d1800",
+              "on-secondary-container": "#fff6f1",
+              "on-tertiary-fixed": "#402d00",
+              "secondary-fixed": "#ffc697",
+              "secondary": "#fd9831"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-panel {
+        backdrop-filter: blur(20px);
+        background: rgba(38, 38, 38, 0.4);
+      }
+      body {
+        background-color: #000000;
+        color: #ababab;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="bg-black/60 backdrop-blur-xl border-b border-white/10 fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full shadow-[0_8px_24px_rgba(255,123,0,0.12)]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-primary-fixed/30">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional headshot of a fitness athlete with dramatic low-key lighting and orange highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCllTptp1eAd657yvuMw7zsI8bLDXmv-56capqCn9pSMRXBqFFp7PwMf2VYCOUkbGoRIGbkRCPY_0Fn2g_Lpkmm3q08T1-y33A3tJPJaDYq9shSQvDoZv2jL1e9ENRuiBIKm_SCApI8nnZjk51BGMM8mIEuorNz6RmYeTnS5DyoDdwOyuCT3Q4KYT-uA1oy1q_bLWHx_M8iuGhHGsDJKXKXRGfYK_MKjnHi94dUDZt7jaDQUScF0XrFzrQmkYqp8WFRRvROFnc-VxiB"/>
+</div>
+<span class="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline uppercase">GEM Z</span>
+</div>
+<button class="text-[#ff7b00] font-headline font-bold tracking-tight hover:text-white transition-colors active:scale-95 duration-200">
+            العربية
+        </button>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-2xl mx-auto min-h-screen">
+<!-- Step Indicator -->
+<div class="mb-12 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-[0.3em] text-primary-fixed font-bold mb-1">Onboarding</span>
+<h1 class="text-4xl font-black text-on-surface font-headline leading-none tracking-tighter">PHASE 02</h1>
+</div>
+<div class="flex gap-2">
+<div class="h-1 w-8 bg-primary-fixed rounded-full shadow-[0_0_10px_rgba(255,123,0,0.5)]"></div>
+<div class="h-1 w-8 bg-surface-container-highest rounded-full"></div>
+<div class="h-1 w-8 bg-surface-container-highest rounded-full"></div>
+</div>
+</div>
+<!-- Section 1: Goal Setting (Bento Grid Style) -->
+<section class="space-y-8 mb-16">
+<div class="space-y-2">
+<h2 class="text-display-sm font-headline font-bold text-on-surface">What's your primary goal?</h2>
+<p class="text-sm text-on-surface-variant max-w-sm">Select the objective that matches your vision for the next 90 days.</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-panel p-6 rounded-lg border border-primary-fixed/20 shadow-[0_0_20px_rgba(255,123,0,0.05)] cursor-pointer group active:scale-95 transition-all">
+<span class="material-symbols-outlined text-primary-fixed text-4xl mb-4 group-hover:scale-110 transition-transform" data-icon="fitness_center">fitness_center</span>
+<h3 class="text-on-surface font-bold font-headline mb-1">Build Muscle</h3>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Hypertrophy focus</p>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-white/5 cursor-pointer hover:border-primary-fixed/30 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-4xl mb-4" data-icon="bolt">bolt</span>
+<h3 class="text-on-surface font-bold font-headline mb-1">Fat Loss</h3>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Caloric deficit</p>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-white/5 cursor-pointer hover:border-primary-fixed/30 active:scale-95 transition-all col-span-2 flex items-center justify-between">
+<div>
+<h3 class="text-on-surface font-bold font-headline mb-1">Athletic Performance</h3>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Speed, Agility &amp; Strength</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-4xl" data-icon="speed">speed</span>
+</div>
+</div>
+</section>
+<!-- Section 2: Frequency (Visual Slider) -->
+<section class="space-y-8 mb-16">
+<div class="space-y-2">
+<h2 class="text-display-sm font-headline font-bold text-on-surface">Workout Frequency</h2>
+<p class="text-sm text-on-surface-variant">How many days per week can you commit?</p>
+</div>
+<div class="bg-surface-container-low p-8 rounded-xl border border-white/5">
+<div class="flex justify-between items-end mb-8">
+<span class="text-6xl font-black text-primary-fixed font-headline leading-none">04</span>
+<span class="text-lg font-bold text-on-surface font-headline uppercase tracking-widest">Days / Week</span>
+</div>
+<div class="relative h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-[60%] bg-gradient-to-r from-primary-fixed to-secondary shadow-[0_0_15px_rgba(255,123,0,0.4)]"></div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">
+<span>1 Day</span>
+<span>7 Days</span>
+</div>
+</div>
+</section>
+<!-- Section 3: Physical Stats (Aggressive Typography) -->
+<section class="space-y-8">
+<div class="space-y-2">
+<h2 class="text-display-sm font-headline font-bold text-on-surface">Vital Statistics</h2>
+<p class="text-sm text-on-surface-variant">We use these to calculate your metabolic baseline.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2 group">
+<label class="text-[10px] font-bold text-primary-fixed uppercase tracking-[0.2em] ml-1">Current Weight (kg)</label>
+<div class="relative">
+<input class="w-full bg-transparent border-0 border-b-2 border-outline-variant/20 focus:border-primary-fixed focus:ring-0 text-3xl font-black font-headline text-on-surface transition-all px-0 pb-4" placeholder="00.0" type="number"/>
+<div class="absolute bottom-0 left-0 h-[2px] w-0 bg-primary-fixed group-focus-within:w-full transition-all duration-500"></div>
+</div>
+</div>
+<div class="space-y-2 group">
+<label class="text-[10px] font-bold text-primary-fixed uppercase tracking-[0.2em] ml-1">Height (cm)</label>
+<div class="relative">
+<input class="w-full bg-transparent border-0 border-b-2 border-outline-variant/20 focus:border-primary-fixed focus:ring-0 text-3xl font-black font-headline text-on-surface transition-all px-0 pb-4" placeholder="000" type="number"/>
+<div class="absolute bottom-0 left-0 h-[2px] w-0 bg-primary-fixed group-focus-within:w-full transition-all duration-500"></div>
+</div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-white/5 mt-8 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="info">info</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                    Your BMI will be calculated automatically. Providing accurate data helps GEM Z tailor your intensity ramps.
+                </p>
+</div>
+</section>
+</main>
+<!-- Kinetic FAB -->
+<div class="fixed bottom-12 right-8 z-50">
+<button class="flex items-center gap-3 bg-primary-fixed text-on-primary-fixed px-8 py-4 rounded-full font-headline font-black uppercase tracking-widest shadow-[0_15px_35px_rgba(255,123,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300">
+            Next Step
+            <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- BottomNavBar Suppression Rule: This is a task-focused registration flow, so we omit the global navigation but maintain structural presence if needed for sub-navigation. For this form, we rely on the FAB. -->
+<!-- Ambient Glow Effects (Visual Decor) -->
+<div class="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary-fixed/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+<div class="fixed bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full -z-10 pointer-events-none"></div>
+</body></html>

@@ -107,6 +107,7 @@ const RECIPES = [
 ];
 
 export default function RecipeLibraryPage() {
+    const { t } = useLanguage();
     const { isArabic, toggleLanguage } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const isDark = theme === 'dark';

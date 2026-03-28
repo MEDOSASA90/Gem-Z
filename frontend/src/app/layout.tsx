@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, Tajawal } from "next/font/google";
+import { Inter, Outfit, Tajawal, Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "../context/LanguageContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import { SocketProvider } from "../context/SocketContext";
 import FloatingSupportWidget from "../components/FloatingSupportWidget";
+import GlobalToggles from "../components/GlobalToggles";
 import SideNav from "../components/SideNav";
 import TopNav from "../components/TopNav";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "600", "700", "800"], variable: "--font-outfit" });
 const tajawal = Tajawal({ subsets: ["arabic"], weight: ["400", "500", "700", "800"], variable: "--font-tajawal" });
-
+const beVietnamPro = Be_Vietnam_Pro({ subsets: ["latin"], weight: ["400", "700", "900"], variable: "--font-headline" });
 export const metadata: Metadata = {
   title: "GEM Z | The Ultimate Fitness Ecosystem",
   description: "The B2B/B2C platform connecting Trainees, Trainers, Gyms, and Stores — powered by AI.",
@@ -22,8 +23,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${tajawal.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${tajawal.variable} ${beVietnamPro.variable} dark`}>
       <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -39,15 +41,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body suppressHydrationWarning className="antialiased min-h-screen transition-colors duration-300">
+      <body suppressHydrationWarning className="font-body selection:bg-primary-fixed selection:text-on-primary-fixed bg-surface-container-lowest text-on-surface antialiased min-h-screen transition-colors duration-300">
         <ThemeProvider>
           <LanguageProvider>
             <SocketProvider>
-              <TopNav />
+              <GlobalToggles />
+              {/* <TopNav /> Removed for Stitch Integration */}
               <main className="max-w-[1440px] mx-auto min-h-screen flex flex-col relative w-full overflow-x-hidden">
                 {children}
               </main>
-              <SideNav />
+              {/* <SideNav /> Removed for Stitch Integration */}
               <FloatingSupportWidget />
             </SocketProvider>
           </LanguageProvider>

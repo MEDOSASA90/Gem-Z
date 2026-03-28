@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GEM Z | Progress Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,700;0,900;1,900&amp;family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-container": "#ffc32d",
+                        "surface": "#1b0a00",
+                        "primary-container": "#ff7b00",
+                        "tertiary-fixed": "#ffc32d",
+                        "surface-container-lowest": "#000000",
+                        "tertiary-dim": "#efb51c",
+                        "primary-dim": "#fb7900",
+                        "on-surface": "#ffe0c8",
+                        "on-tertiary-container": "#584000",
+                        "on-secondary-fixed-variant": "#7a4200",
+                        "on-tertiary-fixed-variant": "#634900",
+                        "surface-tint": "#ff9247",
+                        "inverse-surface": "#fff8f5",
+                        "error": "#ff7351",
+                        "error-dim": "#d53d18",
+                        "on-primary-fixed": "#000000",
+                        "surface-container-low": "#220e00",
+                        "on-primary": "#4f2100",
+                        "surface-variant": "#3d1e00",
+                        "on-tertiary-fixed": "#402d00",
+                        "on-error-container": "#ffd2c8",
+                        "inverse-on-surface": "#754c25",
+                        "inverse-primary": "#9a4800",
+                        "outline": "#9a6b41",
+                        "primary": "#ff9247",
+                        "on-tertiary": "#634800",
+                        "on-error": "#450900",
+                        "surface-container-high": "#341900",
+                        "surface-container-highest": "#3d1e00",
+                        "primary-fixed-dim": "#ea7100",
+                        "on-secondary-container": "#fff6f1",
+                        "background": "#1b0a00",
+                        "on-secondary-fixed": "#512a00",
+                        "surface-container": "#2b1400",
+                        "secondary-container": "#8e4e00",
+                        "on-primary-fixed-variant": "#4b2000",
+                        "outline-variant": "#663f19",
+                        "surface-dim": "#1b0a00",
+                        "secondary-fixed": "#ffc697",
+                        "tertiary-fixed-dim": "#efb51c",
+                        "primary-fixed": "#ff7b00",
+                        "secondary": "#fd9831",
+                        "on-primary-container": "#3d1800",
+                        "error-container": "#b92902",
+                        "on-secondary": "#4c2700",
+                        "tertiary": "#ffd47c",
+                        "on-background": "#ffe0c8",
+                        "on-surface-variant": "#d6a072",
+                        "secondary-fixed-dim": "#ffb471",
+                        "surface-bright": "#462300",
+                        "secondary-dim": "#ec8b23"
+                    },
+                    fontFamily: {
+                        "headline": ["Be Vietnam Pro"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: #000000; color: #ababab; font-family: 'Inter', sans-serif; }
+        .glass-card { backdrop-filter: blur(20px); }
+        .neon-glow-primary { box-shadow: 0 0 15px rgba(255, 123, 0, 0.3); }
+        .neon-text-primary { text-shadow: 0 0 8px rgba(255, 123, 0, 0.6); }
+        .asymmetric-clip { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    @keyframes neon-pulse {
+        0% { box-shadow: 0 0 5px rgba(255, 123, 0, 0.4), 0 0 10px rgba(255, 123, 0, 0.2); }
+        50% { box-shadow: 0 0 20px rgba(255, 123, 0, 0.8), 0 0 30px rgba(255, 123, 0, 0.4); }
+        100% { box-shadow: 0 0 5px rgba(255, 123, 0, 0.4), 0 0 10px rgba(255, 123, 0, 0.2); }
+    }
+    .animate-neon-pulse {
+        animation: neon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .glass-fab {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 123, 0, 0.3);
+    }
+</style></head>
+<body class="selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-black/60 backdrop-blur-xl text-[#ff7b00] docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/20 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a fit athlete with dramatic lighting and dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpmKEjMN-ap7nM1WEK2qHt6MUaKknhXVAerFW-VfMHO-qDndH-9eYL64gI4VOAxcQqP-ioQecLxU91EpOQSltzUymm6MLfZXA48EKdHm9FqdrK2VmuYvnkHvJY0uMIYgFw735Dv39fTTaxJ0BhkIqfkKsG3Q_pM373CBCC1y1YwxW6_uHRqs3g_U1x77DvNSMAlw55ZHa9JgF4nDpnZIxXK5DP11-WrhHgjmq68BAciLVGgoZhyGv6i8U_iNUuV0RXYhcYu1XlxYmy"/>
+</div>
+<span class="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-['Be_Vietnam_Pro']">GEM Z</span>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-8 font-['Be_Vietnam_Pro'] font-bold tracking-tight">
+<a class="text-[#ff7b00] transition-colors" href="#">Coach</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors" href="#">Shop</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors" href="#">Feed</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors" href="#">Wallet</a>
+</nav>
+<button class="material-symbols-outlined text-[#ff7b00] scale-95 active:duration-150">notifications</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-8 pb-32">
+<!-- Hero Section: Kinetic Typography -->
+<div class="mb-12">
+<h1 class="font-headline font-black text-6xl md:text-8xl text-on-surface tracking-tighter leading-none mb-2">
+                EVOLVE<span class="text-primary-fixed italic text-4xl md:text-6xl">.</span>
+</h1>
+<p class="font-body text-on-surface-variant max-w-md text-lg">
+                Your performance data visualized in high-definition. Track your peak state.
+            </p>
+</div>
+<!-- Bento Grid Progress Dashboard -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Weight Trend: Large Chart -->
+<div class="md:col-span-8 bg-surface-container-low rounded-lg p-8 relative overflow-hidden group">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="text-xs uppercase tracking-[0.3em] font-bold text-on-surface-variant mb-1">Body Weight</h3>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-black text-on-surface font-headline italic">78.4</span>
+<span class="text-primary-fixed font-bold">KG</span>
+<span class="ml-4 text-sm text-green-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+                                -1.2kg this week
+                            </span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-bold text-primary-fixed border border-primary-fixed/20 uppercase tracking-widest">7 Days</button>
+<button class="px-3 py-1 rounded-full text-[10px] font-bold text-on-surface-variant uppercase tracking-widest hover:text-on-surface transition-colors">30 Days</button>
+</div>
+</div>
+<!-- SVG Visualization placeholder for Kinetic Chart -->
+<div class="h-64 w-full relative flex items-end">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="chartGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ff7b00" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#ff7b00" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,150 Q100,130 200,140 T400,100 T600,120 T800,80 L800,200 L0,200 Z" fill="url(#chartGradient)"></path>
+<path class="drop-shadow-[0_0_8px_rgba(255,123,0,0.8)]" d="M0,150 Q100,130 200,140 T400,100 T600,120 T800,80" fill="none" stroke="#ff7b00" stroke-linecap="round" stroke-width="4"></path>
+<circle class="animate-pulse" cx="800" cy="80" fill="#ff7b00" r="6"></circle>
+</svg>
+<!-- Floating Data Tooltip -->
+<div class="absolute right-0 top-12 glass-card bg-surface-container-highest/60 p-3 rounded-lg border border-outline-variant/20 neon-glow-primary">
+<span class="block text-[10px] uppercase font-bold text-on-surface-variant">Today</span>
+<span class="block text-lg font-black text-on-surface">78.4 KG</span>
+</div>
+</div>
+</div>
+<!-- Upload CTA: Vertical Card -->
+<div class="md:col-span-4 bg-primary-fixed rounded-lg p-8 flex flex-col justify-between items-start text-on-primary-fixed relative overflow-hidden group">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-5xl mb-4 font-variation-settings: 'FILL' 1;">add_a_photo</span>
+<h2 class="text-3xl font-black font-headline italic leading-tight mb-4">CAPTURE THE GRIND.</h2>
+<p class="font-body text-sm font-semibold opacity-80 mb-6">Compare side-by-side progress and witness your physical transformation.</p>
+</div>
+<button class="relative z-10 w-full bg-black text-primary-fixed font-black py-4 rounded-full uppercase tracking-widest text-xs hover:scale-105 transition-transform active:scale-95">
+                    Upload Progress Photo
+                </button>
+<!-- Decorative element -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-on-primary-fixed-variant/20 rounded-full blur-3xl group-hover:bg-on-primary-fixed-variant/40 transition-colors"></div>
+</div>
+<!-- Personal Records: Bento Item -->
+<div class="md:col-span-5 bg-surface-container-high rounded-lg p-6 flex flex-col border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xs uppercase tracking-[0.3em] font-bold text-on-surface-variant">Strength Milestones</h3>
+<span class="material-symbols-outlined text-primary-fixed">military_tech</span>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center font-black text-primary-fixed italic">DL</div>
+<div>
+<h4 class="font-bold text-on-surface">Deadlift</h4>
+<p class="text-[10px] text-on-surface-variant uppercase">Last PR: 2 days ago</p>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-xl font-black text-on-surface">180<span class="text-xs text-primary-fixed ml-1">KG</span></span>
+</div>
+</div>
+<div class="h-[1px] bg-gradient-to-r from-outline-variant/20 to-transparent"></div>
+<div class="flex justify-between items-center group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center font-black text-primary-fixed italic">BS</div>
+<div>
+<h4 class="font-bold text-on-surface">Back Squat</h4>
+<p class="text-[10px] text-on-surface-variant uppercase">Last PR: 1 week ago</p>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-xl font-black text-on-surface">145<span class="text-xs text-primary-fixed ml-1">KG</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Heatmap/Activity: Bento Item -->
+<div class="md:col-span-7 bg-surface-container-low rounded-lg p-6 relative overflow-hidden">
+<h3 class="text-xs uppercase tracking-[0.3em] font-bold text-on-surface-variant mb-6">Energy Distribution</h3>
+<div class="grid grid-cols-7 gap-2">
+<!-- Fake heatmap for activity tracking -->
+<div class="h-12 bg-primary-fixed/10 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/40 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/60 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/20 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/90 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/100 rounded-sm animate-pulse shadow-[0_0_10px_#ff7b00]"></div>
+<div class="h-12 bg-surface-container-highest rounded-sm"></div>
+<!-- Row 2 -->
+<div class="h-12 bg-primary-fixed/30 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/70 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/10 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/50 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/20 rounded-sm"></div>
+<div class="h-12 bg-primary-fixed/80 rounded-sm"></div>
+<div class="h-12 bg-surface-container-highest rounded-sm"></div>
+</div>
+<div class="mt-6 flex justify-between items-end">
+<p class="text-[10px] text-on-surface-variant uppercase max-w-[150px]">Daily average intensity peaked at 88% today.</p>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-black text-on-surface italic">88</span>
+<span class="text-xs font-bold text-primary-fixed">%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Comparisons -->
+<div class="mt-12">
+<div class="flex justify-between items-end mb-8">
+<h2 class="text-2xl font-black font-headline text-on-surface italic">BODY RECOMPOSITION</h2>
+<button class="text-primary-fixed font-bold text-xs uppercase tracking-widest border-b-2 border-primary-fixed pb-1">View Gallery</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="relative group aspect-[3/4] rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant/20">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Athletic person in fitness gear posing in a dark gym environment with sharp shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEVm-ITN0afpS5X_9Yuw7runNzs6puT1i7-xExqaWHU3bRhPTKCfrD_ozBt9alxvXEGzY6DELNTbTzdRp7QmhtRtVaXTAayzUVQd6hIsKiRnoLncapznYJwYGI61kJQ2c6OS-bjvEucfq_saYu30y58sA03DlC7aWhsMlRyBBccexONB57vcGmPfTJx81LNb8SGAzjVn7R4U722KNy5DCeP8vrMU_Djkwzv-ZL0YUQm3zzd6M2FAm4dy_2QhIGB9rbq8df60Nmgj-a"/>
+<div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
+<span class="block text-[10px] font-bold uppercase tracking-widest text-primary-fixed">Oct 12</span>
+<span class="text-white font-black italic">82.1 KG</span>
+</div>
+</div>
+<div class="relative group aspect-[3/4] rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant/20">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Close up of abs and core of a fit male athlete under strong overhead gym lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgXATvV6vkSM4Q6OHh_LjqH_Y3bPU5SlF7o-Z5_B0dITlOAAraS8LvRXRvKanIe3H8jdC-Ld4powUuZ9AcLilSsO_Zj7hLEnpQmP72iY1u1h_q84LvTHjZthy9vvM76DG6Vuud7GbPCH-XszhtNmYV3L1h6FmV9D5kBB2013X29svAztxpDWII3Czn952q2WTisppfS0AcJRnNjN1ITu2qpdwTd5k8GTsnnukclFo6HJYNlrgx8SFnXePgja7sT4OLIidrT-XOmE6H"/>
+<div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
+<span class="block text-[10px] font-bold uppercase tracking-widest text-primary-fixed">Nov 04</span>
+<span class="text-white font-black italic">80.5 KG</span>
+</div>
+</div>
+<div class="relative group aspect-[3/4] rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant/20">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Female athlete flexing in high-contrast dark room with moody atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0njABprfIhtqgcl_yo4-3yFhtqjdRvxDs-GyxvxgTb3xCeJQeFBRUm5gZRmAzlcav2rimZtzR9ECKU5GWsKQIMzJCiPes7Srrwli46Xr4dCn-OVJQL1xZTbJd_xm0cFeY5qqDJafbs3aVIZnC-med8M8NFy0X0w6KV7sxK-YtkRNvlM3t7n5HNrcQrcCGMdEw3gDuoe2NwN1fMZVIOqGudak6PjHtn552E-ijgmUMJXys5buGuZOLiaXSQ4dT8gq7_s5wINLiQxfo"/>
+<div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
+<span class="block text-[10px] font-bold uppercase tracking-widest text-primary-fixed">Dec 15</span>
+<span class="text-white font-black italic">79.2 KG</span>
+</div>
+</div>
+<div class="relative group aspect-[3/4] rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant/20 ring-2 ring-primary-fixed">
+<img class="w-full h-full object-cover transition-all duration-500" data-alt="Highly defined muscular male back in a dimly lit industrial gym setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSXkOuBwSjxj5P8fOyzQfki2ZsoHqS9Url3aJdlfrOMVsylJ6djEJBfbbwQOsmEXmXwFqrrfKRqXNX_LPR9LpXCZcMH922r9V8Xno7q1HSI2HKt9zoRGe_APE1W8buSx0KKH3DYhsYZIEFk3AdYr8b5vd2t4XIggsNEOS6zpMamvwAvl1yM1t1MyMDRRmX8du6nzWPQvS0dqLvBGvnJ_vDVJTX3uOoTXj5FXFHcuEow9QJHWsFifuPi_iE1BsyGS8d4EkerdX3RNsB"/>
+<div class="absolute top-4 right-4 bg-primary-fixed text-on-primary-fixed text-[8px] font-black px-2 py-1 rounded uppercase tracking-tighter">Current</div>
+<div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
+<span class="block text-[10px] font-bold uppercase tracking-widest text-primary-fixed">Jan 22</span>
+<span class="text-white font-black italic">78.4 KG</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/70 backdrop-blur-2xl z-50 rounded-t-[2rem] shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1">psychology</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Coach</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1">shopping_bag</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1">dynamic_feed</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1">groups</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Squads</span>
+</a>
+</nav>
+<!-- Arabic Support Toggle (Floating) -->
+<div class="fixed bottom-40 end-6 z-50">
+<button class="glass-fab animate-neon-pulse w-16 h-16 rounded-full flex items-center justify-center text-[#ff7b00] transition-transform active:scale-90 hover:scale-110 group">
+<span class="material-symbols-outlined text-4xl font-bold">bolt</span>
+</button>
+</div><div class="fixed bottom-24 z-40">
+<button class="w-12 h-12 rounded-full bg-surface-container-highest border border-outline-variant/30 flex items-center justify-center text-on-surface hover:border-primary-fixed transition-colors">
+<span class="font-black text-sm">ع</span>
+</button>
+</div>
+</body></html>

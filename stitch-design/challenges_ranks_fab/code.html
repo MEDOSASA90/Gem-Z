@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;400;700;900&amp;family=Inter:wght@300;400;600;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#ffc32d",
+              "surface": "#1b0a00",
+              "primary-container": "#ff7b00",
+              "tertiary-fixed": "#ffc32d",
+              "surface-container-lowest": "#000000",
+              "tertiary-dim": "#efb51c",
+              "primary-dim": "#fb7900",
+              "on-surface": "#ffe0c8",
+              "on-tertiary-container": "#584000",
+              "on-secondary-fixed-variant": "#7a4200",
+              "on-tertiary-fixed-variant": "#634900",
+              "surface-tint": "#ff9247",
+              "inverse-surface": "#fff8f5",
+              "error": "#ff7351",
+              "error-dim": "#d53d18",
+              "on-primary-fixed": "#000000",
+              "surface-container-low": "#220e00",
+              "on-primary": "#4f2100",
+              "surface-variant": "#3d1e00",
+              "on-tertiary-fixed": "#402d00",
+              "on-error-container": "#ffd2c8",
+              "inverse-on-surface": "#754c25",
+              "inverse-primary": "#9a4800",
+              "outline": "#9a6b41",
+              "primary": "#ff9247",
+              "on-tertiary": "#634800",
+              "on-error": "#450900",
+              "surface-container-high": "#341900",
+              "surface-container-highest": "#3d1e00",
+              "primary-fixed-dim": "#ea7100",
+              "on-secondary-container": "#fff6f1",
+              "background": "#1b0a00",
+              "on-secondary-fixed": "#512a00",
+              "surface-container": "#2b1400",
+              "secondary-container": "#8e4e00",
+              "on-primary-fixed-variant": "#4b2000",
+              "outline-variant": "#663f19",
+              "surface-dim": "#1b0a00",
+              "secondary-fixed": "#ffc697",
+              "tertiary-fixed-dim": "#efb51c",
+              "primary-fixed": "#ff7b00",
+              "secondary": "#fd9831",
+              "on-primary-container": "#3d1800",
+              "error-container": "#b92902",
+              "on-secondary": "#4c2700",
+              "tertiary": "#ffd47c",
+              "on-background": "#ffe0c8",
+              "on-surface-variant": "#d6a072",
+              "secondary-fixed-dim": "#ffb471",
+              "surface-bright": "#462300",
+              "secondary-dim": "#ec8b23"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glassmorphism-surface {
+        backdrop-filter: blur(20px);
+      }
+      .tonal-transition-bg {
+        background: linear-gradient(to bottom, rgba(27, 10, 0, 0.8), rgba(0, 0, 0, 0.6));
+      }
+      .kinetic-border {
+        position: relative;
+      }
+      .kinetic-border::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, #ff7b00, #cf7502);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+  @keyframes neon-pulse {
+    0% { box-shadow: 0 0 10px rgba(255, 123, 0, 0.4), 0 0 20px rgba(255, 123, 0, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(255, 123, 0, 0.8), 0 0 50px rgba(255, 123, 0, 0.4); }
+    100% { box-shadow: 0 0 10px rgba(255, 123, 0, 0.4), 0 0 20px rgba(255, 123, 0, 0.2); }
+  }
+  .neon-pulse-glow {
+    animation: neon-pulse 2s infinite ease-in-out;
+  }
+</style></head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-black/60 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary-fixed overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Portrait of a determined elite athlete with sharp lighting and glowing orange neon highlights on a dark studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJVyLgtAH1yMP3Uw-sLa7Rm5n76WgXHQTBlfdCdlaSSbg3vNDJBmi1i2qhP-Q1tDXKD5AiWWV2WfRNrWHbl8th2Q40OD-mTLR7DZmk2GRIBGbr2_fw2C3uIYBx2DS-f_B1EkcxQ6A3FST7utJU6o2WlRbx2SCLQoVzmtej9v7ojKs-I2DVpn7m2G1kTLQQJgu35aCVKYDnMoaTqGx0LnbdwpA758H1W847-WPgolCClCHxxXJgzG3WY_R_dGyxs3SCrqqCSaTJTN_D"/>
+</div>
+<span class="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline">GEM Z</span>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-[#ff7b00] font-headline font-bold tracking-tight" href="#">Challenges</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors font-headline font-bold tracking-tight" href="#">Shop</a>
+<a class="text-gray-400 hover:text-[#ff7b00] transition-colors font-headline font-bold tracking-tight" href="#">Coach</a>
+</nav>
+<button class="text-[#ff7b00] scale-95 active:duration-150">
+<span class="material-symbols-outlined text-2xl" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-12">
+<!-- Hero Section: Featured Challenge -->
+<section class="mb-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-7">
+<div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-primary-fixed/20 text-primary-fixed mb-6 border border-primary-fixed/30">
+<span class="material-symbols-outlined text-sm" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em]">Live Challenge</span>
+</div>
+<h1 class="text-6xl md:text-8xl font-black font-headline leading-[0.9] tracking-tighter mb-8 italic uppercase">
+                    Neon <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-fixed to-tertiary-container">Sprint</span> 04
+                </h1>
+<p class="text-on-surface-variant text-lg md:text-xl max-w-xl mb-10 leading-relaxed">
+                    Push your limits in the ultimate 48-hour endurance race. Accumulate steps, burn calories, and climb the ranks to secure exclusive seasonal Gems.
+                </p>
+<div class="flex flex-wrap gap-4">
+<button class="px-10 py-5 bg-primary-fixed text-on-primary-fixed font-headline font-black rounded-lg shadow-[0_0_30px_rgba(255,123,0,0.4)] hover:scale-105 transition-transform flex items-center gap-3 group">
+                        JOIN CHALLENGE
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="px-10 py-5 bg-surface-container-high/40 backdrop-blur-md text-on-surface font-headline font-bold rounded-lg border border-outline-variant/30 hover:bg-surface-container-high transition-colors">
+                        VIEW REWARDS
+                    </button>
+</div>
+</div>
+<div class="lg:col-span-5 relative">
+<div class="aspect-square rounded-xl overflow-hidden shadow-[0_0_50px_rgba(255,123,0,0.15)] relative group">
+<img alt="Challenge Preview" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="High-contrast action shot of a runner sprinting on a dark urban track with glowing orange neon lines tracing the movement" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtrpJ1Y6CdoEZOlonAAZMS29owI4f4d9oPFzFPMeBJ_fFJ3Za9cmpgv8fwElpYnUkBnOt8E2gl66hXu2crKUjbOOdV-0qHqCkgLz6eXm1_McqxlQNgecZiSgM8Fx1Z2I9j2ZtfKklocYnim3-mDJLuCsX8nuqJKPesurjL1CQl7y1-24JlBiMmPs5KSDJ2s4m3-77XqZD07s-CHpeaCm64Xzl27Nx8PhI9T8SBouf9Ejy1vXWcxCngyELDEDw8jqsLk_fWkEWM151S"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 p-6 glassmorphism-surface bg-black/40 rounded-lg border border-white/10">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-widest mb-1">Current Prize Pool</p>
+<h3 class="text-3xl font-black text-tertiary-container italic">15,000 GEMS</h3>
+</div>
+<div class="text-right">
+<p class="text-on-surface-variant text-xs uppercase tracking-widest mb-1">Participants</p>
+<h3 class="text-3xl font-black text-on-surface">1,240</h3>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid: Interactive Leaderboard & Stats -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- Leaderboard Column -->
+<div class="md:col-span-8 bg-surface-container-low rounded-lg p-8 border border-white/5 relative overflow-hidden">
+<div class="flex justify-between items-center mb-10">
+<h2 class="text-4xl font-black font-headline italic tracking-tighter">LEADERBOARD</h2>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-bold uppercase tracking-widest">Global</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full text-xs font-bold uppercase tracking-widest hover:text-on-surface transition-colors">Squads</button>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Rank 1 -->
+<div class="group flex items-center justify-between p-6 bg-surface-container-high/40 rounded-lg border-l-4 border-primary-fixed hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-6">
+<span class="text-2xl font-black italic text-primary-fixed w-8">01</span>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img alt="Rank 1" class="w-full h-full object-cover" data-alt="Cyberpunk style profile avatar of a male athlete with holographic orange interface elements" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9Gu0VPJkcFrVaNB25SB258uAVuOUtW_s4iFJXMDgOqfTrTsn5NQ9UdJ5G0d-UT5vUxA3G820xiTqnI8LbwOM81GuK1-D6ZFY6UChdwawkP68ESX8V3k4hSjOjx79UTsoqWDximS6zJGTJX-73IbbxmcrapequV5l3L0VFWd6K45mLgGVAeZHyb9-mTfcypF4c7yjwkMKh0sFsi2Qc3uTeGml1wgXd-DIKXLBYDzYTZ-G3j6I-6ZP7BBSJfkcn9vxbrrDqwYRwcBRy"/>
+</div>
+<div>
+<h4 class="font-bold text-lg">Xenon_Pulse</h4>
+<p class="text-on-surface-variant text-sm">Level 64 • 12.4k Gems</p>
+</div>
+</div>
+<div class="text-right">
+<div class="text-2xl font-black text-tertiary-container italic">+2,500</div>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest">Expected Reward</p>
+</div>
+</div>
+<!-- Rank 2 -->
+<div class="group flex items-center justify-between p-6 bg-surface-container-low rounded-lg hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-6">
+<span class="text-2xl font-black italic text-on-surface-variant w-8">02</span>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-transparent group-hover:border-outline-variant transition-colors">
+<img alt="Rank 2" class="w-full h-full object-cover" data-alt="Minimalist futuristic avatar of a female athlete with orange lighting accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1NaM7iyIOvG8hagj8UyF6VZ0s0Oh3tX8Hbf9_DYRKU_86_RC5JgUjoQFY88ZAHb0SpDJpM9JD8PjMoxr73rjeuvCRAtkjl3Y8CgAoA34UKY588_3InZNGjn47QRrRkacuIlc7lY_x-FBbd9EwI9i8YJoOwqQFYvx3ILpvJS8Ps2GJZHLQ10aERhu-z5r3qpqTGYhTNSb0Sq5X41xGSnm7_0XoZ5w3fTpMfJun0TbwWNr8LAJnLE4tM0mqo2PPs5XpgFNAOaSlRWiZ"/>
+</div>
+<div>
+<h4 class="font-bold text-lg">Atlas_Force</h4>
+<p class="text-on-surface-variant text-sm">Level 51 • 9.8k Gems</p>
+</div>
+</div>
+<div class="text-right">
+<div class="text-2xl font-black text-on-surface-variant italic">+1,200</div>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest">Expected Reward</p>
+</div>
+</div>
+<!-- User's Current Rank (Pinned/Highlighted) -->
+<div class="group flex items-center justify-between p-6 bg-gradient-to-r from-secondary-container/30 to-transparent rounded-lg border border-secondary/20 shadow-[0_0_20px_rgba(207,117,2,0.1)]">
+<div class="flex items-center gap-6">
+<span class="text-2xl font-black italic text-secondary w-8">42</span>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-secondary shadow-[0_0_10px_rgba(207,117,2,0.5)]">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="Elite athlete portrait in dark settings with amber lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_BJdO1XeojU9LuQgsEzIkuByydM63HZc3koR7OsXyE2xWZOeWqp79jx_5gMMnMNRu6M8ri7ngBflqin0MQsYCpB-MpZxfk5L24kQPiFWZKvHym_cv5QYYvx_J17KgGZ82uIBI5QuGZpcklSGcXs9o8LhTIqRje6xQUr54eM9-BMJ4vg_RnhW_paAACksrNJ8KctiGgMkKyUC6nUc_HpgeKhZx7IX5zJEBB1lfzgFujHDgbnBeoNns8cVBOM6Rl3p4M6iuu64GKf9b"/>
+</div>
+<div>
+<h4 class="font-bold text-lg">YOU</h4>
+<p class="text-secondary text-sm font-bold uppercase tracking-tighter">Elite Athlete • Level 42</p>
+</div>
+</div>
+<div class="text-right">
+<div class="text-2xl font-black text-secondary italic">+150</div>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest">Expected Reward</p>
+</div>
+</div>
+<!-- Rank 3 -->
+<div class="group flex items-center justify-between p-6 bg-surface-container-low rounded-lg hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-6">
+<span class="text-2xl font-black italic text-on-surface-variant w-8">03</span>
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Rank 3" class="w-full h-full object-cover" data-alt="Aggressive athletic profile with orange backlighting and deep shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYxN861-HjMeEja7ueTFbLsQOtIeISWo0UNsQPkfkjpb_pEcaXMBdfPQfvz2HXZL-mh9WFxN0O3ys6i12Rnsu1zs6z7uFd_IjFOTj0tLWTeGqzaQ2tY5tEIx-IYN9yZOqavNYNfQ_IsrDj376SH3PbSxcrgIo2QUlDdfMCksrHk9AWlyaxk6sCYOZUap8SA6uoigXUnACqFZOYFNL1hKJDKynQXQLL1azoSxDH40lRBOeDvT5BzbDpHZYoTcIJQyN1cpcrXhqXKx1y"/>
+</div>
+<div>
+<h4 class="font-bold text-lg">Cipher_Sprint</h4>
+<p class="text-on-surface-variant text-sm">Level 48 • 8.2k Gems</p>
+</div>
+</div>
+<div class="text-right">
+<div class="text-2xl font-black text-on-surface-variant italic">+800</div>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest">Expected Reward</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-4 text-on-surface-variant font-bold uppercase tracking-[0.3em] text-xs hover:text-primary-fixed transition-colors border-t border-white/5">
+                    View Full Rankings (500+)
+                </button>
+</div>
+<!-- Side Widgets -->
+<div class="md:col-span-4 space-y-6">
+<!-- Prize Breakdown -->
+<div class="bg-surface-container-high p-8 rounded-lg border border-white/5">
+<h3 class="text-xl font-black font-headline italic mb-6">REWARD TIERS</h3>
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary-container" data-icon="military_tech">military_tech</span>
+<span class="text-sm font-bold">Top 1%</span>
+</div>
+<span class="font-black text-tertiary-container italic">Legendary Gem</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-gray-400" data-icon="workspace_premium">workspace_premium</span>
+<span class="text-sm font-bold">Top 5%</span>
+</div>
+<span class="font-black text-on-surface italic">Epic Loot Box</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-700" data-icon="verified">verified</span>
+<span class="text-sm font-bold">Participation</span>
+</div>
+<span class="font-black text-on-surface-variant italic">100 Gems</span>
+</div>
+</div>
+</div>
+<!-- Personal Progress Widget -->
+<div class="bg-black border border-primary-fixed/30 p-8 rounded-lg relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-fixed/10 rounded-full blur-2xl group-hover:bg-primary-fixed/20 transition-all"></div>
+<h3 class="text-xl font-black font-headline italic mb-6">YOUR PROGRESS</h3>
+<div class="space-y-4">
+<div class="flex justify-between text-xs font-bold uppercase tracking-widest">
+<span class="text-on-surface-variant">Daily Goal</span>
+<span class="text-primary-fixed">78%</span>
+</div>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-fixed to-tertiary-container w-[78%]"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-relaxed pt-2">
+                            Only <span class="text-on-surface font-bold">2,400 steps</span> left to unlock your daily streak bonus.
+                        </p>
+</div>
+</div>
+<!-- Squad Challenge Teaser -->
+<div class="bg-surface-container-low p-8 rounded-lg border border-white/5">
+<h3 class="text-xl font-black font-headline italic mb-4">SQUAD UP</h3>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Join forces with your squad to multiply your collective rewards by 1.5x.</p>
+<button class="w-full py-3 bg-surface-container-high text-on-surface font-black rounded-lg text-xs uppercase tracking-widest hover:bg-secondary-container/50 transition-colors">
+                        INVITE SQUAD
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Navigation Drawer (Desktop Context Only) -->
+<aside class="hidden lg:fixed left-0 top-24 bottom-24 h-[calc(100vh-12rem)] w-20 hover:w-80 bg-[#0e0e0e] rounded-r-[2rem] shadow-2xl shadow-orange-900/20 flex flex-col p-6 group transition-all duration-300 ease-in-out z-40">
+<div class="flex items-center gap-4 mb-10 overflow-hidden">
+<div class="min-w-[3rem] h-12 rounded-full bg-surface-container-high border-2 border-primary-fixed overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close-up of a high-performance athlete profile in a dark neon environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi7jX1LXSKtIhTWFP5BT73nrWaOKaMfeGAFvOyG3ykYF9e9qYQnBrdDFQ5UWisxT-PQYFO2Qr0l6cDHbbKgf0XhMWfqZUHyW2bYZdDstuvTpWHyCE2kuu3fo_Ga5nsrqrUud1OjcneNieKTUlWkej-EN5g0Tx8fgwaK7csLl1sBQv2I9-zL9X7oJChJGU68oyo6E4_mq8V42NhvFCJB9X0MHyA53dpZ900zqAp07kvNqK85wWdc3eeEKrhVwxb5xfvcWr9cZSWF07a"/>
+</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity">
+<p class="font-headline font-black text-primary-fixed whitespace-nowrap">Elite Athlete</p>
+<p class="text-xs text-on-surface-variant whitespace-nowrap">Level 42 • 1,240 Gems</p>
+</div>
+</div>
+<nav class="space-y-4">
+<a class="flex items-center gap-4 p-3 rounded-lg text-gray-300 hover:bg-[#1f1f1f] transition-all" href="#">
+<span class="material-symbols-outlined min-w-[1.5rem]" data-icon="accessibility_new">accessibility_new</span>
+<span class="opacity-0 group-hover:opacity-100 font-headline text-lg whitespace-nowrap">AI Form Analysis</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-[#ff7b00]/20 to-transparent text-[#ff7b00] border-l-4 border-[#ff7b00]" href="#">
+<span class="material-symbols-outlined min-w-[1.5rem]" data-icon="bolt">bolt</span>
+<span class="opacity-0 group-hover:opacity-100 font-headline text-lg whitespace-nowrap">Challenges</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg text-gray-300 hover:bg-[#1f1f1f] transition-all" href="#">
+<span class="material-symbols-outlined min-w-[1.5rem]" data-icon="restaurant">restaurant</span>
+<span class="opacity-0 group-hover:opacity-100 font-headline text-lg whitespace-nowrap">Nutritionist</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg text-gray-300 hover:bg-[#1f1f1f] transition-all" href="#">
+<span class="material-symbols-outlined min-w-[1.5rem]" data-icon="gavel">gavel</span>
+<span class="opacity-0 group-hover:opacity-100 font-headline text-lg whitespace-nowrap">Auctions</span>
+</a>
+<div class="pt-10">
+<a class="flex items-center gap-4 p-3 rounded-lg text-gray-300 hover:bg-[#1f1f1f] transition-all" href="#">
+<span class="material-symbols-outlined min-w-[1.5rem]" data-icon="settings">settings</span>
+<span class="opacity-0 group-hover:opacity-100 font-headline text-lg whitespace-nowrap">Settings</span>
+</a>
+</div>
+</nav>
+</aside>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Coach</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)]" href="#">
+<span class="material-symbols-outlined" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Challenges</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Squads</span>
+</a>
+</nav>
+<!-- Floating Action Button - Supressed as per Shell Logic for Challenges/Leaderboard focus -->
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 md:bottom-10 md:right-10 z-[60] w-16 h-16 flex items-center justify-center rounded-full bg-black/80 backdrop-blur-xl border border-primary-fixed/30 text-primary-fixed shadow-2xl transition-transform hover:scale-110 active:scale-95 neon-pulse-glow rtl:left-6 rtl:right-auto md:rtl:left-10 md:rtl:right-auto">
+<span class="material-symbols-outlined text-3xl font-bold" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</button></body></html>

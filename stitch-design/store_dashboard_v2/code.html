@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GEM Z - Store Owner Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,700;0,900;1,900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary": "#ffd47c",
+                        "on-surface-variant": "#d6a072",
+                        "error-dim": "#d53d18",
+                        "error-container": "#b92902",
+                        "surface-bright": "#462300",
+                        "surface-variant": "#3d1e00",
+                        "secondary-container": "#8e4e00",
+                        "inverse-surface": "#fff8f5",
+                        "on-secondary": "#4c2700",
+                        "on-primary": "#4f2100",
+                        "on-error-container": "#ffd2c8",
+                        "on-secondary-fixed": "#512a00",
+                        "surface-container-lowest": "#000000",
+                        "primary-dim": "#fb7900",
+                        "on-primary-fixed": "#000000",
+                        "on-error": "#450900",
+                        "on-secondary-fixed-variant": "#7a4200",
+                        "surface-container-highest": "#262626",
+                        "tertiary-fixed-dim": "#efb51c",
+                        "surface-container": "#2b1400",
+                        "outline-variant": "#663f19",
+                        "outline": "#9a6b41",
+                        "primary-fixed": "#ff7b00",
+                        "surface": "#1b0a00",
+                        "on-tertiary-container": "#584000",
+                        "tertiary-dim": "#efb51c",
+                        "error": "#ff7351",
+                        "secondary-dim": "#ec8b23",
+                        "surface-tint": "#ff9247",
+                        "surface-container-high": "#341900",
+                        "primary": "#ff9247",
+                        "tertiary-fixed": "#ffc32d",
+                        "on-surface": "#ffe0c8",
+                        "on-tertiary": "#634800",
+                        "on-tertiary-fixed-variant": "#634900",
+                        "tertiary-container": "#ffc32d",
+                        "surface-dim": "#1b0a00",
+                        "background": "#000000",
+                        "inverse-on-surface": "#754c25",
+                        "primary-container": "#ff7b00",
+                        "secondary-fixed-dim": "#ffb471",
+                        "primary-fixed-dim": "#ea7100",
+                        "on-background": "#ffe0c8",
+                        "surface-container-low": "#131313",
+                        "on-primary-fixed-variant": "#4b2000",
+                        "inverse-primary": "#9a4800",
+                        "on-primary-container": "#3d1800",
+                        "on-secondary-container": "#fff6f1",
+                        "on-tertiary-fixed": "#402d00",
+                        "secondary-fixed": "#ffc697",
+                        "secondary": "#fd9831"
+                    },
+                    fontFamily: {
+                        "headline": ["Be Vietnam Pro"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #ff7b00 0%, #e3aa07 100%);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 15px rgba(255, 123, 0, 0.4);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2b1400;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-6 h-16 shadow-[0_8px_24px_rgba(255,123,0,0.12)]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/30">
+<img alt="Store Owner Profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a stylish modern business owner with professional lighting and minimalist background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTmtR2g3F8FfhTx6m4IK0Q1Rt9H98tCc7CdNLsdyU0fVjhxFvAYcRDSA90-m79CWM1Yd-wvjpKCag_bJm1c1nzVpMyV0zq0HbUGzIMU-Rr93Qe6aa-71ccbNP_NkM9-vqYs9QVau21YfRkFnCEpZJRiMYlFwBkjYNUstB_8ERC3L7Tq75nxNymj6JMr6l-nsGDBQx1STTbYan4JnLSMcm54eSbYTaE4g9NerOFAs_FGhzPRc71y1E_xljCxyPXP_A2EpA2R3_qzK1q"/>
+</div>
+<h1 class="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline">GEM Z</h1>
+</div>
+<button class="text-[#ff7b00] font-headline font-bold tracking-tight hover:text-[#ff7b00] transition-colors active:scale-95 duration-200">
+            العربية
+        </button>
+</header>
+<main class="pt-24 px-6 max-w-7xl mx-auto space-y-12">
+<!-- Sales Analytics Section -->
+<section>
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div class="space-y-1">
+<span class="text-secondary uppercase tracking-[0.2em] text-[10px] font-bold">Performance Overview</span>
+<h2 class="text-5xl md:text-7xl font-black font-headline tracking-tighter text-white">REVENUE</h2>
+</div>
+<div class="flex gap-2 bg-surface-container-low p-1 rounded-full">
+<button class="px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-primary-container text-on-primary-container shadow-lg">Weekly</button>
+<button class="px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-white transition-colors">Monthly</button>
+</div>
+</div>
+<!-- Kinetic Graph Card -->
+<div class="relative bg-surface-container-low/40 rounded-xl p-8 glass-panel border border-white/5 h-[350px] overflow-hidden">
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<div class="absolute top-1/2 left-0 w-full h-[1px] bg-white/10"></div>
+<div class="absolute top-1/4 left-0 w-full h-[1px] bg-white/5"></div>
+<div class="absolute top-3/4 left-0 w-full h-[1px] bg-white/5"></div>
+</div>
+<!-- SVG Graph Mockup -->
+<svg class="w-full h-full overflow-visible" viewbox="0 0 1000 300">
+<defs>
+<lineargradient id="neonGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:#ff7b00;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#fd9831;stop-opacity:1"></stop>
+</lineargradient>
+<filter id="glow">
+<fegaussianblur result="coloredBlur" stddeviation="5"></fegaussianblur>
+<femerge>
+<femergenode in="coloredBlur"></femergenode>
+<femergenode in="SourceGraphic"></femergenode>
+</femerge>
+</filter>
+</defs>
+<path d="M0,250 Q100,220 200,240 T400,100 T600,180 T800,40 T1000,60" fill="none" filter="url(#glow)" stroke="url(#neonGradient)" stroke-linecap="round" stroke-width="6"></path>
+<path d="M0,250 Q100,220 200,240 T400,100 T600,180 T800,40 T1000,60 V300 H0 Z" fill="url(#neonGradient)" fill-opacity="0.05"></path>
+<!-- Interaction Nodes -->
+<circle cx="800" cy="40" fill="#ff7b00" filter="url(#glow)" r="8"></circle>
+</svg>
+<div class="absolute top-12 left-12 flex flex-col">
+<span class="text-4xl font-black font-headline text-white">$42,890.00</span>
+<span class="text-primary font-bold text-sm">+12.4% vs last period</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Stats -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low p-8 rounded-lg space-y-4 border-l-4 border-primary">
+<span class="material-symbols-outlined text-primary text-3xl">shopping_bag</span>
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-widest font-bold">Total Orders</p>
+<p class="text-3xl font-black font-headline text-white">1,284</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-8 rounded-lg space-y-4 border-l-4 border-secondary">
+<span class="material-symbols-outlined text-secondary text-3xl">group</span>
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-widest font-bold">New Customers</p>
+<p class="text-3xl font-black font-headline text-white">342</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-8 rounded-lg space-y-4 border-l-4 border-tertiary">
+<span class="material-symbols-outlined text-tertiary text-3xl">account_balance_wallet</span>
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-widest font-bold">Avg. Ticket</p>
+<p class="text-3xl font-black font-headline text-white">$156.20</p>
+</div>
+</div>
+</section>
+<!-- Inventory Management -->
+<section class="space-y-8">
+<div class="flex items-center justify-between">
+<h3 class="text-3xl font-black font-headline tracking-tight text-white italic">INVENTORY</h3>
+<div class="relative flex-1 max-w-md ml-8 hidden md:block">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-b-2 border-outline-variant/20 focus:border-primary transition-all rounded-t-lg px-12 py-3 outline-none text-sm" placeholder="Search products..." type="text"/>
+</div>
+</div>
+<!-- Product Table -->
+<div class="bg-surface-container-low/20 rounded-xl overflow-hidden glass-panel">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low/60 text-on-surface-variant">
+<th class="px-8 py-6 text-xs font-bold uppercase tracking-[0.2em]">Product Name</th>
+<th class="px-8 py-6 text-xs font-bold uppercase tracking-[0.2em]">Stock Level</th>
+<th class="px-8 py-6 text-xs font-bold uppercase tracking-[0.2em]">Price</th>
+<th class="px-8 py-6 text-xs font-bold uppercase tracking-[0.2em] text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container overflow-hidden">
+<img alt="Product" class="w-full h-full object-cover" data-alt="Close-up of high-end vibrant orange designer sneaker with studio lighting and clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEqLtyUrpzzNkk2fFjXFhFBGF2Rno-ZAYzKd4VnGgqhf7YQjXYRKK3TaX2reKF1nTIKP6gRDi-63BA3v4rtzSlCaidJ_ess_gHuaUHxKgBqX7d_aak9ftE-U0FvmTLWqeudZj86R0egO3li0TmN2ADcEUQPOyeMNSTRqW9i2rVZ78Eu4YLnSYY8cylVI1iFBgS9KBTImFZF3xVFSLzUdr4vXaxUXMGW_w55cS7Buaqsrnt34OSlW4yKTM-ZOdKRAdcJhjofWa0l2Wp"/>
+</div>
+<div>
+<p class="font-bold text-white">Hyper-Volt Sneaker</p>
+<p class="text-xs text-on-surface-variant">ID: HV-2024-X</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between text-[10px] font-bold uppercase">
+<span>42 Units</span>
+<span class="text-primary">Optimized</span>
+</div>
+<div class="h-1 w-32 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full kinetic-gradient w-[70%]"></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-headline font-black text-lg">$280.00</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-white">edit_note</button>
+</td>
+</tr>
+<tr class="bg-surface-container-low/30 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container overflow-hidden">
+<img alt="Product" class="w-full h-full object-cover" data-alt="Sleek modern minimalist smartwatch with silver casing and white band on a dark textured surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy48wevh0UxmHIPGgSQ9bOvlwK8RBU-IM3L-Emj33XJ8qSKIZ1YyTMXJVq1QYLnPHarCCFyAAQmTjl0JGARnd24rWxd5UmydtLqewK3ds2kIu9FP_ISgOBOnWWJmPu0I6E_ytc-UDIhA8qsc-ozeJVe49Il6vyN8f6SkD7fMlIRinq1-nhAaiMpOfO9rT6LDHQGQI60Aots20cWcGSAPsHsXnJoKhSzocX8I9BGtQ2924Ws7yVSIMzx8jh7tsX2pz0TtOZ_39ojY_0"/>
+</div>
+<div>
+<p class="font-bold text-white">Gem-Z Chronos</p>
+<p class="text-xs text-on-surface-variant">ID: CH-9912-A</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between text-[10px] font-bold uppercase">
+<span>12 Units</span>
+<span class="text-error">Low Stock</span>
+</div>
+<div class="h-1 w-32 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error w-[20%]"></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-headline font-black text-lg">$450.00</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-white">edit_note</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container overflow-hidden">
+<img alt="Product" class="w-full h-full object-cover" data-alt="High-fidelity black wireless headphones on a wooden desk with golden hour lighting shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFQkRqC-0X5XpPvrNSWZNF6GG5VyxlrmyxLqhQqsrToJ9Z_qkvIe5M0quLWHNIw8jouUUJrzfugifBLATT3qck4DczTCZ1TTsmy8XJULv3W8Q3AxklTHgAMUGru31BqKHQZUEf3iOpxgJnnDjSU3PWfSDB5_MTOcLe08HoDmWQfiki02dAA0ZknSAyTL79zDz71Ufk8VrxFJ1rmKtdnzzOUPeUkCZGSqR2lP9EP4xoDsnIKfQtEktNi_hwn0-pkRcCq2gFr-69_Pih"/>
+</div>
+<div>
+<p class="font-bold text-white">Sonic-Boom Pro</p>
+<p class="text-xs text-on-surface-variant">ID: SB-5502-K</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between text-[10px] font-bold uppercase">
+<span>89 Units</span>
+<span class="text-secondary">Overstock</span>
+</div>
+<div class="h-1 w-32 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[90%]"></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-headline font-black text-lg">$199.00</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-white">edit_note</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<!-- Kinetic FAB -->
+<button class="fixed bottom-24 right-8 w-16 h-16 kinetic-gradient rounded-full flex items-center justify-center text-on-primary shadow-[0_0_20px_rgba(255,123,0,0.6)] active:scale-90 transition-transform duration-300 z-[60]">
+<span class="material-symbols-outlined text-3xl font-black">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-[#262626]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#ff7b00]/20 text-[#ff7b00] rounded-full p-3 shadow-[0_0_15px_rgba(255,123,0,0.4)] active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">Analytics</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">Products</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">Staff</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest mt-1">Bank</span>
+</div>
+</nav>
+</body></html>

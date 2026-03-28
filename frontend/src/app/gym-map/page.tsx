@@ -1,262 +1,168 @@
 'use client';
-import React, { useState } from 'react';
-import {
-    MapPin, Star, Clock, Tag, Zap, Filter, Globe,
-    Navigation, Phone, CheckCircle, ChevronRight, Search, X
-} from 'lucide-react';
-import { useLanguage } from '../../context/LanguageContext';
-import { useTheme } from '../../context/ThemeContext';
+import React from 'react';
 import Link from 'next/link';
-import GemZLogo from '../../components/GemZLogo';
+import { useLanguage } from '../../context/LanguageContext';
 
-const GYMS = [
-    { id: 1, name: 'Gold Gym Elite', nameAr: 'جولد جيم إيليت', city: 'Cairo', cityAr: 'القاهرة', area: 'Maadi', areaAr: 'المعادي', rating: 4.8, reviews: 1240, distance: '1.2 km', price: 850, priceMonthly: 850, discount: 20, discountReason: 'Off-peak 9AM–12PM', discountReasonAr: 'خصم ساعات الهدوء 9-12', features: ['Pool', 'Sauna', 'Classes', 'Parking'], open: '06:00 – 23:00', phone: '+20 100 000 0001', isOpen: true, isFeatured: true, color: 'var(--color-primary)', emoji: '🏆' },
-    { id: 2, name: 'Platinum Fitness', nameAr: 'بلاتينيوم فيتنس', city: 'Cairo', cityAr: 'القاهرة', area: 'Zamalek', areaAr: 'الزمالك', rating: 4.6, reviews: 890, distance: '2.8 km', price: 650, priceMonthly: 650, discount: 15, discountReason: 'Weekend flash sale', discountReasonAr: 'عرض عطلة نهاية الأسبوع', features: ['Classes', 'Spa', 'Cafe'], open: '07:00 – 22:00', phone: '+20 100 000 0002', isOpen: true, isFeatured: false, color: 'var(--color-purple)', emoji: '⚡' },
-    { id: 3, name: 'Iron House', nameAr: 'آيرون هاوس', city: 'Giza', cityAr: 'الجيزة', area: '6th of October', areaAr: '6 أكتوبر', rating: 4.5, reviews: 634, distance: '4.1 km', price: 500, priceMonthly: 500, discount: 0, discountReason: '', discountReasonAr: '', features: ['Free Weights', 'Boxing', 'Parking'], open: '06:00 – 00:00', phone: '+20 100 000 0003', isOpen: true, isFeatured: false, color: 'var(--color-orange)', emoji: '🔥' },
-    { id: 4, name: 'FitNation', nameAr: 'فيت نيشن', city: 'Alexandria', cityAr: 'الإسكندرية', area: 'Smouha', areaAr: 'سموحة', rating: 4.3, reviews: 412, distance: '8.6 km', price: 420, priceMonthly: 420, discount: 30, discountReason: 'New member deal', discountReasonAr: 'عرض العضو الجديد', features: ['Pool', 'Cardio Zone', 'Classes'], open: '08:00 – 22:00', phone: '+20 100 000 0004', isOpen: false, isFeatured: false, color: 'var(--color-secondary)', emoji: '🏊' },
-    { id: 5, name: 'Power Zone', nameAr: 'باور زون', city: 'Cairo', cityAr: 'القاهرة', area: 'Heliopolis', areaAr: 'مصر الجديدة', rating: 4.7, reviews: 988, distance: '3.5 km', price: 720, priceMonthly: 720, discount: 10, discountReason: 'GEM Z exclusive', discountReasonAr: 'حصري GEM Z', features: ['Crossfit', 'Personal Training', 'Sauna'], open: '05:30 – 23:30', phone: '+20 100 000 0005', isOpen: true, isFeatured: true, color: 'var(--color-warning)', emoji: '💪' },
-];
+export default function Page() {
+    const { t, isArabic, toggleLanguage } = useLanguage();
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body">
+      
 
-const MAP_DOTS = [
-    { x: 30, y: 40, gymId: 1 }, { x: 55, y: 25, gymId: 2 }, { x: 20, y: 65, gymId: 3 },
-    { x: 75, y: 55, gymId: 4 }, { x: 60, y: 70, gymId: 5 },
-];
+<header className="bg-black/60 backdrop-blur-xl text-[#ff7b00] font-['Be_Vietnam_Pro'] font-bold tracking-tight docked full-width top-0 sticky z-50 no-border tonal-transition-bg shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+<div className="flex items-center gap-4">
+<div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<a href="#" className="cursor-pointer hover:opacity-80 transition-opacity w-full h-full block" onClick={(e) => { e.preventDefault(); try { const r=JSON.parse(localStorage.getItem('gemz_user')||'{}').role; window.location.href=r==='trainer'?'/trainer':r==='gym_admin'?'/gym':(r==='store_owner'||r==='store_admin')?'/store/dashboard':'/trainee'; } catch(err) { window.location.href='/login'; } }}><img alt="User Profile" className="w-full h-full object-cover" data-alt="Portrait of a determined athlete with a focused expression in a dimly lit high-end fitness studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsuBDlyIQql2GU1sPbbChgTAckM3f3hWGChb2siCoOW-3GDywlUjMy59EQWJUPQCGUl4h4DWEEW6Ubssu2PyaGyJW9nhTICQcO5NZLb46sKSxZkQjEd9TNguOSlbUSG7fbCJvZLdv6CjCxBGk7lUnyk7rnq5m38siAhRFa7nfcj0FVStRTAscZlX8zavzIXTOBzwFDgLpug2qiH6D-YxbPj-DWvYrU2piWbguFrCfG86QEY4JM-3kLhiSUOyBRacd-AopwocledZl-"/></a>
+</div>
+<a href="https://gem-z.shop/"><span className="text-2xl font-black italic text-[#ff7b00] tracking-tighter">{t("GEM Z")}</span></a>
+</div>
+<div className="flex items-center gap-6">
+<nav className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest">
+<Link className="text-gray-400 hover:text-[#ff7b00] transition-colors" href="/ai-coach">{t("Coach")}</Link>
+<Link className="text-[#ff7b00]" href="/shop">{t("Shop")}</Link>
+<Link className="text-gray-400 hover:text-[#ff7b00] transition-colors" href="/social">{t("Feed")}</Link>
+<Link className="text-gray-400 hover:text-[#ff7b00] transition-colors" href="/wallet">{t("Wallet")}</Link>
+</nav>
+<button className="material-symbols-outlined text-2xl scale-95 active:duration-150">notifications</button>
+</div>
+</header>
+<main className="relative h-[calc(100vh-72px)] w-full overflow-hidden">
 
-export default function GymMapPage() {
-    const { isArabic, toggleLanguage } = useLanguage();
-    const { theme, toggleTheme } = useTheme();
-    const isDark = theme === 'dark';
-    const [searchQuery, setSearchQuery] = useState('');
-    const [cityFilter, setCityFilter] = useState('all');
-    const [showDiscountsOnly, setShowDiscountsOnly] = useState(false);
-    const [selectedGym, setSelectedGym] = useState<typeof GYMS[0] | null>(null);
-    const [selectedMapDot, setSelectedMapDot] = useState<number | null>(null);
-    const [view, setView] = useState<'map' | 'list'>('map');
+<div className="absolute inset-0 z-0">
+<div className="w-full h-full grayscale brightness-50 contrast-125" data-location="Riyadh, SA" >
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115904.60114002675!2d46.738586!3d24.774265!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f03890d489399%3A0xba974d1c98e79fd5!2sRiyadh%20Saudi%20Arabia!5e0!3m2!1sen!2sae!4v1711200000000!5m2!1sen!2sae" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="opacity-80 pointer-events-auto"></iframe>
+<div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
+</div>
 
-    const filtered = GYMS.filter(g => {
-        const matchSearch = g.name.toLowerCase().includes(searchQuery.toLowerCase()) || g.nameAr.includes(searchQuery) || g.area.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchCity = cityFilter === 'all' || g.city === cityFilter || g.cityAr === cityFilter;
-        const matchDiscount = !showDiscountsOnly || g.discount > 0;
-        return matchSearch && matchCity && matchDiscount;
-    });
+<div className="absolute top-[30%] left-[25%] group cursor-pointer">
+<div className="marker-glow bg-primary-fixed w-6 h-6 rounded-full border-4 border-black flex items-center justify-center">
+<div className="w-1.5 h-1.5 bg-black rounded-full"></div>
+</div>
+<div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 glass-panel bg-surface-container-highest/80 px-3 py-1 rounded-full border border-primary/30 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+<span className="text-[10px] font-bold tracking-tighter uppercase">{t("Titan Forge Gym")}</span>
+</div>
+</div>
+<div className="absolute top-[55%] left-[65%] group cursor-pointer">
+<div className="marker-glow bg-primary-fixed w-8 h-8 rounded-full border-4 border-black flex items-center justify-center">
+<span className="material-symbols-outlined text-black text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>fitness_center</span>
+</div>
+<div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 glass-panel bg-primary-fixed px-3 py-1 rounded-full border border-black whitespace-nowrap">
+<span className="text-[10px] font-bold text-black tracking-tighter uppercase">{t("Z-Core Hub (Selected)")}</span>
+</div>
+</div>
+<div className="absolute top-[40%] right-[15%] group cursor-pointer">
+<div className="marker-glow bg-secondary w-5 h-5 rounded-full border-2 border-black"></div>
+</div>
+</div>
 
-    const hoveredGym = GYMS.find(g => g.id === selectedMapDot);
+<div className="absolute top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-20">
+<div className="glass-panel bg-surface-container-highest/60 p-1.5 rounded-full shadow-2xl border border-outline-variant/10 flex items-center gap-3">
+<div className="pl-4">
+<span className="material-symbols-outlined text-primary text-xl">search</span>
+</div>
+<input className="bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/50 w-full font-body text-sm py-2" placeholder="Find your next arena..." type="text"/>
+<button className="bg-primary-fixed text-black p-2 rounded-full hover:scale-105 active:scale-95 transition-all">
+<span className="material-symbols-outlined text-xl">tune</span>
+</button>
+</div>
 
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="h-screen flex flex-col font-sans" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            {/* Nav */}
-            <nav className="shrink-0 px-6 py-4 flex items-center justify-between border-b z-40" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                <div className="flex items-center gap-4">
-                    <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
-                    <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2"><MapPin size={18} className="text-[var(--color-primary)]" />{isArabic ? 'خريطة الصالات' : 'Gym Locator'}</h1>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{GYMS.length} {isArabic ? 'صالة شريكة قريبة منك' : 'partner gyms near you'}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                        <button onClick={() => setView('map')} className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all" style={{ background: view === 'map' ? 'var(--color-primary)' : 'transparent', color: view === 'map' ? '#000' : 'var(--text-secondary)' }}>🗺 {isArabic ? 'خريطة' : 'Map'}</button>
-                        <button onClick={() => setView('list')} className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all" style={{ background: view === 'list' ? 'var(--color-primary)' : 'transparent', color: view === 'list' ? '#000' : 'var(--text-secondary)' }}>☰ {isArabic ? 'قائمة' : 'List'}</button>
-                    </div>
-                    <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
-                    <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
-                </div>
-            </nav>
+<div className="flex gap-2 mt-4 justify-center no-scrollbar overflow-x-auto px-4">
+<button className="glass-panel bg-primary-fixed/20 border border-primary/40 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-primary whitespace-nowrap">24/7 Access</button>
+<button className="glass-panel bg-surface-container-high/40 border border-outline-variant/20 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-on-surface-variant whitespace-nowrap">{t("Crossfit")}</button>
+<button className="glass-panel bg-surface-container-high/40 border border-outline-variant/20 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-on-surface-variant whitespace-nowrap">{t("MMA Cage")}</button>
+</div>
+</div>
 
-            {/* Search + Filters */}
-            <div className="shrink-0 px-6 py-3 flex gap-3 border-b overflow-x-auto" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-card)' }}>
-                <div className="relative min-w-[200px]">
-                    <Search size={14} className="absolute top-1/2 -translate-y-1/2 start-3" style={{ color: 'var(--text-muted)' }} />
-                    <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={isArabic ? 'ابحث عن صالة...' : 'Search gyms...'}
-                        className="ps-8 pe-4 py-2 rounded-xl text-sm input-base w-full" />
-                </div>
-                <select value={cityFilter} onChange={e => setCityFilter(e.target.value)} className="px-3 py-2 rounded-xl text-sm input-base shrink-0">
-                    <option value="all">{isArabic ? 'كل المدن' : 'All Cities'}</option>
-                    <option value="Cairo">{isArabic ? 'القاهرة' : 'Cairo'}</option>
-                    <option value="Giza">{isArabic ? 'الجيزة' : 'Giza'}</option>
-                    <option value="Alexandria">{isArabic ? 'الإسكندرية' : 'Alexandria'}</option>
-                </select>
-                <button onClick={() => setShowDiscountsOnly(!showDiscountsOnly)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition-all"
-                    style={{ background: showDiscountsOnly ? 'var(--color-primary)' : 'var(--bg-input)', color: showDiscountsOnly ? '#000' : 'var(--text-secondary)', border: `1px solid ${showDiscountsOnly ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
-                    <Tag size={14} /> {isArabic ? 'عروض فقط' : 'Deals Only'}
+<div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-[95%] max-w-2xl z-30">
+<div className="glass-panel bg-[#1f1f1f]/90 rounded-lg p-6 shadow-[0_-20px_50px_rgba(0,0,0,0.6)] border-t border-primary/20 flex flex-col md:flex-row gap-6">
+
+<div className="w-full md:w-48 h-32 md:h-auto rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Gym Interior" className="w-full h-full object-cover" data-alt="High-end industrial style gym interior with orange neon lighting and professional weightlifting equipment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIawaaz-ME69V_uZyFctR0MKk6DGml8774R6ZPIbJqzT4SvhAdmrn6HntoHCBX1QCGxOpVgtcN_d5cTptsOZENF6mPdB0PVocuBp65Z2NHFXdcPc9LqbbtmTSe-JZB2kr8lOtWPufaOO-_FiaonWg0EuCyP7eQiDWPYm-xOZEhoKoJO1rxWHj6fJ6voYav71OFxifdhvGjE6mZSSjTSaJ-BSBENoR0T7T7pNrMb6Fb8AqT1QEp2eqeV5Jfm_g6eBvfWYlRsP1wM2wb"/>
+</div>
+
+<div className="flex-grow space-y-3">
+<div className="flex justify-between items-start">
+<div>
+<h2 className="font-headline text-2xl font-black text-primary italic leading-none tracking-tight">{t("Z-CORE HUB")}</h2>
+<p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mt-1">Downtown Tech District • 0.8km away</p>
+</div>
+<div className="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded text-[10px] font-black italic">{t("ELITE GRADE")}</div>
+</div>
+<div className="flex items-center gap-4 py-2">
+<div className="flex items-center gap-1">
+<span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>{t("star")}</span>
+<span className="text-sm font-bold">4.9</span>
+</div>
+<div className="w-1 h-1 bg-outline-variant rounded-full"></div>
+<div className="text-sm text-on-surface-variant font-medium">850+ Athletes</div>
+</div>
+<div className="flex flex-wrap gap-2">
+<span className="text-[10px] px-2 py-0.5 bg-surface-container-highest border border-outline-variant/30 rounded text-on-surface-variant uppercase font-bold">{t("Steam Room")}</span>
+<span className="text-[10px] px-2 py-0.5 bg-surface-container-highest border border-outline-variant/30 rounded text-on-surface-variant uppercase font-bold">{t("Free Weights")}</span>
+<span className="text-[10px] px-2 py-0.5 bg-surface-container-highest border border-outline-variant/30 rounded text-on-surface-variant uppercase font-bold">{t("AI Coach")}</span>
+</div>
+<div className="pt-4 flex items-center justify-between gap-4">
+<div className="flex flex-col">
+<span className="text-[10px] text-on-surface-variant uppercase font-bold">{t("Daily Pass")}</span>
+<span className="text-xl font-headline font-black text-on-surface">15.00 GEMS</span>
+</div>
+<Link href="/wallet" className="bg-primary-fixed hover:shadow-[0_0_20px_rgba(255,123,0,0.4)] text-black px-8 py-3 rounded-full font-headline font-black italic text-lg transition-all active:scale-95 flex items-center gap-2">{t("BUY PASS")}<span className="material-symbols-outlined">bolt</span>
+</Link>
+</div>
+</div>
+
+<button onClick={toggleLanguage} className="absolute top-4 right-4 text-[10px] font-headline bg-black/80 px-3 py-1.5 rounded border border-white/20 hover:bg-white/10 transition-colors z-50 cursor-pointer text-on-surface">
+                    {isArabic ? 'English' : 'عربي'}
                 </button>
-            </div>
+</div>
+</div>
 
-            <div className="flex-1 flex overflow-hidden">
-                {/* MAP VIEW */}
-                {view === 'map' && (
-                    <>
-                        {/* Interactive Map (Stylized placeholder) */}
-                        <div className="flex-1 relative overflow-hidden" style={{ background: isDark ? '#0D1117' : '#e8f4e8' }}>
-                            {/* Map grid lines */}
-                            <svg className="absolute inset-0 w-full h-full opacity-10">
-                                {Array.from({ length: 20 }).map((_, i) => (
-                                    <React.Fragment key={i}>
-                                        <line x1={`${i * 5}%`} y1="0" x2={`${i * 5}%`} y2="100%" stroke={isDark ? '#fff' : '#000'} strokeWidth="0.5" />
-                                        <line x1="0" y1={`${i * 5}%`} x2="100%" y2={`${i * 5}%`} stroke={isDark ? '#fff' : '#000'} strokeWidth="0.5" />
-                                    </React.Fragment>
-                                ))}
-                            </svg>
-                            {/* Roads simulation */}
-                            <svg className="absolute inset-0 w-full h-full opacity-20">
-                                <line x1="0" y1="40%" x2="100%" y2="40%" stroke="var(--color-primary)" strokeWidth="2" />
-                                <line x1="0" y1="70%" x2="100%" y2="70%" stroke="var(--color-primary)" strokeWidth="1.5" />
-                                <line x1="35%" y1="0" x2="35%" y2="100%" stroke="var(--color-primary)" strokeWidth="2" />
-                                <line x1="65%" y1="0" x2="65%" y2="100%" stroke="var(--color-primary)" strokeWidth="1.5" />
-                            </svg>
-                            {/* "You are here" pin */}
-                            <div className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
-                                <div className="w-6 h-6 rounded-full bg-[var(--color-secondary)] border-4 border-white shadow-lg flex items-center justify-center">
-                                    <div className="w-2 h-2 rounded-full bg-white" />
-                                </div>
-                                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold whitespace-nowrap" style={{ color: 'var(--color-secondary)' }}>
-                                    {isArabic ? 'أنت هنا' : 'You'}
-                                </div>
-                            </div>
-                            {/* Gym pins */}
-                            {MAP_DOTS.map(dot => {
-                                const gym = GYMS.find(g => g.id === dot.gymId)!;
-                                return (
-                                    <div key={dot.gymId} className="absolute cursor-pointer transition-all hover:scale-125"
-                                        style={{ left: `${dot.x}%`, top: `${dot.y}%`, transform: 'translate(-50%,-50%)' }}
-                                        onClick={() => { setSelectedMapDot(dot.gymId === selectedMapDot ? null : dot.gymId); setSelectedGym(gym); }}>
-                                        <div className="relative">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-lg transition-all ${selectedMapDot === dot.gymId ? 'scale-125' : ''}`}
-                                                style={{ background: gym.color, border: selectedMapDot === dot.gymId ? '3px solid white' : 'none' }}>
-                                                {gym.emoji}
-                                            </div>
-                                            {gym.discount > 0 && (
-                                                <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[var(--color-danger)] flex items-center justify-center text-white text-[9px] font-bold">
-                                                    -{gym.discount}%
-                                                </div>
-                                            )}
-                                            {selectedMapDot === dot.gymId && (
-                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45" style={{ background: 'white' }} />
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            {/* Selected gym popup */}
-                            {hoveredGym && selectedMapDot && (
-                                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-72 rounded-2xl p-4 shadow-2xl"
-                                    style={{ background: 'var(--bg-card)', border: `1px solid ${hoveredGym.color}50` }}>
-                                    <button onClick={() => setSelectedMapDot(null)} className="absolute top-3 end-3"><X size={14} style={{ color: 'var(--text-muted)' }} /></button>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="text-2xl">{hoveredGym.emoji}</div>
-                                        <div>
-                                            <h4 className="font-bold">{isArabic ? hoveredGym.nameAr : hoveredGym.name}</h4>
-                                            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? hoveredGym.areaAr : hoveredGym.area} • {hoveredGym.distance}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-1"><Star size={12} className="text-[var(--color-warning)] fill-[var(--color-warning)]" /><span className="text-sm font-bold">{hoveredGym.rating}</span></div>
-                                        <div className="font-bold text-sm" style={{ color: hoveredGym.color }} dir="ltr">EGP {hoveredGym.discount > 0 ? Math.round(hoveredGym.price * (1 - hoveredGym.discount / 100)) : hoveredGym.price}/mo</div>
-                                    </div>
-                                    {hoveredGym.discount > 0 && <div className="text-xs text-[var(--color-danger)] mb-3 font-bold">🏷 {isArabic ? hoveredGym.discountReasonAr : hoveredGym.discountReason} — {hoveredGym.discount}% OFF</div>}
-                                    <button onClick={() => setSelectedGym(hoveredGym)} className="w-full py-2 rounded-xl text-sm font-bold text-black" style={{ background: hoveredGym.color }}>
-                                        {isArabic ? 'عرض التفاصيل' : 'View Details'}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
+<div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-20">
+<button className="w-12 h-12 glass-panel bg-surface-container-highest/80 rounded-full flex items-center justify-center border border-outline-variant/20 hover:border-primary/50 transition-colors">
+<span className="material-symbols-outlined text-on-surface">my_location</span>
+</button>
+<button className="w-12 h-12 glass-panel bg-surface-container-highest/80 rounded-full flex items-center justify-center border border-outline-variant/20 hover:border-primary/50 transition-colors">
+<span className="material-symbols-outlined text-on-surface">layers</span>
+</button>
+<button className="w-12 h-12 glass-panel bg-surface-container-highest/80 rounded-full flex items-center justify-center border border-outline-variant/20 hover:border-primary/50 transition-colors">
+<span className="material-symbols-outlined text-on-surface">add</span>
+</button>
+<button className="w-12 h-12 glass-panel bg-surface-container-highest/80 rounded-full flex items-center justify-center border border-outline-variant/20 hover:border-primary/50 transition-colors">
+<span className="material-symbols-outlined text-on-surface">remove</span>
+</button>
+</div>
+<div className="fixed bottom-32 right-6 z-50 md:bottom-10 pointer-events-none">
+<button className="group pointer-events-auto relative flex h-16 w-16 items-center justify-center rounded-full bg-black/80 text-[#ff7b00] shadow-[0_0_30px_rgba(255,123,0,0.4)] backdrop-blur-xl border border-[#ff7b00]/30 transition-all hover:scale-110 hover:shadow-[0_0_50px_rgba(255,123,0,0.6)] active:scale-95">
+<span className="material-symbols-outlined text-3xl font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>navigation</span>
 
-                {/* LIST VIEW */}
-                {view === 'list' && (
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                        {filtered.map(gym => (
-                            <div key={gym.id} onClick={() => setSelectedGym(gym)} className="rounded-2xl p-5 cursor-pointer transition-all hover:scale-[1.01]"
-                                style={{ background: 'var(--bg-card)', border: `1px solid ${gym.isFeatured ? `${gym.color}40` : 'var(--border-subtle)'}` }}>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0" style={{ background: `${gym.color}15` }}>{gym.emoji}</div>
-                                    <div className="flex-1">
-                                        <div className="flex items-start justify-between mb-1">
-                                            <div>
-                                                <h3 className="font-bold">{isArabic ? gym.nameAr : gym.name}</h3>
-                                                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}><MapPin size={10} className="inline" /> {isArabic ? gym.areaAr : gym.area} • {gym.distance}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-bold" style={{ color: gym.color }} dir="ltr">EGP {gym.discount > 0 ? Math.round(gym.price * (1 - gym.discount / 100)) : gym.price}</p>
-                                                {gym.discount > 0 && <p className="text-xs line-through" style={{ color: 'var(--text-muted)' }}>{gym.price}</p>}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-xs">
-                                            <span className="flex items-center gap-1"><Star size={10} className="text-[var(--color-warning)]" />{gym.rating} ({gym.reviews})</span>
-                                            <span className={`px-2 py-0.5 rounded-full font-bold ${gym.isOpen ? 'bg-[#34C759]/10 text-[#34C759]' : 'bg-gray-800 text-gray-500'}`}>{gym.isOpen ? (isArabic ? 'مفتوح' : 'Open') : (isArabic ? 'مغلق' : 'Closed')}</span>
-                                            {gym.discount > 0 && <span className="px-2 py-0.5 rounded-full font-bold bg-[var(--color-danger)]/10 text-[var(--color-danger)]">-{gym.discount}%</span>}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+<div className="absolute inset-0 rounded-full border-2 border-[#ff7b00]/20 animate-ping opacity-20 group-hover:opacity-40"></div>
+</button>
+</div>
+</main>
 
-                {/* Side panel: Gym Detail */}
-                {selectedGym && (
-                    <div className="w-80 border-s flex flex-col overflow-y-auto" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-card)' }}>
-                        <div className="p-5 border-b" style={{ borderColor: 'var(--border-subtle)', background: `${selectedGym.color}08` }}>
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="text-4xl">{selectedGym.emoji}</div>
-                                <button onClick={() => setSelectedGym(null)}><X size={18} style={{ color: 'var(--text-muted)' }} /></button>
-                            </div>
-                            <h2 className="font-bold text-xl font-heading mb-1">{isArabic ? selectedGym.nameAr : selectedGym.name}</h2>
-                            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                <MapPin size={12} />{isArabic ? selectedGym.areaAr : selectedGym.area}, {isArabic ? selectedGym.cityAr : selectedGym.city}
-                            </div>
-                            <div className="flex items-center gap-3 mt-3">
-                                <div className="flex items-center gap-1"><Star size={14} className="text-[var(--color-warning)] fill-[var(--color-warning)]" /><span className="font-bold">{selectedGym.rating}</span><span className="text-xs" style={{ color: 'var(--text-secondary)' }}>({selectedGym.reviews})</span></div>
-                                <span className="text-xs">{selectedGym.distance}</span>
-                            </div>
-                        </div>
-                        <div className="p-5 space-y-4 flex-1">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'السعر الشهري' : 'Monthly Price'}</p>
-                                    <p className="text-3xl font-bold font-mono" style={{ color: selectedGym.color }} dir="ltr">
-                                        {selectedGym.discount > 0 ? `EGP ${Math.round(selectedGym.price * (1 - selectedGym.discount / 100))}` : `EGP ${selectedGym.price}`}
-                                    </p>
-                                    {selectedGym.discount > 0 && <p className="text-sm line-through" style={{ color: 'var(--text-muted)' }}>EGP {selectedGym.price}</p>}
-                                </div>
-                                {selectedGym.discount > 0 && (
-                                    <div className="px-3 py-2 rounded-xl text-center" style={{ background: 'rgba(255,59,48,0.1)', border: '1px solid rgba(255,59,48,0.3)' }}>
-                                        <p className="text-xl font-bold text-[var(--color-danger)]">-{selectedGym.discount}%</p>
-                                        <p className="text-xs text-[var(--color-danger)]">{isArabic ? 'خصم' : 'OFF'}</p>
-                                    </div>
-                                )}
-                            </div>
-                            {selectedGym.discount > 0 && (
-                                <div className="p-3 rounded-xl text-sm" style={{ background: 'rgba(255,204,0,0.1)', border: '1px solid rgba(255,204,0,0.2)' }}>
-                                    🏷 {isArabic ? selectedGym.discountReasonAr : selectedGym.discountReason}
-                                </div>
-                            )}
-                            <div className="flex items-center gap-2 text-sm"><Clock size={14} style={{ color: 'var(--text-muted)' }} />{selectedGym.open}</div>
-                            <div className="flex items-center gap-2 text-sm"><Phone size={14} style={{ color: 'var(--text-muted)' }} />{selectedGym.phone}</div>
-                            <div>
-                                <p className="text-xs font-bold mb-2" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'المرافق:' : 'Amenities:'}</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {selectedGym.features.map(f => (
-                                        <span key={f} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style={{ background: 'var(--bg-input)', color: 'var(--text-secondary)' }}>
-                                            <CheckCircle size={10} className="text-[var(--color-primary)]" />{f}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="p-5 border-t space-y-3" style={{ borderColor: 'var(--border-subtle)' }}>
-                            <button className="w-full py-3 rounded-xl font-bold text-black" style={{ background: selectedGym.color }}>
-                                {isArabic ? '💳 اشترك الآن' : '💳 Subscribe Now'}
-                            </button>
-                            <button className="w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                                <Navigation size={14} />{isArabic ? 'اعرض على الخريطة' : 'Get Directions'}
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    );
+<footer className="md:hidden bg-[#1f1f1f]/70 backdrop-blur-2xl fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 rounded-t-[2rem] z-50 no-border glassmorphism-surface shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/ai-coach">
+<span className="material-symbols-outlined text-2xl">psychology</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Coach")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] hover:scale-110 transition-transform" href="/shop">
+<span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_bag</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Shop")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/social">
+<span className="material-symbols-outlined text-2xl">{t("dynamic_feed")}</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Feed")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/wallet">
+<span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Wallet")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/squads">
+<span className="material-symbols-outlined text-2xl">{t("groups")}</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Squads")}</span>
+</Link>
+</footer>
+
+    </div>
+  );
 }

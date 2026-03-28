@@ -86,7 +86,7 @@ const T = {
     }
 };
 
-const ICONS = {
+const ICONS: Record<string, React.ReactNode> = {
     platform: <Shield size={20} />,
     trainees: <User size={20} />,
     trainers: <Briefcase size={20} />,
@@ -135,7 +135,7 @@ export default function TermsPage() {
                             const isActive = activeSection === key;
                             return (
                                 <button
-                                    key={key}
+                                    key={key as string}
                                     onClick={() => setActiveSection(key)}
                                     className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all w-full text-start ${isActive ? 'shadow-lg' : 'hover:bg-white/5'}`}
                                     style={{ 
@@ -168,7 +168,7 @@ export default function TermsPage() {
                         </div>
 
                         <div className="space-y-6">
-                            {t.content[activeSection].map((paragraph, idx) => (
+                            {t.content[activeSection].map((paragraph: string, idx: number) => (
                                 <div key={idx} className="flex gap-4 animate-in fade-in slide-in-from-bottom-2" style={{ animationDelay: `${idx * 100}ms`, animationFillMode: 'both' }}>
                                     <div className="mt-1">
                                         <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'var(--bg-input)', color: '#00E5FF', border: '1px solid var(--border-medium)' }}>

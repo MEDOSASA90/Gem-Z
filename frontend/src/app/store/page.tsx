@@ -1,2 +1,8 @@
+'use client';
 import StoreDashboard from '../../components/StoreDashboard';
-export default function Page() { return <StoreDashboard />; }
+import { useLanguage } from '../../context/LanguageContext';
+
+export default function Page() {
+    const { t } = useLanguage(); 
+    return <StoreDashboard />; 
+}

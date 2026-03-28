@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme } from '../../../context/ThemeContext';
 import { GemZApi } from '../../../lib/api';
@@ -8,6 +9,7 @@ import { QrCode, Ticket, Loader2, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function PassesPage() {
+    const { t } = useLanguage();
     const { isArabic } = useLanguage();
     const [passes, setPasses] = useState<any[]>([]);
     const [gyms, setGyms] = useState<any[]>([]);

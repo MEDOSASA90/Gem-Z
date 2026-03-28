@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Store Registration Wizard - GEM Z</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&amp;family=Inter:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#ffd47c",
+              "on-surface-variant": "#d6a072",
+              "error-dim": "#d53d18",
+              "error-container": "#b92902",
+              "surface-bright": "#462300",
+              "surface-variant": "#3d1e00",
+              "secondary-container": "#8e4e00",
+              "inverse-surface": "#fff8f5",
+              "on-secondary": "#4c2700",
+              "on-primary": "#4f2100",
+              "on-error-container": "#ffd2c8",
+              "on-secondary-fixed": "#512a00",
+              "surface-container-lowest": "#000000",
+              "primary-dim": "#fb7900",
+              "on-primary-fixed": "#000000",
+              "on-error": "#450900",
+              "on-secondary-fixed-variant": "#7a4200",
+              "surface-container-highest": "#3d1e00",
+              "tertiary-fixed-dim": "#efb51c",
+              "surface-container": "#2b1400",
+              "outline-variant": "#663f19",
+              "outline": "#9a6b41",
+              "primary-fixed": "#ff7b00",
+              "surface": "#1b0a00",
+              "on-tertiary-container": "#584000",
+              "tertiary-dim": "#efb51c",
+              "error": "#ff7351",
+              "secondary-dim": "#ec8b23",
+              "surface-tint": "#ff9247",
+              "surface-container-high": "#341900",
+              "primary": "#ff9247",
+              "tertiary-fixed": "#ffc32d",
+              "on-surface": "#ffe0c8",
+              "on-tertiary": "#634800",
+              "on-tertiary-fixed-variant": "#634900",
+              "tertiary-container": "#ffc32d",
+              "surface-dim": "#1b0a00",
+              "background": "#1b0a00",
+              "inverse-on-surface": "#754c25",
+              "primary-container": "#ff7b00",
+              "secondary-fixed-dim": "#ffb471",
+              "primary-fixed-dim": "#ea7100",
+              "on-background": "#ffe0c8",
+              "surface-container-low": "#220e00",
+              "on-primary-fixed-variant": "#4b2000",
+              "inverse-primary": "#9a4800",
+              "on-primary-container": "#3d1800",
+              "on-secondary-container": "#fff6f1",
+              "on-tertiary-fixed": "#402d00",
+              "secondary-fixed": "#ffc697",
+              "secondary": "#fd9831"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(38, 38, 38, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .kinetic-glow {
+            box-shadow: 0 0 20px rgba(255, 123, 0, 0.2);
+        }
+        input:focus {
+            outline: none;
+            border-bottom-color: #ff7b00;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-background font-body min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 h-16">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/30 overflow-hidden">
+<img alt="Profile" data-alt="minimalist stylized 3d avatar of a professional merchant with sleek tech aesthetic and orange accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxJWAvdhkt1f7s2Emf2QpakzQmxrrIL_NDMI6U7Q5QApExdSiskAJcxbog-lKqNpcBVd8K_D0s2Siuo85FAAntUvSbvJ-yIEbeUg24k-OVqhJaoLelkIAi7KkflosdPbP3vXi8oiVGDchXiLogcdcXP2hmHrSF0T4ufQQVNeQyqEzCFC6ZRm9B6eTSWZ2sG3FeKxPscOcnnB-CaFxGCnvmddJX7PSP32klBSq2KTqf300bfL4xxe3LCNhf88iiXrZZNkQWwmKWWPyH"/>
+</div>
+<span class="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline">GEM Z</span>
+</div>
+<button class="text-[#ff7b00] font-headline font-bold tracking-tight active:scale-95 duration-200 transition-colors hover:text-[#ff7b00]/80">
+            العربية
+        </button>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-4xl mx-auto">
+<!-- Step Indicator -->
+<div class="mb-12 flex justify-between items-center gap-4">
+<div class="flex-1 flex flex-col gap-2">
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full w-1/3 bg-gradient-to-r from-primary-fixed to-secondary rounded-full"></div>
+</div>
+<div class="flex justify-between text-[10px] uppercase tracking-widest text-on-surface-variant font-label font-semibold">
+<span class="text-primary-fixed">Identity</span>
+<span>Inventory</span>
+<span>Payouts</span>
+</div>
+</div>
+</div>
+<!-- Asymmetric Intro Header -->
+<section class="mb-16">
+<h1 class="text-6xl md:text-8xl font-black font-headline tracking-tighter leading-[0.9] text-primary-fixed mb-4">
+                LAUNCH<br/>YOUR<br/>SPACE.
+            </h1>
+<p class="text-on-surface-variant max-w-xs text-sm leading-relaxed border-l-2 border-primary-fixed pl-4 ml-2">
+                Join the high-performance ecosystem. Define your brand identity in the Kinetic Void.
+            </p>
+</section>
+<!-- Form Wizard: Step 1 (Identity) -->
+<form class="space-y-12">
+<!-- Section 1: Store Name -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+<div class="md:col-span-4">
+<h2 class="text-xl font-headline font-bold text-on-surface mb-2">STORE IDENTITY</h2>
+<p class="text-xs text-on-surface-variant/60 uppercase tracking-widest">Brand name &amp; bio</p>
+</div>
+<div class="md:col-span-8 space-y-8">
+<div class="relative group">
+<label class="block text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2 group-focus-within:text-primary-fixed transition-colors">Digital Storefront Name</label>
+<input class="w-full bg-transparent border-0 border-b-2 border-outline-variant/40 py-4 text-2xl font-headline font-bold text-on-surface focus:border-primary-fixed transition-all duration-300 placeholder:text-surface-variant" placeholder="e.g. NEON VELOCITY" type="text"/>
+</div>
+<div class="relative group">
+<label class="block text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2 group-focus-within:text-primary-fixed transition-colors">Brand Mission</label>
+<textarea class="w-full bg-transparent border-0 border-b-2 border-outline-variant/40 py-4 text-lg font-body text-on-surface focus:border-primary-fixed transition-all duration-300 placeholder:text-surface-variant resize-none" placeholder="Describe the energy of your products..." rows="2"></textarea>
+</div>
+</div>
+</div>
+<!-- Section 2: Product Categories (Bento Style Selection) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-12 border-t border-white/5">
+<div class="md:col-span-4">
+<h2 class="text-xl font-headline font-bold text-on-surface mb-2">CATEGORIES</h2>
+<p class="text-xs text-on-surface-variant/60 uppercase tracking-widest">Select your niche</p>
+</div>
+<div class="md:col-span-8">
+<div class="grid grid-cols-2 gap-4">
+<!-- Category Card: Tech -->
+<div class="glass-panel p-6 rounded-lg border border-white/5 hover:border-primary-fixed/50 cursor-pointer transition-all group relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-5 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl" data-icon="smart_toy">smart_toy</span>
+</div>
+<span class="material-symbols-outlined text-primary-fixed mb-4 block" data-icon="smart_toy">smart_toy</span>
+<h3 class="font-headline font-bold text-on-surface">Digital Assets</h3>
+<p class="text-xs text-on-surface-variant">Software &amp; AI tools</p>
+</div>
+<!-- Category Card: Gear -->
+<div class="bg-primary-fixed p-6 rounded-lg cursor-pointer transition-all group relative overflow-hidden shadow-[0_0_30px_rgba(255,123,0,0.3)]">
+<div class="absolute -right-4 -top-4 opacity-20">
+<span class="material-symbols-outlined text-8xl text-on-primary-fixed" data-icon="shopping_bag">shopping_bag</span>
+</div>
+<span class="material-symbols-outlined text-on-primary-fixed mb-4 block" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<h3 class="font-headline font-bold text-on-primary-fixed">Premium Gear</h3>
+<p class="text-xs text-on-primary-fixed/70">Hardware &amp; Equipment</p>
+</div>
+<!-- Category Card: Fashion -->
+<div class="glass-panel p-6 rounded-lg border border-white/5 hover:border-primary-fixed/50 cursor-pointer transition-all group relative overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed mb-4 block transition-colors" data-icon="apparel">apparel</span>
+<h3 class="font-headline font-bold text-on-surface">Apparel</h3>
+<p class="text-xs text-on-surface-variant">Performance wear</p>
+</div>
+<!-- Category Card: Lifestyle -->
+<div class="glass-panel p-6 rounded-lg border border-white/5 hover:border-primary-fixed/50 cursor-pointer transition-all group relative overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed mb-4 block transition-colors" data-icon="bolt">bolt</span>
+<h3 class="font-headline font-bold text-on-surface">Supplements</h3>
+<p class="text-xs text-on-surface-variant">Energy &amp; Health</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Financials -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-12 border-t border-white/5">
+<div class="md:col-span-4">
+<h2 class="text-xl font-headline font-bold text-on-surface mb-2">BANKING</h2>
+<p class="text-xs text-on-surface-variant/60 uppercase tracking-widest">Payout configuration</p>
+</div>
+<div class="md:col-span-8 glass-panel p-8 rounded-lg border border-white/5">
+<div class="space-y-6">
+<div class="relative">
+<label class="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">IBAN / Account Number</label>
+<div class="flex items-center gap-3 border-b border-outline-variant/40 py-2 focus-within:border-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="account_balance">account_balance</span>
+<input class="w-full bg-transparent border-none p-0 text-on-surface font-body focus:ring-0" placeholder="SA 0000 0000 0000 0000 0000" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="relative">
+<label class="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Swift Code</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/40 py-2 text-on-surface font-body focus:border-primary-fixed focus:ring-0 transition-colors" placeholder="ABCD US XX" type="text"/>
+</div>
+<div class="relative">
+<label class="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Currency</label>
+<select class="w-full bg-transparent border-0 border-b border-outline-variant/40 py-2 text-on-surface font-body focus:border-primary-fixed focus:ring-0 transition-colors">
+<option class="bg-surface-container">USD - Dollar</option>
+<option class="bg-surface-container">SAR - Riyal</option>
+<option class="bg-surface-container">EUR - Euro</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</div>
+</form>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-[#262626]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#ff7b00]/20 text-[#ff7b00] rounded-full p-3 shadow-[0_0_15px_rgba(255,123,0,0.4)] active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="shopping_bag" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+</nav>
+<!-- Kinetic FAB (Action Specific) -->
+<div class="fixed bottom-24 right-6 z-50">
+<button class="bg-primary-fixed text-on-primary-fixed p-5 rounded-full shadow-[0_15px_35px_rgba(255,123,0,0.4)] flex items-center gap-3 active:scale-95 duration-200 group">
+<span class="font-headline font-black tracking-widest text-[10px] uppercase hidden group-hover:block transition-all">Next Pulse</span>
+<span class="material-symbols-outlined font-bold" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Background Decorative Elements -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10">
+<div class="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-primary-fixed/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[100px]"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.02] mix-blend-overlay">
+<img class="w-full h-full object-cover" data-alt="subtle micro-texture of dark industrial carbon fiber or brushed metal with high contrast shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5B8C_NOmugOr-JYQiFkvAHK9Aw36s-b13w7BPoWqDOt1hFHD15tRscHLpJ58WgtHleMjHCUrYqJsLVOWsYCLGFRwNpjfixmtlauYvIE3rfN6AdvdG97zCv83KpddsfKsw_JhPPOjSdbXrJC5aAG9G-qJ1uAVuVMZnkOqpbAbwmoHhwt6JLdzGAWuc__YeoLiwBljjOl0lWJ7EoqJcE2Ike1Bys8KZBjucuGnmEmv89JFIr35-6m4r3WM5TEth2R1hrm7EvM1KAwqy"/>
+</div>
+</div>
+</body></html>

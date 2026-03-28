@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gem Z | The Kinetic Revolution</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,400;0,700;0,900;1,900&amp;family=Inter:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error-dim": "#d53d18",
+              "on-primary-fixed": "#000000",
+              "surface-container-low": "#220e00",
+              "surface-container-lowest": "#000000",
+              "surface-container-high": "#341900",
+              "surface": "#1b0a00",
+              "surface-tint": "#ff9247",
+              "tertiary-fixed": "#ffc32d",
+              "secondary-dim": "#ec8b23",
+              "on-secondary": "#4c2700",
+              "inverse-surface": "#fff8f5",
+              "on-tertiary-fixed": "#402d00",
+              "tertiary": "#ffd47c",
+              "on-tertiary": "#634800",
+              "surface-bright": "#462300",
+              "primary-dim": "#fb7900",
+              "outline": "#9a6b41",
+              "surface-dim": "#1b0a00",
+              "tertiary-dim": "#efb51c",
+              "on-primary": "#4f2100",
+              "on-secondary-container": "#fff6f1",
+              "secondary-container": "#8e4e00",
+              "error-container": "#b92902",
+              "error": "#ff7351",
+              "surface-variant": "#3d1e00",
+              "on-error": "#450900",
+              "secondary": "#fd9831",
+              "on-secondary-fixed": "#512a00",
+              "outline-variant": "#663f19",
+              "on-surface": "#ffe0c8",
+              "inverse-primary": "#9a4800",
+              "on-primary-fixed-variant": "#4b2000",
+              "secondary-fixed": "#ffc697",
+              "primary-fixed-dim": "#ea7100",
+              "surface-container-highest": "#3d1e00",
+              "on-surface-variant": "#d6a072",
+              "on-secondary-fixed-variant": "#7a4200",
+              "on-tertiary-fixed-variant": "#634900",
+              "surface-container": "#2b1400",
+              "primary": "#ff9247",
+              "inverse-on-surface": "#754c25",
+              "tertiary-fixed-dim": "#efb51c",
+              "on-primary-container": "#3d1800",
+              "on-error-container": "#ffd2c8",
+              "tertiary-container": "#ffc32d",
+              "on-tertiary-container": "#584000",
+              "primary-fixed": "#ff7b00",
+              "background": "#1b0a00",
+              "on-background": "#ffe0c8",
+              "secondary-fixed-dim": "#ffb471",
+              "primary-container": "#ff7b00"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #ababab;
+            font-family: 'Inter', sans-serif;
+        }
+        .kinetic-gradient-text {
+            background: linear-gradient(135deg, #ff7b00 0%, #e3aa07 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(61, 30, 0, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .neon-border-glow {
+            box-shadow: 0 0 15px rgba(255, 123, 0, 0.2);
+            border: 1px solid rgba(255, 123, 0, 0.3);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-black/70 backdrop-blur-xl tonal-shift bg-zinc-900/40 shadow-[0_8px_24px_rgba(255,123,0,0.12)]">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-black text-orange-500 italic tracking-tighter font-['Be_Vietnam_Pro']">Gem Z</div>
+<div class="hidden md:flex items-center space-x-10 font-['Be_Vietnam_Pro'] tracking-tight">
+<a class="text-orange-500 font-bold border-b-2 border-orange-500 pb-1 transition-all duration-300" href="#">Features</a>
+<a class="text-zinc-400 hover:text-white transition-colors transition-all duration-300" href="#">Shop</a>
+<a class="text-zinc-400 hover:text-white transition-colors transition-all duration-300" href="#">Leaderboard</a>
+</div>
+<div class="flex items-center space-x-6">
+<button class="text-sm font-['Inter'] uppercase tracking-widest text-zinc-400 hover:text-orange-400 transition-all duration-300">Language: AR/EN</button>
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-zinc-400 hover:text-orange-500 cursor-pointer transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-zinc-400 hover:text-orange-500 cursor-pointer transition-colors" data-icon="person">person</span>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black z-10"></div>
+<img alt="" class="w-full h-full object-cover opacity-60 scale-105" data-alt="Dynamic 3D digital athlete in a futuristic neon studio with orange energy trails and cinematic lighting, high-performance atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaWraq-BN3B39PtERtg0AwmkMHvQTnw5FAwiZnUCzowm5vO4oaWoe08CtBNIc7P05ENeucDsfDZNXCZOrlmLRU9cFTpe6A6_iTLrJ60fNu92zOeJb-MwecvOeTiPtVm7SnvUiSIYJABniVAdrR9bf060pFWAM7Z6DQUEiFbJmkLLZ93xru3WzsLTPx5NJ32tmjJbn6eKJdIbThDpyyFCUwug8gn_5SHFD9AS164apIIIWSeMuMArizsypmiTCIXIfC-JWqjeTRwsw2"/>
+</div>
+<div class="relative z-20 text-center px-6 max-w-5xl">
+<h1 class="font-headline text-6xl md:text-8xl lg:text-9xl font-black italic tracking-tighter text-white uppercase leading-[0.9] mb-8">
+                    THE KINETIC <br/> <span class="kinetic-gradient-text">REVOLUTION</span> <br/> IS HERE
+                </h1>
+<p class="font-body text-xl md:text-2xl text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Unleash your potential in the world's most advanced fitness ecosystem. AI-driven precision, high-octane community, and elite gear.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+<button class="px-10 py-5 bg-primary-fixed text-on-primary-fixed font-headline font-bold text-lg rounded-full shadow-[0_0_20px_rgba(255,123,0,0.4)] hover:scale-105 active:scale-95 transition-all duration-300">
+                        Join the Revolution
+                    </button>
+<button class="px-10 py-5 glass-panel text-white font-headline font-bold text-lg rounded-full border border-white/10 hover:bg-white/10 transition-all">
+                        Explore Ecosystem
+                    </button>
+</div>
+</div>
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="keyboard_double_arrow_down">keyboard_double_arrow_down</span>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="py-24 px-8 max-w-screen-2xl mx-auto">
+<div class="mb-20">
+<span class="font-label text-primary tracking-[0.3em] uppercase text-sm font-bold">Performance Modules</span>
+<h2 class="font-headline text-5xl md:text-7xl font-black text-white mt-4 tracking-tighter">ENGINEERED FOR <br/>PEAK RESULTS.</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- AI Coach -->
+<div class="glass-panel neon-border-glow p-8 rounded-lg flex flex-col justify-between h-[400px] group hover:translate-y-[-8px] transition-all duration-500">
+<div>
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="psychology" data-weight="fill" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<h3 class="font-headline text-2xl font-bold text-white mb-4">AI Coach &amp; Form Analysis</h3>
+<p class="text-on-surface-variant leading-relaxed">Real-time biomechanical feedback and personalized programming powered by neural networks.</p>
+</div>
+<div class="w-12 h-1 bg-primary/20 group-hover:w-full transition-all duration-500"></div>
+</div>
+<!-- Precision Nutrition -->
+<div class="glass-panel neon-border-glow p-8 rounded-lg flex flex-col justify-between h-[400px] group hover:translate-y-[-8px] transition-all duration-500">
+<div>
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="nutrition" data-weight="fill" style="font-variation-settings: 'FILL' 1;">nutrition</span>
+<h3 class="font-headline text-2xl font-bold text-white mb-4">Precision Nutrition</h3>
+<p class="text-on-surface-variant leading-relaxed">Macro-tracking and bio-integrated meal plans that sync with your metabolic load.</p>
+</div>
+<div class="w-12 h-1 bg-primary/20 group-hover:w-full transition-all duration-500"></div>
+</div>
+<!-- Shop & Auctions -->
+<div class="glass-panel neon-border-glow p-8 rounded-lg flex flex-col justify-between h-[400px] group hover:translate-y-[-8px] transition-all duration-500">
+<div>
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="shopping_bag" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<h3 class="font-headline text-2xl font-bold text-white mb-4">E-Commerce &amp; Auctions</h3>
+<p class="text-on-surface-variant leading-relaxed">Exclusive drops and live auctions for elite performance gear and limited digital assets.</p>
+</div>
+<div class="w-12 h-1 bg-primary/20 group-hover:w-full transition-all duration-500"></div>
+</div>
+<!-- Social Squads -->
+<div class="glass-panel neon-border-glow p-8 rounded-lg flex flex-col justify-between h-[400px] group hover:translate-y-[-8px] transition-all duration-500">
+<div>
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="groups" data-weight="fill" style="font-variation-settings: 'FILL' 1;">groups</span>
+<h3 class="font-headline text-2xl font-bold text-white mb-4">Social Squads</h3>
+<p class="text-on-surface-variant leading-relaxed">Join high-performance communities and dominate global leaderboards with your crew.</p>
+</div>
+<div class="w-12 h-1 bg-primary/20 group-hover:w-full transition-all duration-500"></div>
+</div>
+</div>
+</section>
+<!-- Dynamic Content Section -->
+<section class="py-24 bg-surface-container-lowest">
+<div class="max-w-screen-2xl mx-auto flex flex-col lg:flex-row items-center gap-16 px-8">
+<div class="lg:w-1/2">
+<div class="relative rounded-lg overflow-hidden aspect-video neon-border-glow">
+<img alt="" class="w-full h-full object-cover" data-alt="High-tech fitness data dashboard on a transparent screen with glowing amber and orange UI elements, futuristic analytical vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALvHYvlRuBihYg8j3LtIVMk3nBkwJFeDIer-oFVLsiRx0zgi8AheiT7qDW4bqtoiAbnG48Tiek2MQ6OF5M702FnNZP0pXnW3oXtUXiPTHcCldORPSYKGm7rKnpeA7h7b7hWEnz_srVhsIhSB2QUegzk3cwT53sjoBswsAAee8KIZ9WzPry1pdW4PzV6G5a5i92kYRR6FB2EbsUrCCEeWi913Tq5mV3c-oeIGFSIxnKyvjbSiJLfJAo8lamADzdQPVW7a9y0v3X5Hgh"/>
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent"></div>
+</div>
+</div>
+<div class="lg:w-1/2">
+<h2 class="font-headline text-5xl font-black text-white mb-8 tracking-tight">DATA IS YOUR <br/><span class="text-secondary">NEW MUSCLE.</span></h2>
+<p class="text-xl text-on-surface-variant mb-8 leading-relaxed">
+                        Every rep, every calorie, every heartbeat is transformed into actionable intelligence. Gem Z doesn't just track your progress—it predicts your peak.
+                    </p>
+<ul class="space-y-4">
+<li class="flex items-center space-x-4 text-white font-body">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span>Predictive Recovery Analytics</span>
+</li>
+<li class="flex items-center space-x-4 text-white font-body">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span>Neural Form Correction (Live)</span>
+</li>
+<li class="flex items-center space-x-4 text-white font-body">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Testimonials Carousel -->
+<section class="py-24 px-8 max-w-screen-2xl mx-auto overflow-hidden">
+<h2 class="font-headline text-4xl font-black text-white mb-16 text-center tracking-tight">VOICES FROM THE VOID</h2>
+<div class="flex flex-col md:flex-row gap-8 overflow-x-auto pb-8 snap-x no-scrollbar">
+<!-- Testimonial 1 -->
+<div class="glass-panel p-10 rounded-lg min-w-full md:min-w-[450px] snap-center border border-white/5">
+<p class="text-white text-xl italic font-body mb-8">"The AI coach corrected a deadlift form error I've had for years. It's like having an Olympic trainer in my pocket 24/7."</p>
+<div class="flex items-center space-x-4">
+<img alt="" class="w-14 h-14 rounded-full border-2 border-primary" data-alt="Close-up portrait of a fit young man with short hair, confident expression, soft dramatic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7AWZbz0MBHx5Fd4HMs4Ul_Vs1U5F6ixsORzWyAqdO2LrkD4jlrkami_hPae-hoKjMuvesFy58Y_JiiYiqmR-pmDD70OCJHN7BFiB-9n1ZtRlpJQjdOC6Lex-wtD4any4m1C_v33Y4p3lk5uB7OGfOun-L3uMcY5GGuXSfqSSNCW0ot0CFEMiLJXOM8aEMkMIqDlQ9uMlznvKtgMcCPvh4yfPCKtOr-DhdBJWDVwl4Ig2tW9DA-5XdpuKUqXT5nHOvS17fwy_sSZoI"/>
+<div>
+<h4 class="text-white font-bold font-headline">Marcus V.</h4>
+<p class="text-primary text-sm font-label tracking-widest uppercase">Elite Athlete</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="glass-panel p-10 rounded-lg min-w-full md:min-w-[450px] snap-center border border-white/5">
+<p class="text-white text-xl italic font-body mb-8">"The community squads keep me accountable. We're not just working out; we're competing for the future of fitness."</p>
+<div class="flex items-center space-x-4">
+<img alt="" class="w-14 h-14 rounded-full border-2 border-secondary" data-alt="Close-up portrait of an athletic woman with tied-back hair, smiling confidently, urban gym setting background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChVX6-8RM1lriq6z-uPRarRTM9pZE8a1-f1zrlPQZVAFUn7ANWZXvGJ_cEm-7vXenPC4LZhiBGXAxos3MV5FoEIT2kbfJdYzo-7JbC6L593YxsdSebrtNkZioAQOxmFb7MZX3fcYinpg6R_TH0w2mTBtuqxqNE9yvYlh-gXKFLCEOTrzg1-yjNEU2P8ugOuNkHI14Gbx55aeKY8_GQ_wn9KlTgsLor3OdgD10U6O5Aj0VnTiqMT3WzRt_5eCTOorXDtJCVJNDPGmKo"/>
+<div>
+<h4 class="text-white font-bold font-headline">Sarah J.</h4>
+<p class="text-secondary text-sm font-label tracking-widest uppercase">Squad Leader</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="glass-panel p-10 rounded-lg min-w-full md:min-w-[450px] snap-center border border-white/5">
+<p class="text-white text-xl italic font-body mb-8">"Exclusive drops in the shop are insane. The gear quality matches the digital experience—both are absolute top-tier."</p>
+<div class="flex items-center space-x-4">
+<img alt="" class="w-14 h-14 rounded-full border-2 border-primary" data-alt="Portrait of a professional male fitness coach, serious and disciplined look, high-contrast black and white photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTAlxcpDINutpuHqAvlyucBJHccY5e8Cwd7OeVkasW6ysRJsAdwuXguSMKav117ihFYihpIW2PtBPQ62qBSRS04dEe421EDNvI3-wjBULWeXnjbcdnPiOIzfg8AF5Fy5TiezQ229gbbo1CQJ4dh5SUoBqZOSmbL1XY2Z_GvD6516By_BRoMSUZiIRbBGmA3N87ecQxrhJfO8FpY9Ihqj65kjYE571DFVar7oNT736gbd2eBcmlufQJxg-mlyN-iQDb1y0R7OlaQPJA"/>
+<div>
+<h4 class="text-white font-bold font-headline">David K.</h4>
+<p class="text-primary text-sm font-label tracking-widest uppercase">Performance Coach</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 px-8">
+<div class="max-w-4xl mx-auto glass-panel p-16 rounded-xl text-center relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/10 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+<h2 class="font-headline text-5xl font-black text-white mb-6 tracking-tight">READY TO UNLEASH?</h2>
+<p class="text-xl text-on-surface-variant mb-10 max-w-xl mx-auto">Don't settle for average. Enter the Kinetic Void and redefine your limits today.</p>
+<button class="px-12 py-6 bg-primary-fixed text-on-primary-fixed font-headline font-black text-xl rounded-full hover:shadow-[0_0_30px_rgba(255,123,0,0.6)] transition-all transform hover:scale-105 active:scale-95">
+                    GET STARTED NOW
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-black w-full py-12 border-t border-zinc-800/20 tonal-shift bg-zinc-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 space-y-6 md:space-y-0 max-w-screen-2xl mx-auto">
+<div class="text-lg font-bold text-zinc-500 font-['Be_Vietnam_Pro'] tracking-tight">Gem Z</div>
+<div class="flex flex-wrap justify-center gap-8 font-['Inter'] text-sm uppercase tracking-widest text-zinc-500">
+<a class="hover:text-orange-500 transition-colors hover:translate-y-[-2px] duration-300" href="#">Privacy Policy</a>
+<a class="hover:text-orange-500 transition-colors hover:translate-y-[-2px] duration-300" href="#">Terms of Service</a>
+<a class="hover:text-orange-500 transition-colors hover:translate-y-[-2px] duration-300" href="#">Support</a>
+<a class="hover:text-orange-500 transition-colors hover:translate-y-[-2px] duration-300" href="#">Contact</a>
+<a class="hover:text-orange-500 transition-colors hover:translate-y-[-2px] duration-300" href="#">Careers</a>
+</div>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-zinc-600">
+                © 2024 Gem Z Fitness Ecosystem. Kinetic Energy Unleashed.
+            </p>
+</div>
+</footer>
+</body></html>

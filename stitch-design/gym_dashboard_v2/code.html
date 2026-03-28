@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,700;0,900;1,900&amp;family=Inter:wght@300;400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#ffd47c",
+              "on-surface-variant": "#d6a072",
+              "error-dim": "#d53d18",
+              "error-container": "#b92902",
+              "surface-bright": "#462300",
+              "surface-variant": "#3d1e00",
+              "secondary-container": "#8e4e00",
+              "inverse-surface": "#fff8f5",
+              "on-secondary": "#4c2700",
+              "on-primary": "#4f2100",
+              "on-error-container": "#ffd2c8",
+              "on-secondary-fixed": "#512a00",
+              "surface-container-lowest": "#000000",
+              "primary-dim": "#fb7900",
+              "on-primary-fixed": "#000000",
+              "on-error": "#450900",
+              "on-secondary-fixed-variant": "#7a4200",
+              "surface-container-highest": "#3d1e00",
+              "tertiary-fixed-dim": "#efb51c",
+              "surface-container": "#2b1400",
+              "outline-variant": "#663f19",
+              "outline": "#9a6b41",
+              "primary-fixed": "#ff7b00",
+              "surface": "#1b0a00",
+              "on-tertiary-container": "#584000",
+              "tertiary-dim": "#efb51c",
+              "error": "#ff7351",
+              "secondary-dim": "#ec8b23",
+              "surface-tint": "#ff9247",
+              "surface-container-high": "#341900",
+              "primary": "#ff9247",
+              "tertiary-fixed": "#ffc32d",
+              "on-surface": "#ffe0c8",
+              "on-tertiary": "#634800",
+              "on-tertiary-fixed-variant": "#634900",
+              "tertiary-container": "#ffc32d",
+              "surface-dim": "#1b0a00",
+              "background": "#1b0a00",
+              "inverse-on-surface": "#754c25",
+              "primary-container": "#ff7b00",
+              "secondary-fixed-dim": "#ffb471",
+              "primary-fixed-dim": "#ea7100",
+              "on-background": "#ffe0c8",
+              "surface-container-low": "#220e00",
+              "on-primary-fixed-variant": "#4b2000",
+              "inverse-primary": "#9a4800",
+              "on-primary-container": "#3d1800",
+              "on-secondary-container": "#fff6f1",
+              "on-tertiary-fixed": "#402d00",
+              "secondary-fixed": "#ffc697",
+              "secondary": "#fd9831"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(255, 123, 0, 0.4);
+        }
+        .glass-panel {
+            background: rgba(38, 38, 38, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .chart-line-neon {
+            filter: drop-shadow(0 0 8px #ff7b00);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 h-16">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/30">
+<img alt="Owner Profile" data-alt="Close-up portrait of a professional gym owner in modern athletic wear, sharp lighting, high-end fitness studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlEDfcp5dojgwqTTgOw46CVNek1VdRH6CD8sEfD0EKDGbl0UDc-ISf6LAQSJx1FzeQUmdJWju9YaRu5C2ly9S-My0ZoUiz38EArmeHX-8jHtFnlkyaz9rRAj_RBubl4IXCUg85VGxXp6MEOS6DERXg-61menhx0GQh5CPxD2RNifQCo_8oNFG_59jNiPB5NBKDkVqw30niRv7ZoVdSYBXOCoQ5nWUUc2a68REkHV7rbjI5yzz97sXFcjQXy_hRhn-CbH2m6SClZbb-"/>
+</div>
+<h1 class="font-headline font-black italic text-[#ff7b00] tracking-tighter text-2xl uppercase">GEM Z</h1>
+</div>
+<button class="font-headline font-bold tracking-tight text-[#ff7b00] hover:text-[#ff7b00] transition-colors active:scale-95 duration-200">
+            العربية
+        </button>
+</header>
+<main class="pt-24 px-6 max-w-7xl mx-auto space-y-8">
+<!-- Welcome & Primary Action -->
+<section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div class="space-y-1">
+<p class="text-on-surface-variant font-label text-sm uppercase tracking-[0.2em]">Dashboard Overview</p>
+<h2 class="font-headline font-black text-4xl md:text-6xl text-on-surface tracking-tighter uppercase leading-none">
+                    Good Morning,<br/><span class="text-primary-fixed">Commander</span>
+</h2>
+</div>
+<button class="group relative bg-primary-fixed text-on-primary-fixed font-headline font-black px-8 py-5 rounded-lg flex items-center gap-4 neon-glow-primary active:scale-95 transition-all duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="qr_code_scanner">qr_code_scanner</span>
+<span class="text-xl tracking-tight uppercase">Launch QR Scanner</span>
+</button>
+</section>
+<!-- KPI Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Revenue Widget -->
+<div class="glass-panel p-8 rounded-lg relative overflow-hidden group">
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div>
+<div class="flex justify-between items-start">
+<p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Monthly Revenue</p>
+<span class="material-symbols-outlined text-primary-fixed" data-icon="trending_up">trending_up</span>
+</div>
+<h3 class="text-4xl font-black font-headline mt-2">$142,850</h3>
+<p class="text-primary-fixed text-sm mt-1">+12.4% from last month</p>
+</div>
+<div class="mt-8 h-24 flex items-end gap-1">
+<!-- Neon Line Simulation -->
+<svg class="w-full h-full" viewbox="0 0 200 60">
+<path class="chart-line-neon" d="M0 50 Q 25 45, 50 30 T 100 35 T 150 15 T 200 5" fill="none" stroke="#ff7b00" stroke-width="3"></path>
+<path d="M0 50 Q 25 45, 50 30 T 100 35 T 150 15 T 200 5 V 60 H 0 Z" fill="url(#grad1)" opacity="0.2"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#ff7b00;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#ff7b00;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+</div>
+<!-- Subscriptions Widget -->
+<div class="glass-panel p-8 rounded-lg relative overflow-hidden group">
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div>
+<div class="flex justify-between items-start">
+<p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Active Members</p>
+<span class="material-symbols-outlined text-secondary" data-icon="group">group</span>
+</div>
+<h3 class="text-4xl font-black font-headline mt-2">2,482</h3>
+<p class="text-secondary text-sm mt-1">84 New this week</p>
+</div>
+<div class="mt-8 h-24 flex items-end gap-1">
+<svg class="w-full h-full" viewbox="0 0 200 60">
+<path class="chart-line-neon" d="M0 55 Q 50 50, 80 40 T 130 20 T 200 10" fill="none" stroke="#fd9831" stroke-width="3" style="filter: drop-shadow(0 0 8px #fd9831);"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Capacity Widget -->
+<div class="glass-panel p-8 rounded-lg flex flex-col justify-center items-center text-center">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-highest/30" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary-fixed chart-line-neon" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364" stroke-dashoffset="100" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-black font-headline">72%</span>
+<span class="text-[10px] uppercase font-label text-on-surface-variant">Live Load</span>
+</div>
+</div>
+<p class="mt-4 font-headline font-bold text-on-surface">Peak Hour Approaching</p>
+<p class="text-xs text-on-surface-variant mt-1">142 people currently in facility</p>
+</div>
+</div>
+<!-- Secondary Grid: Bento Style -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Live Activity -->
+<div class="md:col-span-8 glass-panel rounded-lg p-6">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-headline font-black text-xl tracking-tight uppercase italic">Live Entrance Log</h4>
+<button class="text-primary-fixed font-label text-xs uppercase tracking-widest flex items-center gap-2">
+                        View All <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 rounded-lg bg-surface-container-low/50 hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+<img alt="User" data-alt="Portrait of a young male athlete with a focused expression, neon studio lighting background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBrG3IUgSuJxa5GL8k8-W3eMzWRfd3ReZ2MRUaq8PjKusWSjhCSBsti8J18sJxTTW-elYpUjkeQDNqHk8GusamEAvNUnY1BlftqhqkqyBavIEgB2RD6WuU2kbtbAEyovPA7U6dmcBCj92uvDXsDJ7zgfT742BkmsUQr5ZKfbB67TDQu0FP41FHIHw-kSjaVMlQSnR2bqVIeZtw80QwTOQu4ALnmXNwpndwa284SZ_3eSIhvzh_a2pPb6uVSLXdZDGpoE0DHhOP6Oh-"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Marcus Thorne</p>
+<p class="text-xs text-on-surface-variant">Membership: Pro Athlete</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label font-bold text-primary-fixed">09:41 AM</p>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded uppercase">Verified</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-lg bg-surface-container-low/50 hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+<img alt="User" data-alt="Portrait of a woman in fitness gear, energetic vibe, soft orange lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA59ioBvqzto-FY5HpnqmKzLeUISJppQRHo8SKG6FHxGM9lWREWaucCtXcHiwLk0Mh7IHAmoruEngrB3eUwvB12BfgxlK_DHBH9aOnW_heTv0x9EXQqVvr7pO5nSuDbpgHdup2u9ULdNF7V1M8aSea1mXqVal1qwD2aHhGRaZMfMhhb65cmP3QFDgO2mXZWZG8I1uOFgL9YYxUrmPt5BlKkQNcE2BfnePTHyepD77w-luXrkR6MMbOgyBBVGf9BWBC1uHL4_KZ-Ttqo"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Elena Rodriguez</p>
+<p class="text-xs text-on-surface-variant">Membership: Daily Pass</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label font-bold text-primary-fixed">09:38 AM</p>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded uppercase">Verified</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-lg bg-surface-container-low/50 hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20">
+<img alt="User" data-alt="Portrait of an older athletic man, gray hair, professional fitness attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb_FdQaO3H66T_jLwcg9GGeREpAdoVDIrkTHmhK_PitdMLbAm0QE54RllBC_O24fzQc_DJau8eIfut0Frbb04CWUHHXjO3S25ZKM9Vzn565Hn9PAO0bOjBZK5MO7armpYfLPuFc1YMtABTb2c0YZrbG0Ni4q6cpmBEQmgzTH9oUWnE8QijKOhMj-zy3NQN0SPBTLK0WPq1DJx7fpLoJXwqVw7503H8dapfsZuR3c72yT-ftj0nPdcDVjjFZMxDnXf4mEvop5l-rS7V"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">David Chen</p>
+<p class="text-xs text-on-surface-variant">Membership: Platinum Plus</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label font-bold text-primary-fixed">09:35 AM</p>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded uppercase">Verified</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Stats / Inventory -->
+<div class="md:col-span-4 space-y-6">
+<div class="glass-panel rounded-lg p-6 bg-gradient-to-br from-surface-container-highest/60 to-surface-container/20">
+<h4 class="font-headline font-black text-lg tracking-tight uppercase italic mb-4">Quick Alerts</h4>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+<div class="flex-1">
+<p class="text-sm font-bold text-on-surface">Inventory Low</p>
+<p class="text-[10px] text-on-surface-variant">Whey Isolate (Chocolate) - 2 units left</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary" data-icon="event_busy">event_busy</span>
+<div class="flex-1">
+<p class="text-sm font-bold text-on-surface">Maintenance Due</p>
+<p class="text-[10px] text-on-surface-variant">Treadmill Zone B (3 units)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-lg p-6 relative overflow-hidden h-full">
+<img alt="Gym" class="absolute inset-0 object-cover opacity-20 grayscale" data-alt="Interior of a luxury modern gym at night with sleek black equipment and neon orange accent lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChRdQ3sHzIFbwb5lw-Re5tUOqRAS9vN9509O9ElVnQ5zjnTLrPMHM0UVnU6Vq24mQ0iQAsQExe8MJgOtdyYJiXrCP72kTmv2Iffcy9SnI3o4a7woA2ExKb-Z-ShF8Dnmj-hWxVzPCD1EN5KCrx2Dkx1AaKkjv4fp0iPOeYCPdQcfheRevs70U2b_0XQ9ZU3dfBPUc10rsygR-NtY_8DavfIm0SPl7ot11OCDl6wGQj4OrMzJevfzz5ebrCml5LGnEXZFznlceHwXXv"/>
+<div class="relative z-10">
+<h4 class="font-headline font-black text-lg tracking-tight uppercase italic">Community</h4>
+<p class="text-xs text-on-surface-variant mt-2">New challenge starting tomorrow:</p>
+<p class="text-xl font-headline font-black text-primary-fixed mt-1">THE VOID RUN</p>
+<button class="mt-4 w-full bg-white/10 hover:bg-white/20 py-2 rounded font-label text-[10px] uppercase tracking-widest transition-colors">Broadcast News</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-[#262626]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<div class="flex flex-col items-center justify-center bg-[#ff7b00]/20 text-[#ff7b00] rounded-full p-3 shadow-[0_0_15px_rgba(255,123,0,0.4)]">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+</nav>
+</body></html>

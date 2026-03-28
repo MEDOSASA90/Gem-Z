@@ -1,271 +1,261 @@
 'use client';
-import React, { useState } from 'react';
-import {
-    Upload, Brain, CheckCircle, AlertCircle, Zap, Apple, ChevronRight,
-    Loader2, Globe, ArrowLeft, RotateCcw, Sparkles
-} from 'lucide-react';
-import { useLanguage } from '../../context/LanguageContext';
-import { useTheme } from '../../context/ThemeContext';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import GemZLogo from '../../components/GemZLogo';
+import { useLanguage } from '../../context/LanguageContext';
+import { Loader2 } from 'lucide-react';
 
-const SAMPLE_DIET_PLAN = {
-    summary: { calories: 2240, protein: 178, carbs: 224, fat: 62 },
-    findings: [
-        { type: 'warning', label: 'Vitamin D', labelAr: 'فيتامين د', value: '18 ng/mL', note: 'Deficient — below optimal 30 ng/mL', noteAr: 'نقص — أقل من المستوى المثالي 30' },
-        { type: 'warning', label: 'Iron', labelAr: 'حديد', value: '60 µg/dL', note: 'Low — risk of anemia', noteAr: 'منخفض — خطر فقر الدم' },
-        { type: 'ok', label: 'Vitamin B12', labelAr: 'B12', value: '420 pg/mL', note: 'Normal range', noteAr: 'مستوى طبيعي' },
-        { type: 'ok', label: 'Hemoglobin', labelAr: 'هيموغلوبين', value: '13.8 g/dL', note: 'Acceptable', noteAr: 'مقبول' },
-    ],
-    days: [
-        {
-            day: 1, dayAr: 'اليوم 1',
-            meals: [
-                { type: 'Breakfast', typeAr: 'إفطار', name: 'Oats + 3 Eggs + Orange Juice', nameAr: 'شوفان + 3 بيض + عصير برتقال', kcal: 580, p: 42, c: 68, f: 14, time: '07:00', color: 'var(--color-warning)', emoji: '🌅', vit: 'Vit D boost' },
-                { type: 'Snack', typeAr: 'سناك', name: 'Tuna + Spinach Salad', nameAr: 'تونة + سلطة سبانخ', kcal: 280, p: 32, c: 10, f: 8, time: '10:30', color: 'var(--color-secondary)', emoji: '🐟', vit: 'Iron rich' },
-                { type: 'Lunch', typeAr: 'غداء', name: 'Grilled Chicken + Lentil Soup + Brown Rice', nameAr: 'دجاج مشوي + عدس + أرز بني', kcal: 720, p: 58, c: 80, f: 16, time: '13:30', color: 'var(--color-primary)', emoji: '🍗', vit: 'Iron rich' },
-                { type: 'Dinner', typeAr: 'عشاء', name: 'Salmon + Broccoli + Sweet Potato', nameAr: 'سمك سلمون + بروكلي + بطاطا حلوة', kcal: 660, p: 46, c: 66, f: 24, time: '19:00', color: 'var(--color-purple)', emoji: '🐟', vit: 'Vit D + Iron' },
-            ]
-        },
-        {
-            day: 2, dayAr: 'اليوم 2',
-            meals: [
-                { type: 'Breakfast', typeAr: 'إفطار', name: 'Greek Yogurt + Berries + Flaxseed', nameAr: 'يوغرت يوناني + توت + بذر كتان', kcal: 420, p: 30, c: 45, f: 14, time: '07:00', color: 'var(--color-warning)', emoji: '🫐', vit: 'Calcium' },
-                { type: 'Snack', typeAr: 'سناك', name: '2 Hard Boiled Eggs + Handful Almonds', nameAr: 'بيضتان مسلوقتان + لوز', kcal: 320, p: 24, c: 8, f: 22, time: '10:30', color: 'var(--color-secondary)', emoji: '🥚', vit: 'Vit D' },
-                { type: 'Lunch', typeAr: 'غداء', name: 'Beef Steak + Mixed Greens + Quinoa', nameAr: 'استيك لحم + خضروات + كينوا', kcal: 740, p: 60, c: 58, f: 22, time: '13:30', color: 'var(--color-primary)', emoji: '🥩', vit: 'Iron max' },
-                { type: 'Dinner', typeAr: 'عشاء', name: 'Tuna Pasta + Side Salad', nameAr: 'باستا تونة + سلطة', kcal: 560, p: 42, c: 58, f: 14, time: '19:00', color: 'var(--color-purple)', emoji: '🍝', vit: 'Iron' },
-            ]
-        },
-    ]
-};
+export default function Page() {
+    const { t, isArabic, toggleLanguage } = useLanguage();
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [weight, setWeight] = useState('78.4');
+    const [targetWeight, setTargetWeight] = useState('82.0');
+    const [userName, setUserName] = useState('');
+    const [planGenerated, setPlanGenerated] = useState(false);
 
-export default function AINutritionistPage() {
-    const { isArabic, toggleLanguage } = useLanguage();
-    const { theme, toggleTheme } = useTheme();
-    const isDark = theme === 'dark';
-    const [stage, setStage] = useState<'upload' | 'analyzing' | 'result'>('upload');
-    const [dragOver, setDragOver] = useState(false);
-    const [fileName, setFileName] = useState('');
-    const [activeDay, setActiveDay] = useState(0);
-    const [selectedMeal, setSelectedMeal] = useState<typeof SAMPLE_DIET_PLAN.days[0]['meals'][0] | null>(null);
+    // Auto-load trainee data from dashboard
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem('gemz_user');
+            if (stored) {
+                const user = JSON.parse(stored);
+                if (user.fullName) setUserName(user.fullName.split(' ')[0]);
+                if (user.weight) setWeight(String(user.weight));
+                if (user.targetWeight) setTargetWeight(String(user.targetWeight));
+            }
+            // Also check dashboard data
+            const dashboard = localStorage.getItem('gemz_dashboard');
+            if (dashboard) {
+                const data = JSON.parse(dashboard);
+                if (data.currentWeight) setWeight(String(data.currentWeight));
+                if (data.targetWeight) setTargetWeight(String(data.targetWeight));
+            }
+        } catch {}
+    }, []);
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setFileName(file.name);
-        setStage('analyzing');
-        setTimeout(() => setStage('result'), 3000);
+    const handleGeneratePlan = () => {
+        setIsGenerating(true);
+        setTimeout(() => {
+            setIsGenerating(false);
+            setPlanGenerated(true);
+        }, 2000);
     };
 
-    const plan = SAMPLE_DIET_PLAN;
+  return (
+    <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body pb-32">
+      
+<header className="bg-black/60 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+<div className="flex items-center gap-3">
+<Link href="/trainee" className="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/30 overflow-hidden block">
+<img className="w-full h-full object-cover" data-alt="close-up portrait of a determined young athlete with sweat on forehead in dramatic dark lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaJVC1QQ8VihcaPEAK65JBLatKZfAmdApQvZn3rWAiJNZODLhxdCwY5oRU3FlZeLbM0MlFEv5oyg-RndVmiayhD1aUZVRFeb_TJDzG6wvzE4UDO9JCdD_rCb65alqOBgawqIniSuc1qlMrvaMzP5H5HZ-ZyBIbe3HApQEHP4tBiIXP7lVwpL0p3Y0lttKCpQuZSnnAuoW2M6JYhws1JOeN1wmWcmhThaYEmfEHZJ3dd4jsuIb_35W-2nJYwVVZnqTS6rBMw8AkafYw"/>
+</Link>
+<Link href="/"><h1 className="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline">{t("GEM Z")}</h1></Link>
+</div>
+<div className="flex items-center gap-4">
+    <button onClick={toggleLanguage} className="text-[#ff7b00] bg-white/5 border border-white/10 px-4 py-1.5 rounded-full font-headline font-bold tracking-tight hover:bg-white/10 transition-colors active:scale-95 duration-200">
+        {isArabic ? 'EN' : 'عربي'}
+    </button>
+    <button translate="no" className="material-symbols-outlined text-gray-400 hover:text-[#ff7b00] transition-colors scale-95 active:duration-150" onClick={() => alert(isArabic ? 'التنبيهات سيتم تفعيلها قريباً 🔔' : 'Notifications coming soon 🔔')}>notifications</button>
+</div>
+</header>
 
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen font-sans pb-20" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            {/* Nav */}
-            <nav className="sticky top-0 z-40 px-6 py-4 flex items-center justify-between border-b" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-subtle)', backdropFilter: 'blur(16px)' }}>
-                <div className="flex items-center gap-4">
-                    <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
-                    <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2">
-                            <Brain size={18} className="text-[var(--color-purple)]" />
-                            {isArabic ? 'خبير التغذية AI' : 'AI Nutritionist'}
-                        </h1>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'ارفع تحاليلك واحصل على خطتك' : 'Upload labs & get your custom plan'}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    {stage === 'result' && <button onClick={() => { setStage('upload'); setFileName(''); }} className="flex items-center gap-2 text-sm px-3 py-2 rounded-xl font-bold" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><RotateCcw size={14} />{isArabic ? 'رفع جديد' : 'New Upload'}</button>}
-                    <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
-                    <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
-                </div>
-            </nav>
+<main className="px-6 pt-8 max-w-4xl mx-auto space-y-12">
 
-            <div className="max-w-4xl mx-auto p-6">
+{/* Personalized Greeting */}
+{userName && (
+<div className="bg-[#ff7b00]/5 border border-[#ff7b00]/10 rounded-2xl p-4 flex items-center gap-4">
+<span className="material-symbols-outlined text-[#ff7b00]">person_check</span>
+<div>
+<p className="font-bold text-white text-sm">{isArabic ? `مرحباً ${userName}! بياناتك محملة تلقائياً` : `Welcome back, ${userName}! Your data is auto-loaded.`}</p>
+<p className="text-xs text-on-surface-variant">{isArabic ? 'تم جلب بيانات جسمك من لوحة التحكم' : 'Body metrics pulled from your dashboard'}</p>
+</div>
+</div>
+)}
 
-                {/* STAGE: UPLOAD */}
-                {stage === 'upload' && (
-                    <div className="flex flex-col items-center py-10">
-                        <div className="w-20 h-20 rounded-3xl mb-6 flex items-center justify-center" style={{ background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.3)' }}>
-                            <Brain size={40} className="text-[var(--color-purple)]" />
-                        </div>
-                        <h2 className="text-3xl font-bold font-heading text-center mb-3">{isArabic ? 'اعرف جسمك من الداخل' : 'Know Your Body from Within'}</h2>
-                        <p className="text-center max-w-lg mb-10" style={{ color: 'var(--text-secondary)' }}>
-                            {isArabic ? 'ارفع صورة تحاليلك الطبية وسيقوم الذكاء الاصطناعي بتحليلها وتصميم خطة غذائية مخصصة بالكامل لجسمك.' : 'Upload your medical blood test results. Our AI analyzes deficiencies and builds a 100% customized diet plan.'}
-                        </p>
+<section className="space-y-2">
+<span className="text-primary-fixed font-label text-[10px] uppercase tracking-[0.2em] font-bold">{t("Performance Fueling")}</span>
+<div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-4">
+<h2 className="text-5xl md:text-7xl font-black font-headline tracking-tighter text-on-surface-variant text-transparent bg-clip-text bg-gradient-to-r from-primary-fixed to-tertiary-fixed">{t("Nutritionist")}</h2>
+<div className="flex items-center gap-2 text-on-surface-variant/60 cursor-pointer hover:text-primary-fixed transition-colors active:scale-95" onClick={toggleLanguage}>
+<span translate="no" className="material-symbols-outlined text-sm">language</span>
+<span className="text-xs font-label uppercase tracking-widest">{isArabic ? 'العربية | EN' : 'EN | AR'}</span>
+</div>
+</div>
+</section>
 
-                        {/* How it works */}
-                        <div className="grid grid-cols-3 gap-4 mb-10 w-full max-w-2xl">
-                            {[
-                                { step: '1', icon: '📄', titleEn: 'Upload Labs', titleAr: 'ارفع التحاليل', descEn: 'PDF or image of your blood work', descAr: 'PDF أو صورة التحاليل' },
-                                { step: '2', icon: '🤖', titleEn: 'AI Analyzes', titleAr: 'AI يحلل', descEn: 'OCR reads and identifies markers', descAr: 'OCR يقرأ المؤشرات' },
-                                { step: '3', icon: '🥗', titleEn: 'Get Your Plan', titleAr: 'احصل على خطتك', descEn: 'Custom 7-day meal plan', descAr: 'خطة وجبات مخصصة 7 أيام' },
-                            ].map(s => (
-                                <div key={s.step} className="text-center p-4 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                                    <div className="text-3xl mb-2">{s.icon}</div>
-                                    <div className="text-xs font-mono text-[var(--color-purple)] mb-1">STEP {s.step}</div>
-                                    <p className="font-bold text-sm mb-1">{isArabic ? s.titleAr : s.titleEn}</p>
-                                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? s.descAr : s.descEn}</p>
-                                </div>
-                            ))}
-                        </div>
+<section className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
-                        {/* Drop Zone */}
-                        <label className={`w-full max-w-xl flex flex-col items-center gap-4 p-12 rounded-3xl cursor-pointer transition-all ${dragOver ? 'scale-105' : ''}`}
-                            style={{ border: `2px dashed ${dragOver ? 'var(--color-purple)' : 'var(--border-medium)'}`, background: dragOver ? 'rgba(167,139,250,0.05)' : 'var(--bg-card)' }}
-                            onDragOver={e => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)}>
-                            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(167,139,250,0.1)' }}>
-                                <Upload size={28} className="text-[var(--color-purple)]" />
-                            </div>
-                            <div className="text-center">
-                                <p className="font-bold mb-1">{isArabic ? 'اسحب وأفلت ملف التحاليل' : 'Drag & drop your lab results'}</p>
-                                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'أو اضغط للاختيار • PDF, JPG, PNG' : 'or click to browse • PDF, JPG, PNG'}</p>
-                            </div>
-                            <button className="px-8 py-3 rounded-xl font-bold text-white" style={{ background: 'var(--color-purple)' }}>
-                                {isArabic ? 'اختر ملفاً' : 'Choose File'}
-                            </button>
-                            <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" onChange={handleFileUpload} />
-                        </label>
+<div className="md:col-span-8 glass-panel rounded-lg p-8 space-y-8 border border-white/5">
+<h3 className="text-xl font-bold font-headline flex items-center gap-2">
+<span translate="no" className="material-symbols-outlined text-primary-fixed">monitor_weight</span>{t("Body Metrics")}
+<span className="text-[10px] text-[#ff7b00] bg-[#ff7b00]/10 px-2 py-0.5 rounded-full font-bold ml-2">{isArabic ? 'محمّل تلقائياً' : 'Auto-loaded'}</span>
+</h3>
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+<div className="space-y-2 group">
+<label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">{t("Current Weight (kg)")}</label>
+<input value={weight} onChange={e => setWeight(e.target.value)} className="w-full bg-transparent border-t-0 border-x-0 border-b-2 border-outline-variant/20 focus:border-primary-fixed focus:ring-0 text-3xl font-headline transition-all placeholder:text-surface-container-highest" type="number"/>
+</div>
+<div className="space-y-2 group">
+<label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">{t("Target Weight (kg)")}</label>
+<input value={targetWeight} onChange={e => setTargetWeight(e.target.value)} className="w-full bg-transparent border-t-0 border-x-0 border-b-2 border-outline-variant/20 focus:border-primary-fixed focus:ring-0 text-3xl font-headline transition-all placeholder:text-surface-container-highest" type="number"/>
+</div>
+</div>
+</div>
 
-                        <p className="mt-6 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
-                            🔒 {isArabic ? 'بياناتك مشفرة بالكامل ولا تُشارك مع أي طرف ثالث' : 'Your data is fully encrypted and never shared with third parties'}
-                        </p>
-                    </div>
-                )}
+<div className="md:col-span-4 glass-panel rounded-lg p-8 flex flex-col justify-between border border-white/5">
+<div className="space-y-6">
+<h3 className="text-xl font-bold font-headline flex items-center gap-2">
+<span translate="no" className="material-symbols-outlined text-primary-fixed">no_food</span>{t("Allergies")}</h3>
+<div className="flex flex-wrap gap-2">
+<button onClick={(e) => e.currentTarget.classList.toggle('bg-primary-fixed/10')} className="px-3 py-1.5 rounded-full border border-outline-variant/30 text-xs font-bold font-label hover:border-primary-fixed transition-colors active:scale-95">{t("Dairy")}</button>
+<button onClick={(e) => e.currentTarget.classList.toggle('bg-primary-fixed/10')} className="px-3 py-1.5 rounded-full border border-primary-fixed bg-primary-fixed/10 text-primary-fixed text-xs font-bold font-label active:scale-95">{t("Nuts")}</button>
+<button onClick={(e) => e.currentTarget.classList.toggle('bg-primary-fixed/10')} className="px-3 py-1.5 rounded-full border border-outline-variant/30 text-xs font-bold font-label hover:border-primary-fixed transition-colors active:scale-95">{t("Gluten")}</button>
+<button onClick={(e) => e.currentTarget.classList.toggle('bg-primary-fixed/10')} className="px-3 py-1.5 rounded-full border border-outline-variant/30 text-xs font-bold font-label hover:border-primary-fixed transition-colors active:scale-95">{t("Soy")}</button>
+</div>
+</div>
+<button onClick={() => alert(isArabic ? 'إضافة حساسية مخصصة قريباً 📝' : 'Custom Allergies arriving soon 📝')} className="mt-8 flex items-center justify-between group hover:text-primary-fixed transition-colors active:scale-95">
+<span className="text-[10px] uppercase tracking-widest font-bold">{t("Add Custom")}</span>
+<span translate="no" className="material-symbols-outlined text-primary-fixed group-hover:translate-x-1 transition-transform rtl:group-hover:-translate-x-1">add_circle</span>
+</button>
+</div>
 
-                {/* STAGE: ANALYZING */}
-                {stage === 'analyzing' && (
-                    <div className="flex flex-col items-center justify-center py-20 gap-8">
-                        <div className="relative">
-                            <div className="w-32 h-32 rounded-full" style={{ border: '2px solid var(--border-subtle)' }}>
-                                <div className="absolute inset-2 rounded-full animate-pulse" style={{ background: 'rgba(167,139,250,0.1)' }} />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <Brain size={48} className="text-[var(--color-purple)]" />
-                                </div>
-                            </div>
-                            <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center animate-bounce">
-                                <Sparkles size={16} className="text-black" />
-                            </div>
-                        </div>
-                        <div className="text-center">
-                            <h2 className="text-2xl font-bold font-heading mb-2">{isArabic ? 'الذكاء الاصطناعي يحلل تحاليلك...' : 'AI is analyzing your results...'}</h2>
-                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{fileName}</p>
-                        </div>
-                        <div className="w-full max-w-sm space-y-3">
-                            {[
-                                { label: isArabic ? 'قراءة الملف OCR' : 'Reading file with OCR', done: true },
-                                { label: isArabic ? 'تحليل المؤشرات الحيوية' : 'Analyzing biomarkers', done: true },
-                                { label: isArabic ? 'حساب الاحتياجات الغذائية' : 'Calculating nutritional needs', done: false },
-                                { label: isArabic ? 'توليد خطة الوجبات' : 'Generating meal plan', done: false },
-                            ].map((step, i) => (
-                                <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                                    {step.done ? <CheckCircle size={18} className="text-[var(--color-primary)] shrink-0" /> : <Loader2 size={18} className="text-[var(--color-purple)] animate-spin shrink-0" />}
-                                    <span className="text-sm">{step.label}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+<div className="md:col-span-12">
+{/* Sponsored Ad Banner */}
+<div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-purple-500/10 to-[#ff7b00]/5 border border-purple-500/20 flex items-center gap-3 cursor-pointer hover:bg-purple-500/15 transition-all">
+<span className="material-symbols-outlined text-purple-400 text-sm">campaign</span>
+<p className="text-xs flex-1">
+<span className="font-black text-purple-400">{isArabic ? '✦ ممول: ' : '✦ Sponsored: '}</span>
+<span className="text-on-surface-variant">{isArabic ? 'مكمل Keto Pro — خصم 25% لمشتركي Gem Z' : 'Keto Pro Supplement — 25% off for Gem Z members'}</span>
+</p>
+<span className="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+</div>
+<button 
+    onClick={handleGeneratePlan}
+    disabled={isGenerating}
+    className="disabled:opacity-70 w-full py-6 rounded-lg bg-gradient-to-r from-primary-fixed to-tertiary-fixed text-on-primary-fixed font-black text-xl uppercase tracking-widest flex items-center justify-center gap-4 hover:shadow-[0_0_30px_rgba(255,123,0,0.4)] transition-all active:scale-[0.98]"
+>
+    {isGenerating ? <Loader2 className="animate-spin w-6 h-6" /> : t("Generate Meal Plan")}
+    {!isGenerating && <span translate="no" className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>}
+</button>
+</div>
+</section>
 
-                {/* STAGE: RESULT */}
-                {stage === 'result' && (
-                    <div className="space-y-6">
-                        {/* Success Banner */}
-                        <div className="rounded-2xl p-5 flex items-center gap-4" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
-                            <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center text-black shrink-0">✓</div>
-                            <div>
-                                <h3 className="font-bold text-[var(--color-primary)]">{isArabic ? '✅ التحليل مكتمل!' : '✅ Analysis Complete!'}</h3>
-                                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'تم توليد خطتك الغذائية المخصصة بنجاح بناءً على تحاليلك.' : 'Your custom meal plan has been generated based on your lab results.'}</p>
-                            </div>
-                        </div>
+<section className="space-y-8 pt-12">
+<div className="flex items-end justify-between">
+<h3 className="text-4xl font-black font-headline tracking-tighter">{t("Your daily stats")}</h3>
+<span className="text-on-surface-variant/40 text-[10px] md:text-xs font-label">{t("BASED ON ELITE ATHLETE PROFILE")}</span>
+</div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                        {/* Macro Goals */}
-                        <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <h3 className="font-bold mb-4 flex items-center gap-2"><Zap size={16} className="text-[var(--color-warning)]" />{isArabic ? 'أهدافك الغذائية اليومية' : 'Your Daily Macro Targets'}</h3>
-                            <div className="grid grid-cols-4 gap-4">
-                                {[
-                                    { label: isArabic ? 'سعرات' : 'Calories', value: plan.summary.calories, unit: 'kcal', color: 'var(--color-orange)' },
-                                    { label: isArabic ? 'بروتين' : 'Protein', value: plan.summary.protein, unit: 'g', color: 'var(--color-primary)' },
-                                    { label: isArabic ? 'كارب' : 'Carbs', value: plan.summary.carbs, unit: 'g', color: 'var(--color-secondary)' },
-                                    { label: isArabic ? 'دهون' : 'Fat', value: plan.summary.fat, unit: 'g', color: 'var(--color-purple)' },
-                                ].map((m, i) => (
-                                    <div key={i} className="text-center p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
-                                        <p className="text-2xl font-bold font-mono" style={{ color: m.color }}>{m.value}</p>
-                                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{m.unit}</p>
-                                        <p className="text-xs font-medium mt-1" style={{ color: 'var(--text-muted)' }}>{m.label}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+<div className="bg-surface-container-low rounded-lg p-6 border border-white/5 relative overflow-hidden group hover:border-primary-fixed/30 transition-colors">
+<div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span translate="no" className="material-symbols-outlined text-6xl text-primary-fixed">restaurant</span>
+</div>
+<span className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">{t("Proteins")}</span>
+<div className="mt-4 flex items-baseline gap-2">
+<span className="text-5xl font-black font-headline text-primary-fixed">180</span>
+<span className="text-xl font-bold font-headline text-on-surface-variant">g</span>
+</div>
+<div className="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div className="w-[75%] h-full bg-primary-fixed animate-pulse"></div>
+</div>
+</div>
+<div className="bg-surface-container-low rounded-lg p-6 border border-white/5 relative overflow-hidden group hover:border-tertiary-fixed/30 transition-colors">
+<div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span translate="no" className="material-symbols-outlined text-6xl text-tertiary-fixed">bakery_dining</span>
+</div>
+<span className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">{t("Carbs")}</span>
+<div className="mt-4 flex items-baseline gap-2">
+<span className="text-5xl font-black font-headline text-tertiary-fixed">240</span>
+<span className="text-xl font-bold font-headline text-on-surface-variant">g</span>
+</div>
+<div className="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div className="w-[60%] h-full bg-tertiary-fixed animate-pulse"></div>
+</div>
+</div>
+<div className="bg-surface-container-low rounded-lg p-6 border border-white/5 relative overflow-hidden group hover:border-secondary-fixed/30 transition-colors">
+<div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span translate="no" className="material-symbols-outlined text-6xl text-secondary-fixed">opacity</span>
+</div>
+<span className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">{t("Fats")}</span>
+<div className="mt-4 flex items-baseline gap-2">
+<span className="text-5xl font-black font-headline text-secondary-fixed">65</span>
+<span className="text-xl font-bold font-headline text-on-surface-variant">g</span>
+</div>
+<div className="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div className="w-[45%] h-full bg-secondary-fixed animate-pulse"></div>
+</div>
+</div>
+</div>
+</section>
 
-                        {/* Lab Findings */}
-                        <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <h3 className="font-bold mb-4">{isArabic ? 'ما كشفه التحليل' : 'Lab Findings'}</h3>
-                            <div className="space-y-3">
-                                {plan.findings.map((f, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
-                                        {f.type === 'warning' ? <AlertCircle size={18} className="text-[var(--color-warning)] shrink-0" /> : <CheckCircle size={18} className="text-[#34C759] shrink-0" />}
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-bold text-sm">{isArabic ? f.labelAr : f.label}</span>
-                                                <span className="font-mono text-xs px-2 py-0.5 rounded" style={{ background: f.type === 'warning' ? 'rgba(255,204,0,0.1)' : 'rgba(52,199,89,0.1)', color: f.type === 'warning' ? 'var(--color-warning)' : '#34C759' }}>{f.value}</span>
-                                            </div>
-                                            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? f.noteAr : f.note}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+<section className="space-y-6 pt-12">
+<h4 className="text-2xl font-black font-headline tracking-tight">{t("Today's Protocol")}</h4>
+<div className="space-y-4">
 
-                        {/* Day Tabs */}
-                        <div>
-                            <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
-                                {plan.days.map((d, i) => (
-                                    <button key={i} onClick={() => setActiveDay(i)}
-                                        className="px-5 py-2.5 rounded-xl text-sm font-bold shrink-0 transition-all"
-                                        style={{ background: activeDay === i ? 'var(--color-primary)' : 'var(--bg-card)', color: activeDay === i ? '#000' : 'var(--text-secondary)', border: `1px solid ${activeDay === i ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
-                                        {isArabic ? d.dayAr : `Day ${d.day}`}
-                                    </button>
-                                ))}
-                            </div>
+<div onClick={() => alert(isArabic ? 'وصفة الشوفان متوفرة قريباً 🥣' : 'Oats Recipe available soon 🥣')} className="group flex items-center gap-6 p-4 glass-panel rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer border-l-4 border-primary-fixed active:scale-[0.99]">
+<div className="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 border border-outline-variant/10">
+<img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="vibrant healthy grain bowl with salmon avocado and fresh greens in a minimalist dark ceramic bowl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3q84L4UivX73AfDWJ2kEd4iovf2vL5PvOU-JG1AgR6DLfOA7Fv-HbSYx9vjRbfDzUYoQey75XZR9vGhY-erVF7vgXWMNw-CNB9o-UnAsmy49m2Zf5Wy7F3akIJHJqSr6x4h8Hl7xwAfSOzoHnEBvN-qbPBq9elfcUsBpHE_72XZEbUbF5i6HsbJlVLiWzU_9VH4ky2fmZogNyYRIxbICqCEp2QyuGplj1EprYhjRZSu9tNE_DHOOlD3hLs_3tqyL_ySumDJDT5-g4"/>
+</div>
+<div className="flex-grow">
+<div className="flex justify-between items-start">
+<div>
+<span className="text-[10px] uppercase tracking-widest font-bold text-primary-fixed">Breakfast • 07:30 AM</span>
+<h5 className="text-base md:text-lg font-bold font-headline">Steel-Cut Oats &amp; Whey</h5>
+</div>
+<span className="text-xs font-bold text-on-surface-variant/60">450 kcal</span>
+</div>
+<p className="text-sm text-on-surface-variant mt-1">{t("Topped with fresh blueberries and raw honey.")}</p>
+</div>
+<span translate="no" className="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary-fixed transition-colors rtl:rotate-180">chevron_right</span>
+</div>
 
-                            <div className="space-y-3">
-                                {plan.days[activeDay].meals.map((meal, i) => (
-                                    <div key={i} className="rounded-2xl p-5 cursor-pointer transition-all hover:scale-[1.01]"
-                                        style={{ background: 'var(--bg-card)', border: `1px solid ${meal.color}30` }}
-                                        onClick={() => setSelectedMeal(selectedMeal?.type === meal.type ? null : meal)}>
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-2xl">{meal.emoji}</span>
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <h4 className="font-bold text-sm">{isArabic ? meal.typeAr : meal.type}</h4>
-                                                        <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: `rgba(167,139,250,0.1)`, color: 'var(--color-purple)' }}>{meal.vit}</span>
-                                                    </div>
-                                                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{isArabic ? meal.nameAr : meal.name}</p>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-bold" style={{ color: meal.color }}>{meal.kcal} kcal</p>
-                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{meal.time}</p>
-                                            </div>
-                                        </div>
-                                        {selectedMeal?.type === meal.type && (
-                                            <div className="mt-4 pt-4 border-t grid grid-cols-3 gap-3" style={{ borderColor: 'var(--border-subtle)' }}>
-                                                {[{ l: 'Protein', v: `${meal.p}g`, c: 'var(--color-primary)' }, { l: 'Carbs', v: `${meal.c}g`, c: 'var(--color-secondary)' }, { l: 'Fat', v: `${meal.f}g`, c: 'var(--color-purple)' }].map((m, j) => (
-                                                    <div key={j} className="text-center p-2 rounded-xl" style={{ background: 'var(--bg-input)' }}>
-                                                        <p className="font-bold" style={{ color: m.c }}>{m.v}</p>
-                                                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{m.l}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    );
+<div onClick={() => alert(isArabic ? 'وصفة الدجاج المشوي متوفرة قريباً 🍗' : 'Grilled Chicken Recipe available soon 🍗')} className="group flex items-center gap-6 p-4 glass-panel rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer border-l-4 border-transparent hover:border-outline-variant/30 active:scale-[0.99]">
+<div className="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 border border-outline-variant/10">
+<img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="seared chicken breast with roasted asparagus and sweet potatoes presented on a dark slate background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnFMjXYZV7DSUGb3Ce2T9fMJf_c9MdrhR8DSPXoxjWQnbZQ_oIznKQ_tBZoXfvDn4W_TDN3GVJjA6GZxSfDqI5XWQQwWdbYlYLJ2nsDlLefJPSLuAOZInFfmTHVyHnA1HaS3BD6_HyqbTkoLcOwyaKknV8jQZGcEQhkS3_9ajv_ZkpWghFSU1XAmJPrpGbNRwbDrtMJ3unS1cnu3S45HyEbpe15j8K-ajteFDjr87o2qt9Wsq40K5ANMIqDiNOVuuAblkoKcjEy4NA"/>
+</div>
+<div className="flex-grow">
+<div className="flex justify-between items-start">
+<div>
+<span className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60">Lunch • 12:45 PM</span>
+<h5 className="text-base md:text-lg font-bold font-headline">Grilled Poultry &amp; Roots</h5>
+</div>
+<span className="text-xs font-bold text-on-surface-variant/60">620 kcal</span>
+</div>
+<p className="text-sm text-on-surface-variant mt-1">{t("Lean chicken breast with honey-glazed carrots.")}</p>
+</div>
+<span translate="no" className="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary-fixed transition-colors rtl:rotate-180">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+
+<nav className="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/80 backdrop-blur-3xl rounded-t-[2rem] z-50 shadow-[0_-15px_40px_rgba(0,-0,0,0.6)] md:hidden border-t border-white/5 no-border glassmorphism-surface">
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:text-white hover:scale-110 transition-transform active:scale-90" href="/ai-coach">
+<span translate="no" className="material-symbols-outlined mb-1">psychology</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">{t("Coach")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:text-white hover:scale-110 transition-transform active:scale-90" href="/shop">
+<span translate="no" className="material-symbols-outlined mb-1">shopping_bag</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">{t("Shop")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:text-white hover:scale-110 transition-transform active:scale-90" href="/social">
+<span translate="no" className="material-symbols-outlined mb-1">dynamic_feed</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">{t("Feed")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:text-white hover:scale-110 transition-transform active:scale-90" href="/wallet">
+<span translate="no" className="material-symbols-outlined mb-1">account_balance_wallet</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">{t("Wallet")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] hover:scale-110 transition-transform active:scale-90" href="/squads">
+<span translate="no" className="material-symbols-outlined mb-1" style={{ fontVariationSettings: "'FILL' 1" }}>groups</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">{t("Squads")}</span>
+</Link>
+</nav>
+
+<Link href="/nutrition" onClick={(e) => { e.preventDefault(); alert(isArabic ? 'تسجيل الوجبة قريباً 🧾' : 'Meal logger coming soon 🧾'); }} className="fixed bottom-32 right-6 md:right-12 md:bottom-12 z-[60] w-16 h-16 md:w-20 md:h-20 rounded-full bg-black/80 backdrop-blur-xl border border-primary-fixed/30 flex items-center justify-center shadow-[0_0_30px_rgba(255,123,0,0.3)] hover:shadow-[0_0_60px_rgba(255,123,0,0.6)] hover:scale-110 active:scale-95 transition-all duration-500 group">
+<div className="absolute inset-0 rounded-full bg-primary-fixed/10 animate-pulse"></div>
+<span translate="no" className="material-symbols-outlined text-primary-fixed text-3xl md:text-4xl group-hover:rotate-12 drop-shadow-[0_0_10px_rgba(255,123,0,0.8)] transition-transform duration-300">nutrition</span>
+</Link>
+    </div>
+  );
 }

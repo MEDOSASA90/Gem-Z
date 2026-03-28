@@ -1,256 +1,304 @@
 'use client';
-import React, { useState, useRef } from 'react';
-import {
-    Camera, CameraOff, AlertTriangle, CheckCircle, Zap,
-    Globe, RotateCcw, Play, Pause, Activity
-} from 'lucide-react';
-import { useLanguage } from '../../context/LanguageContext';
-import { useTheme } from '../../context/ThemeContext';
+import React from "react";
 import Link from 'next/link';
-import GemZLogo from '../../components/GemZLogo';
+import { useLanguage } from '../../context/LanguageContext';
 
-const EXERCISES = [
-    { id: 'squat', nameEn: 'Squat', nameAr: 'سكوات', emoji: '🦵', joints: ['Knee', 'Hip', 'Ankle'], commonErrors: ['Knees caving in', 'Chest dropping', 'Heels rising'] },
-    { id: 'pushup', nameEn: 'Push-Up', nameAr: 'ضغط', emoji: '💪', joints: ['Elbow', 'Shoulder', 'Wrist'], commonErrors: ['Hips sagging', 'Elbows flaring', 'Neck dropping'] },
-    { id: 'deadlift', nameEn: 'Deadlift', nameAr: 'ديدليفت', emoji: '⚡', joints: ['Hip', 'Spine', 'Knee'], commonErrors: ['Back rounding', 'Bar too far', 'Hyperextension at top'] },
-    { id: 'lunge', nameEn: 'Lunge', nameAr: 'لانج', emoji: '🏃', joints: ['Knee', 'Hip', 'Ankle'], commonErrors: ['Front knee over toe', 'Trunk leaning', 'Back knee not lowering'] },
-];
-
-const MOCK_ANALYSIS = {
-    score: 87,
-    reps: 8,
-    issues: [
-        { joint: 'Right Knee', jointAr: 'الركبة اليمنى', angle: '162°', optimal: '90°', severity: 'warning', tip: 'Go deeper — aim for 90° knee bend', tipAr: 'انزل أعمق — استهدف 90 درجة للركبة' },
-        { joint: 'Hip', jointAr: 'الحوض', angle: '85°', optimal: '85°', severity: 'ok', tip: 'Perfect hip hinge angle!', tipAr: 'زاوية الحوض مثالية!' },
-        { joint: 'Spine', jointAr: 'العمود الفقري', angle: '175°', optimal: '180°', severity: 'ok', tip: 'Good neutral spine position', tipAr: 'وضعية العمود الفقري ممتازة' },
-    ]
-};
-
-export default function AIFormCorrectionPage() {
-    const { isArabic, toggleLanguage } = useLanguage();
-    const { theme, toggleTheme } = useTheme();
-    const isDark = theme === 'dark';
-    const [selectedExercise, setSelectedExercise] = useState(EXERCISES[0]);
-    const [cameraActive, setCameraActive] = useState(false);
-    const [analyzing, setAnalyzing] = useState(false);
-    const [showResults, setShowResults] = useState(false);
-    const [repCount, setRepCount] = useState(0);
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    const startCamera = async () => {
-        setCameraActive(true);
-        setShowResults(false);
-        setRepCount(0);
-        // In production: access getUserMedia + MediaPipe pose detection
-        // Simulate analysis after 4 seconds
-        setAnalyzing(true);
-        setTimeout(() => {
-            setAnalyzing(false);
-            setShowResults(true);
-        }, 4000);
-        // Simulate rep counting
-        let count = 0;
-        const interval = setInterval(() => {
-            count++;
-            setRepCount(count);
-            if (count >= MOCK_ANALYSIS.reps) clearInterval(interval);
-        }, 500);
-    };
-
-    const stopCamera = () => {
-        setCameraActive(false);
-        setAnalyzing(false);
-    };
-
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen font-sans pb-20" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            {/* Nav */}
-            <nav className="sticky top-0 z-40 px-6 py-4 flex items-center justify-between border-b" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-subtle)', backdropFilter: 'blur(16px)' }}>
-                <div className="flex items-center gap-4">
-                    <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
-                    <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2">
-                            <Activity size={18} className="text-[var(--color-primary)]" />
-                            {isArabic ? 'مصحح الأداء AI' : 'AI Form Correction'}
-                        </h1>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'تحليل حركي فوري عبر الكاميرا' : 'Real-time movement analysis'}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
-                    <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
-                </div>
-            </nav>
-
-            <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left: Exercise Selector */}
-                <div className="lg:col-span-1 space-y-4">
-                    <h3 className="font-bold">{isArabic ? 'اختر التمرين' : 'Select Exercise'}</h3>
-                    {EXERCISES.map(ex => (
-                        <button key={ex.id} onClick={() => { setSelectedExercise(ex); setShowResults(false); setCameraActive(false); }}
-                            className="w-full flex items-center gap-3 p-4 rounded-2xl text-left transition-all"
-                            style={{ background: selectedExercise.id === ex.id ? 'rgba(var(--color-primary-rgb), 0.1)' : 'var(--bg-card)', border: `1px solid ${selectedExercise.id === ex.id ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
-                            <span className="text-3xl">{ex.emoji}</span>
-                            <div>
-                                <p className="font-bold">{isArabic ? ex.nameAr : ex.nameEn}</p>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                    {ex.joints.map(j => (
-                                        <span key={j} className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-input)', color: 'var(--text-muted)' }}>{j}</span>
-                                    ))}
-                                </div>
-                            </div>
-                            {selectedExercise.id === ex.id && <CheckCircle size={16} className="text-[var(--color-primary)] ms-auto shrink-0" />}
-                        </button>
-                    ))}
-
-                    {/* Common Errors */}
-                    <div className="rounded-2xl p-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                        <h4 className="font-bold text-sm mb-3">{isArabic ? 'أخطاء شائعة:' : 'Common Errors:'}</h4>
-                        {selectedExercise.commonErrors.map((err, i) => (
-                            <div key={i} className="flex items-center gap-2 text-sm mb-2">
-                                <AlertTriangle size={12} className="text-[var(--color-warning)] shrink-0" />
-                                <span style={{ color: 'var(--text-secondary)' }}>{err}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Center: Camera Feed */}
-                <div className="lg:col-span-2 space-y-4">
-                    {/* Camera viewport */}
-                    <div className="relative rounded-3xl overflow-hidden bg-black" style={{ aspectRatio: '4/3', border: '1px solid var(--border-subtle)' }}>
-                        {!cameraActive ? (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-6" style={{ background: 'var(--bg-card)' }}>
-                                <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background: 'rgba(var(--color-primary-rgb), 0.1)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
-                                    <Camera size={40} className="text-[var(--color-primary)]" />
-                                </div>
-                                <div className="text-center">
-                                    <h3 className="font-bold text-xl mb-2">{isArabic ? 'ابدأ تحليل الحركة' : 'Start Movement Analysis'}</h3>
-                                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                        {isArabic ? 'سيتم استخدام كاميرا الهاتف لتحليل حركتك وتصحيحها' : 'Your camera will be used to analyze and correct your form'}
-                                    </p>
-                                </div>
-                                <button onClick={startCamera} className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-black text-lg neon-glow" style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}>
-                                    <Play size={20} /> {isArabic ? 'تشغيل الكاميرا' : 'Start Camera'}
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Simulated camera feed with skeleton overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
-                                    {/* Skeleton body visualization */}
-                                    <svg viewBox="0 0 200 350" className="h-4/5 opacity-60">
-                                        {/* Head */}
-                                        <circle cx="100" cy="40" r="22" fill="none" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Neck */}
-                                        <line x1="100" y1="62" x2="100" y2="80" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Shoulders */}
-                                        <line x1="60" y1="80" x2="140" y2="80" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Torso */}
-                                        <line x1="100" y1="80" x2="100" y2="175" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Left arm */}
-                                        <line x1="60" y1="80" x2="40" y2="135" stroke="var(--color-primary)" strokeWidth="2" />
-                                        <line x1="40" y1="135" x2="30" y2="185" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Right arm */}
-                                        <line x1="140" y1="80" x2="160" y2="135" stroke="var(--color-primary)" strokeWidth="2" />
-                                        <line x1="160" y1="135" x2="170" y2="185" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Hips */}
-                                        <line x1="75" y1="175" x2="125" y2="175" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Left leg */}
-                                        <line x1="75" y1="175" x2="65" y2="265" stroke="var(--color-primary)" strokeWidth="2" />
-                                        <line x1="65" y1="265" x2="60" y2="330" stroke={MOCK_ANALYSIS.issues[0].severity === 'warning' ? 'var(--color-warning)' : 'var(--color-primary)'} strokeWidth="2" />
-                                        {/* Right leg */}
-                                        <line x1="125" y1="175" x2="135" y2="265" stroke="var(--color-primary)" strokeWidth="2" />
-                                        <line x1="135" y1="265" x2="140" y2="330" stroke="var(--color-primary)" strokeWidth="2" />
-                                        {/* Joint dots */}
-                                        {[[100, 40], [60, 80], [140, 80], [40, 135], [160, 135], [30, 185], [170, 185], [75, 175], [125, 175], [65, 265], [135, 265], [60, 330], [140, 330]].map(([x, y], i) => (
-                                            <circle key={i} cx={x} cy={y} r="4" fill="var(--color-primary)" />
-                                        ))}
-                                        {/* Warning joint */}
-                                        <circle cx="60" cy="330" r="6" fill="var(--color-warning)" className="animate-pulse" />
-                                        <circle cx="140" cy="330" r="6" fill="var(--color-warning)" className="animate-pulse" />
-                                        {/* Angle indicator */}
-                                        <text x="75" y="280" fill="var(--color-warning)" fontSize="11" fontFamily="monospace">162°</text>
-                                        <text x="130" y="280" fill="var(--color-primary)" fontSize="11" fontFamily="monospace">160°</text>
-                                    </svg>
-                                </div>
-
-                                {/* Overlay UI */}
-                                <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-                                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
-                                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                        <span className="text-white text-xs font-bold">REC</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: 'rgba(0,0,0,0.7)' }}>
-                                        <span className="text-white text-xs">{isArabic ? 'تكرارات:' : 'Reps:'}</span>
-                                        <span className="text-[var(--color-primary)] font-bold font-mono text-lg">{repCount}</span>
-                                    </div>
-                                </div>
-
-                                {analyzing && (
-                                    <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'rgba(0,0,0,0.8)' }}>
-                                        <div className="w-4 h-4 rounded-full border-2 border-[var(--color-primary)] border-t-transparent animate-spin" />
-                                        <span className="text-white text-sm">{isArabic ? 'تحليل الحركة...' : 'Analyzing movement...'}</span>
-                                    </div>
-                                )}
-
-                                {showResults && !analyzing && (
-                                    <div className="absolute bottom-4 left-4 right-4 px-4 py-3 rounded-xl" style={{ background: 'rgba(0,0,0,0.9)', border: '1px solid rgba(var(--color-primary-rgb), 0.25)' }}>
-                                        <p className="text-[var(--color-warning)] text-sm font-bold">⚠️ {isArabic ? 'الركبة اليمنى: انزل أعمق!' : 'Right Knee: Go deeper!'}</p>
-                                        <p className="text-xs text-gray-300 mt-1">{isArabic ? 'الزاوية الحالية 162° — يجب أن تكون 90°' : 'Current angle 162° — target is 90°'}</p>
-                                    </div>
-                                )}
-
-                                <button onClick={stopCamera} className="absolute top-4 end-4 p-2 rounded-xl bg-red-500/80 text-white">
-                                    <CameraOff size={18} />
-                                </button>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Form Score */}
-                    {showResults && (
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-4 p-5 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                                <div className="relative w-20 h-20">
-                                    <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
-                                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--bg-input)" strokeWidth="3" />
-                                        <circle cx="18" cy="18" r="15.9" fill="none" stroke={MOCK_ANALYSIS.score >= 80 ? 'var(--color-primary)' : 'var(--color-warning)'} strokeWidth="3"
-                                            strokeDasharray={`${MOCK_ANALYSIS.score} 100`} strokeLinecap="round" />
-                                    </svg>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="font-bold text-xl" style={{ color: MOCK_ANALYSIS.score >= 80 ? 'var(--color-primary)' : 'var(--color-warning)' }}>{MOCK_ANALYSIS.score}</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-lg">{isArabic ? 'نتيجة الأداء' : 'Form Score'}</h3>
-                                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{MOCK_ANALYSIS.reps} {isArabic ? 'تكرارات محللة' : 'reps analyzed'}</p>
-                                    <p className="text-sm font-bold" style={{ color: MOCK_ANALYSIS.score >= 80 ? 'var(--color-primary)' : 'var(--color-warning)' }}>
-                                        {MOCK_ANALYSIS.score >= 80 ? (isArabic ? '✅ أداء جيد جداً!' : '✅ Very Good Form!') : (isArabic ? '⚠️ يحتاج تحسين' : '⚠️ Needs Improvement')}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Joint Analysis */}
-                            <div className="space-y-3">
-                                {MOCK_ANALYSIS.issues.map((issue, i) => (
-                                    <div key={i} className="flex items-center gap-4 p-4 rounded-2xl" style={{ background: 'var(--bg-card)', border: `1px solid ${issue.severity === 'warning' ? 'rgba(255,204,0,0.3)' : 'rgba(52,199,89,0.3)'}` }}>
-                                        {issue.severity === 'warning' ? <AlertTriangle size={20} className="text-[var(--color-warning)] shrink-0" /> : <CheckCircle size={20} className="text-[#34C759] shrink-0" />}
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <span className="font-bold text-sm">{isArabic ? issue.jointAr : issue.joint}</span>
-                                                <span className="font-mono text-xs px-2 py-0.5 rounded" style={{ background: issue.severity === 'warning' ? 'rgba(255,204,0,0.1)' : 'rgba(52,199,89,0.1)', color: issue.severity === 'warning' ? 'var(--color-warning)' : '#34C759' }}>{issue.angle}</span>
-                                                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>→ {isArabic ? 'المثالي' : 'target'}: {issue.optimal}</span>
-                                            </div>
-                                            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? issue.tipAr : issue.tip}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+export default function Page() {
+    const { t } = useLanguage();
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body">
+      <header className="bg-black/60 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/20">
+            <img
+              className="w-full h-full object-cover"
+              data-alt="Close up portrait of a professional athlete with intense focus and dramatic lighting on face"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAdpiYV3ucdXvnoNFr95OBmkyMcVw91V5rKl6tmKQpmmz9shpFY28EkTIrcqio8tKmKH8bmqoBi2xGaW44apI5pJ9S4qdt2_FaHlK0hSvw4Wir1igDT98SzjHo0bTQXPR2L-dOVjoPw1iGr_NpHvYIVo0bqz8TKOgBA-ieLPy7oKj0ZW5SFLw6-mJRF2r64gKI3oHSjt4rZ8SMRkDsFFjtzf9B1AewcdQcyhgZPDbMGt8F-vkohX1gK8qohxbHc5rt26JD22tMCbDB"
+            />
+          </div>
+          <a href="https://gem-z.shop/"><h1 className="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline">{t("GEM Z")}</h1></a>
         </div>
-    );
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex gap-8 text-gray-400 font-headline font-bold tracking-tight">
+            <Link className="hover:text-[#ff7b00] transition-colors" href="/ai-coach">{t("Coach")}</Link>
+            <Link className="hover:text-[#ff7b00] transition-colors" href="/shop">{t("Shop")}</Link>
+            <Link className="hover:text-[#ff7b00] transition-colors" href="/social">{t("Feed")}</Link>
+            <Link className="hover:text-[#ff7b00] transition-colors" href="/wallet">{t("Wallet")}</Link>
+          </div>
+          <button className="text-[#ff7b00] p-2 hover:bg-surface-variant/20 rounded-full transition-all active:scale-95">
+            <span className="material-symbols-outlined">notifications</span>
+          </button>
+        </div>
+      </header>
+      <main className="flex-grow container mx-auto px-4 py-8 md:py-12 max-w-7xl">
+        <div className="mb-12">
+          <span className="text-primary font-headline font-black text-sm uppercase tracking-[0.3em] mb-2 block">{t("Performance Intelligence")}</span>
+          <h2 className="text-5xl md:text-7xl font-headline font-black text-white tracking-tighter leading-none mb-4">{t("AI FORM")}<br />
+            <span className="text-primary italic">{t("ANALYSIS")}</span>
+          </h2>
+          <p className="text-on-surface-variant max-w-xl text-lg">
+            Harness the power of neural tracking to perfect your mechanics.
+            Upload your set and let the AI find your kinetic leaks.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-8 space-y-8">
+            <div className="relative rounded-lg overflow-hidden bg-surface-container-low aspect-video border border-outline-variant/10 shadow-2xl group">
+              <img
+                className="w-full h-full object-cover opacity-60"
+                data-alt="Muscular athlete performing a heavy barbell back squat in a dark, atmospheric industrial gym environment"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHs1S57tuGcPB1FN1ahoOmPiz-kN_NUkxgoORlXtun2f3qx7ZzoEyfA7DMfr5e1HiNLdohA6ghrzT0oQUTyDByXKrpukLOZmSYSkA6boOLrau7wzMIQ84RSv5BRf-2-Qjroag7I-saLxEKAbGcLkCla3vigEIuOLtYrXZ-q71pIiW__baByX4fz9aQ6xU-a0d9oA2wlHFm17cRkZiz1zy9IwCDUp5F1feWQ3II2eE--UwjhNrWSdClyivuslqkAePeqgxWHFP0qgmQ"
+              />
+
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                viewBox="0 0 800 450"
+              >
+                <circle
+                  className="skeleton-joint"
+                  cx="400"
+                  cy="80"
+                  r="12"
+                ></circle>
+                <line
+                  className="skeleton-line"
+                  x1="400"
+                  x2="400"
+                  y1="92"
+                  y2="240"
+                ></line>
+
+                <line
+                  className="skeleton-line"
+                  x1="340"
+                  x2="460"
+                  y1="130"
+                  y2="130"
+                ></line>
+                <circle
+                  className="skeleton-joint"
+                  cx="340"
+                  cy="130"
+                  r="8"
+                ></circle>
+                <circle
+                  className="skeleton-joint"
+                  cx="460"
+                  cy="130"
+                  r="8"
+                ></circle>
+
+                <line
+                  className="skeleton-line"
+                  x1="340"
+                  x2="300"
+                  y1="130"
+                  y2="200"
+                ></line>
+                <line
+                  className="skeleton-line"
+                  x1="460"
+                  x2="500"
+                  y1="130"
+                  y2="200"
+                ></line>
+
+                <circle
+                  className="skeleton-joint"
+                  cx="400"
+                  cy="240"
+                  r="10"
+                ></circle>
+                <line
+                  className="skeleton-line"
+                  x1="400"
+                  x2="330"
+                  y1="240"
+                  y2="300"
+                ></line>
+                <line
+                  className="skeleton-line"
+                  x1="400"
+                  x2="470"
+                  y1="240"
+                  y2="300"
+                ></line>
+                <line
+                  className="skeleton-line"
+                  x1="330"
+                  x2="350"
+                  y1="300"
+                  y2="400"
+                ></line>
+                <line
+                  className="skeleton-line"
+                  x1="470"
+                  x2="450"
+                  y1="300"
+                  y2="400"
+                ></line>
+                <circle
+                  className="skeleton-joint"
+                  cx="330"
+                  cy="300"
+                  r="8"
+                ></circle>
+                <circle
+                  className="skeleton-joint"
+                  cx="470"
+                  cy="300"
+                  r="8"
+                ></circle>
+              </svg>
+
+              <div className="absolute inset-0 glass-panel flex flex-col items-center justify-center border-2 border-dashed border-primary/40 rounded-lg group-hover:bg-surface-container-highest/20 transition-all">
+                <span className="material-symbols-outlined text-6xl text-primary mb-4">{t("cloud_upload")}</span>
+                <h3 className="text-2xl font-bold text-white mb-2">{t("Drop Video to Analyze")}</h3>
+                <p className="text-on-surface-variant mb-8 text-sm uppercase tracking-widest">{t("MP4, MOV up to 250MB")}</p>
+                <div className="flex gap-4">
+                  <button className="bg-primary hover:bg-primary-dim text-on-primary-fixed px-8 py-3 rounded-full font-bold transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-primary/20">
+                    <span className="material-symbols-outlined">{t("video_camera_back")}</span>{t("Camera Access")}</button>
+                  <button className="bg-surface-container-highest/80 backdrop-blur-md border border-outline-variant/30 text-white px-8 py-3 rounded-full font-bold hover:bg-surface-container-highest transition-all active:scale-95">{t("Browse Files")}</button>
+                </div>
+              </div>
+
+              <div className="absolute top-6 left-6 flex flex-col gap-2">
+                <div className="bg-black/80 px-4 py-2 rounded-md border-l-4 border-primary">
+                  <p className="text-[10px] text-primary font-bold uppercase tracking-tighter">{t("Hip Angle")}</p>
+                  <p className="text-xl font-black font-headline">78.4°</p>
+                </div>
+                <div className="bg-black/80 px-4 py-2 rounded-md border-l-4 border-secondary">
+                  <p className="text-[10px] text-secondary font-bold uppercase tracking-tighter">{t("Stability")}</p>
+                  <p className="text-xl font-black font-headline">94%</p>
+                </div>
+              </div>
+            </div>
+
+            <Link href="/ai-coach" className="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed py-6 rounded-lg font-headline font-black text-2xl uppercase tracking-tighter flex items-center justify-center gap-4 hover:shadow-[0_0_30px_rgba(255,146,71,0.3)] transition-all active:scale-[0.98]">{t("Analyze Form")}<span className="material-symbols-outlined text-3xl">
+                psychology
+              </span>
+            </Link>
+          </div>
+
+          <div className="lg:col-span-4 space-y-6">
+            <div className="bg-surface-container-low rounded-lg p-6 border border-outline-variant/10">
+              <h4 className="text-sm font-black text-primary uppercase tracking-widest mb-6">{t("Detection Params")}</h4>
+              <div className="space-y-6">
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between text-xs font-bold uppercase">
+                    <span className="text-on-surface-variant">{t("Joint Sensitivity")}</span>
+                    <span className="text-primary">{t("High")}</span>
+                  </div>
+                  <div className="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-4/5"></div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 p-3 bg-surface-container rounded-md hover:bg-surface-container-high transition-colors cursor-pointer">
+                    <input
+                      defaultChecked
+                      className="rounded bg-surface-container-highest border-outline-variant text-primary focus:ring-primary"
+                      type="checkbox"
+                    />
+                    <span className="text-sm font-bold">{t("Auto-detect Reps")}</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 bg-surface-container rounded-md hover:bg-surface-container-high transition-colors cursor-pointer">
+                    <input
+                      className="rounded bg-surface-container-highest border-outline-variant text-primary focus:ring-primary"
+                      type="checkbox"
+                    />
+                    <span className="text-sm font-bold">{t("Kinematic Heatmap")}</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 bg-surface-container rounded-md hover:bg-surface-container-high transition-colors cursor-pointer">
+                    <input
+                      defaultChecked
+                      className="rounded bg-surface-container-highest border-outline-variant text-primary focus:ring-primary"
+                      type="checkbox"
+                    />
+                    <span className="text-sm font-bold">{t("Voice Feedback")}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-surface-container-high p-4 rounded-lg flex flex-col justify-between aspect-square">
+                <span className="material-symbols-outlined text-primary text-3xl">
+                  bolt
+                </span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase text-on-surface-variant">{t("Processing")}</p>
+                  <p className="text-lg font-black font-headline">
+                    0.4s Latency
+                  </p>
+                </div>
+              </div>
+              <div className="bg-surface-container-high p-4 rounded-lg flex flex-col justify-between aspect-square">
+                <span className="material-symbols-outlined text-secondary text-3xl">{t("precision_manufacturing")}</span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase text-on-surface-variant">{t("Precision")}</p>
+                  <p className="text-lg font-black font-headline">{t("MM-Level")}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-tertiary/20 to-transparent p-6 rounded-lg border border-tertiary/10">
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className="material-symbols-outlined text-tertiary"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  military_tech
+                </span>
+                <span className="text-tertiary font-bold text-xs uppercase tracking-widest">{t("Elite Feature")}</span>
+              </div>
+              <h5 className="text-xl font-bold mb-2">3D Depth Modeling</h5>
+              <p className="text-xs text-on-surface-variant mb-4">
+                Unlock multi-angle skeleton tracking with pro-level
+                biomechanical insights.
+              </p>
+              <button className="text-tertiary font-black text-xs uppercase tracking-tighter border-b border-tertiary pb-1 hover:text-tertiary-fixed transition-colors">{t("Upgrade to Elite")}</button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        <div className="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)]">
+          <span
+            className="material-symbols-outlined"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            psychology
+          </span>
+          <span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Coach")}</span>
+        </div>
+        <div className="flex flex-col items-center justify-center text-gray-500">
+          <span className="material-symbols-outlined">shopping_bag</span>
+          <span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Shop")}</span>
+        </div>
+        <div className="flex flex-col items-center justify-center text-gray-500">
+          <span className="material-symbols-outlined">{t("dynamic_feed")}</span>
+          <span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Feed")}</span>
+        </div>
+        <div className="flex flex-col items-center justify-center text-gray-500">
+          <span className="material-symbols-outlined">
+            account_balance_wallet
+          </span>
+          <span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Wallet")}</span>
+        </div>
+        <div className="flex flex-col items-center justify-center text-gray-500">
+          <span className="material-symbols-outlined">{t("groups")}</span>
+          <span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Squads")}</span>
+        </div>
+      </nav>
+
+      <Link href="/squads" className="fixed bottom-40 right-6 md:bottom-24 w-16 h-16 rounded-full glass-fab neon-glow-orange flex items-center justify-center text-primary z-50 transition-all hover:scale-110 active:scale-95 group shadow-2xl">
+        <span className="material-symbols-outlined text-4xl font-bold group-hover:rotate-90 transition-transform duration-300">{t("add")}</span>
+      </Link>
+      <button className="fixed bottom-60 right-6 bg-surface-container-highest/80 backdrop-blur-xl w-12 h-12 rounded-full flex items-center justify-center border border-outline-variant/30 text-white font-black z-40 md:bottom-44">
+        AR
+      </button>
+    </div>
+  );
 }

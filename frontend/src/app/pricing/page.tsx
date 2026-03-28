@@ -64,6 +64,7 @@ const T = {
 };
 
 export default function PricingPage() {
+    // duplicate t removed
     const { isArabic } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const t = isArabic ? T.ar : T.en;
@@ -99,14 +100,13 @@ export default function PricingPage() {
             {/* Header */}
             <div className="max-w-7xl mx-auto px-6 pt-20 pb-12 text-center relative z-10">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-6" style={{ background: 'rgba(var(--color-secondary-rgb), 0.1)', color: 'var(--color-secondary)', border: '1px solid rgba(var(--color-secondary-rgb), 0.25)' }}>
-                    <Zap size={14} /> GEM Z SUBSCRIPTIONS
-                </div>
+                    <Zap size={14} />{isArabic ? "اشتراكات GEM Z" : "GEM Z SUBSCRIPTIONS"}</div>
                 <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-heading" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
                 <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
 
                 {/* Billing Toggle */}
                 <div className="inline-flex items-center p-1.5 rounded-2xl mx-auto" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                    {t.billingOps.map(op => (
+                    {t.billingOps.map((op: any) => (
                         <button
                             key={op.id}
                             onClick={() => setBilling(op.id)}
@@ -125,7 +125,7 @@ export default function PricingPage() {
 
             {/* Pricing Cards */}
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-                {t.roles.map((role) => (
+                {t.roles.map((role: any) => (
                     <div key={role.id} className="rounded-3xl p-8 flex flex-col relative overflow-hidden transition-transform hover:-translate-y-2" style={{ background: 'var(--bg-card)', border: `1px solid var(--border-subtle)` }}>
                         {/* Top Glow Indicator */}
                         <div className="absolute top-0 left-0 right-0 h-1" style={{ background: role.color }} />
@@ -147,7 +147,7 @@ export default function PricingPage() {
 
                         <div className="space-y-4 flex-1">
                             <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>{isArabic ? 'المميزات المتضمنة:' : 'What\'s included:'}</p>
-                            {role.features.map((feat, i) => (
+                            {role.features.map((feat: string, i: number) => (
                                 <div key={i} className="flex items-start gap-3">
                                     <CheckCircle size={18} className="shrink-0 mt-0.5" style={{ color: role.color }} />
                                     <span className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{feat}</span>

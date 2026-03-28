@@ -1,255 +1,196 @@
 'use client';
-import GemZLogo from '../../../components/GemZLogo';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useLanguage } from '../../../context/LanguageContext';
-import { useTheme } from '../../../context/ThemeContext';
-import { CheckCircle, ChevronRight, UploadCloud, Loader2 } from 'lucide-react';
-import { GemZApi } from '../../../lib/api';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../../../context/LanguageContext';
+import { GemZApi } from '../../../lib/api';
+import { Loader2 } from 'lucide-react';
 
-const T = {
-    en: {
-        back: '← Back to role selection',
-        title: 'Open Your Store', subtitle: 'Sell supplements and gear to targeted athletes',
-        step1: 'Admin Info', step2: 'Store Profile', step3: 'Products & Payouts',
-        name: 'Full Name', email: 'Business Email', phone: 'Business Phone', password: 'Password', confirm: 'Confirm Password',
-        storeName: 'Store Name', category: 'Primary Category', catOps: ['Supplements', 'Apparel', 'Equipment', 'Meal Prep', 'Accessories'],
-        website: 'Website / Instagram (Optional)',
-        tax: 'Tax ID Number', cr: 'Commercial Register No.', bank: 'Bank IBAN',
-        logo: 'Upload Store Logo (Required)',
-        next: 'Next', back2: 'Back', finish: 'Open Store',
-        loginLink: 'Already have a store?', login: 'Sign In',
-        agree: 'I allow GEM Z to process payments and deduct the standard platform fee per sale',
-        errRequired: 'Please fill all required fields.',
-    },
-    ar: {
-        back: '→ العودة لاختيار الدور',
-        title: 'افتح متجرك', subtitle: 'بع المكملات والمعدات للرياضيين المستهدفين',
-        step1: 'المدير', step2: 'ملف المتجر', step3: 'المنتجات والمدفوعات',
-        name: 'الاسم الكامل', email: 'البريد الإلكتروني للعمل', phone: 'رقم هاتف العمل', password: 'كلمة المرور', confirm: 'تأكيد كلمة المرور',
-        storeName: 'اسم المتجر', category: 'التصنيف الأساسي', catOps: ['مكملات غذائية', 'ملابس رياضية', 'معدات رياضية', 'وجبات صحية', 'إكسسوارات'],
-        website: 'الموقع أو الانستجرام (اختياري)',
-        tax: 'البطاقة الضريبية', cr: 'السجل التجاري', bank: 'الآيبان البنكي (IBAN)',
-        logo: 'رفع شعار المتجر (مطلوب)',
-        next: 'التالي', back2: 'السابق', finish: 'فتح المتجر',
-        loginLink: 'تمتلك متجراً بالفعل؟', login: 'تسجيل الدخول',
-        agree: 'أوافق على قيام منصة GEM Z بمعالجة المدفوعات وخصم رسوم المنصة الأساسية لكل مبيعة',
-        errRequired: 'يرجى ملء كافة الحقول المطلوبة.',
-    }
-};
-
-const ACCENT = '#F59E0B';
-
-export default function StoreRegisterPage() {
-    const { isArabic } = useLanguage();
-    const { theme } = useTheme();
-    const t = isArabic ? T.ar : T.en;
-    const [step, setStep] = useState(0);
-    const [logoBase64, setLogoBase64] = useState('');
-    
-    const [formData, setFormData] = useState({
-        adminName: '', email: '', phone: '', password: '', confirm: '',
-        storeName: '', category: t.catOps[0], website: '',
-        cr: '', tax: '', bank: ''
-    });
+export default function Page() {
+    const { t } = useLanguage();
+    const router = useRouter();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const router = useRouter();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onloadend = () => setLogoBase64(reader.result as string);
-        reader.readAsDataURL(file);
-    };
-
-    const validateStep = (currentStep: number) => {
-        setError('');
-        if (currentStep === 0) {
-            if (!formData.adminName || !formData.email || !formData.phone || !formData.password || !formData.confirm) {
-                setError(t.errRequired);
-                return false;
-            }
-            if (formData.password !== formData.confirm) {
-                setError(isArabic ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
-                return false;
-            }
-        }
-        if (currentStep === 1) {
-            if (!formData.storeName || !logoBase64) {
-                setError(t.errRequired);
-                return false;
-            }
-        }
-        return true;
-    };
-
-    const nextStep = () => {
-        if (validateStep(step)) setStep(s => s + 1);
-    };
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    
+    const [storeName, setStoreName] = useState('');
+    const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('Premium Gear');
 
     const handleRegister = async () => {
-        if (!validateStep(2)) return;
+        if (!email || !password || !fullName || !storeName) {
+            setError(t('Please complete your merchant account details and store name.'));
+            return;
+        }
         setLoading(true);
         setError('');
-
         try {
-            const payload = {
-                email: formData.email,
-                password: formData.password,
-                fullName: formData.adminName,
-                phone: formData.phone,
-                role: 'store_admin',
-                logoBase64,
-                storeData: {
-                    name: formData.storeName,
-                    category: formData.category,
-                    website: formData.website
-                }
-            };
-            
-            const res: any = await GemZApi.Auth.register(payload);
+            const res: any = await GemZApi.Auth.register({ 
+                email, 
+                password, 
+                fullName, 
+                role: 'store_owner', 
+                storeData: { 
+                    name: storeName,
+                    description: description,
+                    category: category
+                } 
+            });
             localStorage.setItem('gemz_access_token', res.accessToken);
             localStorage.setItem('gemz_user', JSON.stringify(res.user));
-            router.push('/store');
+            router.push('/store'); 
         } catch (err: any) {
-            setError(err.message || (isArabic ? 'فشل إنشاء الحساب' : 'Registration failed'));
+            setError(err.message || t('Registration failed'));
         } finally {
             setLoading(false);
         }
     };
 
-    const steps = [t.step1, t.step2, t.step3];
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body">
+      
+<header className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 h-16">
+<Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+<span className="text-2xl font-black italic text-[#ff7b00] tracking-tighter">Gem Z</span>
+</Link>
+<button className="text-[#ff7b00] font-headline font-bold tracking-tight active:scale-95 duration-200 transition-colors hover:text-[#ff7b00]/80">
+            العربية
+        </button>
+</header>
+<main className="pt-24 pb-32 px-6 max-w-4xl mx-auto">
 
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col items-center justify-center p-6" style={{ backgroundColor: 'var(--bg-primary)' }}>
-            <div className="w-full max-w-lg">
-                <Link href="/register" className="text-sm mb-6 block hover:underline" style={{ color: ACCENT }}>{t.back}</Link>
-                <div className="text-center mb-8">
-                    <div className="flex justify-center w-full"><GemZLogo size={60} variant="full" /></div>
-                    <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t.title}</h1>
-                    <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{t.subtitle}</p>
-                </div>
+<div className="mb-12 flex justify-between items-center gap-4">
+<div className="flex-1 flex flex-col gap-2">
+<div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div className="h-full w-1/3 bg-gradient-to-r from-primary-fixed to-secondary rounded-full"></div>
+</div>
+<div className="flex justify-between text-[10px] uppercase tracking-widest text-on-surface-variant font-label font-semibold">
+<span className="text-primary-fixed">{t("Identity")}</span>
+<span>{t("Inventory")}</span>
+<span>{t("Payouts")}</span>
+</div>
+</div>
+</div>
 
-                <div className="flex items-center gap-2 mb-8">
-                    {steps.map((s, i) => (
-                        <React.Fragment key={i}>
-                            <div className="flex items-center gap-2">
-                                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all"
-                                    style={{ background: i <= step ? ACCENT : 'var(--bg-card)', color: i <= step ? '#fff' : 'var(--text-muted)', border: `1px solid ${i <= step ? ACCENT : 'var(--border-subtle)'}` }}>
-                                    {i < step ? <CheckCircle size={14} color="#fff" /> : <span style={{ color: i <= step ? '#fff' : '' }}>{i + 1}</span>}
-                                </div>
-                                <span className="text-xs hidden sm:block" style={{ color: i === step ? 'var(--text-primary)' : 'var(--text-muted)' }}>{s}</span>
-                            </div>
-                            {i < 2 && <div className="flex-1 h-px" style={{ background: i < step ? ACCENT : 'var(--border-subtle)' }} />}
-                        </React.Fragment>
-                    ))}
-                </div>
+<section className="mb-16">
+<h1 className="text-6xl md:text-8xl font-black font-headline tracking-tighter leading-[0.9] text-primary-fixed mb-4">{t("LAUNCH")}<br/>{t("YOUR")}<br/>{t("SPACE.")}</h1>
+<p className="text-on-surface-variant max-w-xs text-sm leading-relaxed border-l-2 border-primary-fixed pl-4 ml-2">{t("Join the high-performance ecosystem. Define your brand identity in the Kinetic Void.")}</p>
+</section>
 
-                <div className="p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    {error && (
-                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm font-bold text-center">
-                            {error}
-                        </div>
-                    )}
-                    
-                    {step === 0 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                            {[{ name: 'adminName', label: t.name, type: 'text' },
-                            { name: 'email', label: t.email, type: 'email' },
-                            { name: 'phone', label: t.phone, type: 'tel' },
-                            { name: 'password', label: t.password, type: 'password' },
-                            { name: 'confirm', label: t.confirm, type: 'password' }].map((f, i) => (
-                                <div key={i}>
-                                    <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{f.label}</label>
-                                    <input name={f.name} value={(formData as any)[f.name]} onChange={handleChange} type={f.type} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#F59E0B]" />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {step === 1 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.storeName}</label>
-                                <input name="storeName" value={formData.storeName} onChange={handleChange} type="text" placeholder="e.g. Muscle Pharm Egypt" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#F59E0B]" />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.category}</label>
-                                <select name="category" value={formData.category} onChange={handleChange} className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#F59E0B] appearance-none" style={{ background: 'var(--bg-input)' }}>
-                                    {t.catOps.map((op, i) => <option key={i} value={op}>{op}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.website}</label>
-                                <input name="website" value={formData.website} onChange={handleChange} type="text" placeholder="https://..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#F59E0B]" />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.logo}</label>
-                                <label className="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 relative h-32 overflow-hidden" style={{ borderColor: logoBase64 ? ACCENT : 'var(--border-medium)', background: 'var(--bg-input)' }}>
-                                    {logoBase64 ? <img src={logoBase64} className="absolute inset-0 w-full h-full object-cover opacity-60" /> : <UploadCloud size={24} style={{ color: 'var(--text-muted)' }} />}
-                                    <span className="text-xs relative z-10 font-bold" style={{ color: logoBase64 ? '#fff' : 'var(--text-muted)' }}>{logoBase64 ? (isArabic ? 'تم الرفع' : 'Uploaded') : 'Browse or drag image (PNG, JPG)'}</span>
-                                    <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-                                </label>
-                            </div>
-                        </div>
-                    )}
-                    {step === 2 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.cr}</label>
-                                <input name="cr" value={formData.cr} onChange={handleChange} type="text" placeholder="XXXX-XXXX" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#F59E0B]" />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.tax}</label>
-                                <input name="tax" value={formData.tax} onChange={handleChange} type="text" placeholder="XXX-XXX-XXX" className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#F59E0B]" />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium block mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t.bank}</label>
-                                <input name="bank" value={formData.bank} onChange={handleChange} type="text" placeholder="EG1200..." className="w-full px-4 py-3 rounded-xl text-sm input-base focus:border-[#F59E0B]" />
-                            </div>
+{error && <div className="mb-8 p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm font-bold text-center">{error}</div>}
 
-                            <div className="mt-6 border border-[#F59E0B]/30 bg-[#F59E0B]/5 rounded-xl p-4">
-                                <p className="text-sm font-medium mb-1" style={{ color: ACCENT }}>E-Commerce Features Unlocked</p>
-                                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>Upon approval, you gain access to the fulfillment dashboard, automated inventory tracking, and API integrations.</p>
-                            </div>
+<form className="space-y-12" onSubmit={(e) => e.preventDefault()}>
 
-                            <div className="mt-4">
-                                <label className="flex items-start gap-3 cursor-pointer">
-                                    <input type="checkbox" className="w-4 h-4 mt-1 accent-[#F59E0B]" />
-                                    <span className="text-sm leading-snug" style={{ color: 'var(--text-secondary)' }}>{t.agree}</span>
-                                </label>
-                            </div>
-                        </div>
-                    )}
+<div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+<div className="md:col-span-4">
+<h2 className="text-xl font-headline font-bold text-on-surface mb-2">{t("STORE IDENTITY")}</h2>
+<p className="text-xs text-on-surface-variant/60 uppercase tracking-widest">Brand name &amp; bio</p>
+</div>
+<div className="md:col-span-8 space-y-8">
+    
+    <div className="space-y-4 mb-4">
+        <label className="block text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2">{t("Merchant Credentials")}</label>
+        <input value={fullName} onChange={(e) => setFullName(e.target.value)} type="text" placeholder={t("Manager Full Name")} className="w-full bg-surface-container p-4 rounded-xl border border-white/5 focus:border-primary-fixed focus:ring-0 transition-all outline-none" />
+        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder={t("Business Email")} className="w-full bg-surface-container p-4 rounded-xl border border-white/5 focus:border-primary-fixed focus:ring-0 transition-all outline-none" />
+        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder={t("Password (min 8 chars)")} className="w-full bg-surface-container p-4 rounded-xl border border-white/5 focus:border-primary-fixed focus:ring-0 transition-all outline-none" />
+    </div>
 
-                    <div className={`flex justify-between mt-8 gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
-                        {step > 0 && (
-                            <button onClick={() => { setError(''); setStep(s => s - 1); }} className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors hover:bg-white/5" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)' }}>
-                                {t.back2}
-                            </button>
-                        )}
-                        {step < 2 ? (
-                            <button onClick={nextStep} className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
-                                {t.next} <ChevronRight size={16} className={isArabic ? 'rotate-180' : ''} />
-                            </button>
-                        ) : (
-                            <button onClick={handleRegister} disabled={loading} className="flex-1 py-3 rounded-xl text-sm font-bold text-white text-center flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: ACCENT, boxShadow: `0 0 20px ${ACCENT}40` }}>
-                                {loading ? <Loader2 size={16} className="animate-spin" /> : <><CheckCircle size={16} /> {t.finish}</>}
-                            </button>
-                        )}
-                    </div>
-                </div>
-                <p className="text-center mt-5 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    {t.loginLink} <Link href="/login" className="font-bold hover:underline" style={{ color: ACCENT }}>{t.login}</Link>
-                </p>
-            </div>
-        </div>
-    );
+<div className="relative group">
+<label className="block text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2 group-focus-within:text-primary-fixed transition-colors">{t("Digital Storefront Name")}</label>
+<input value={storeName} onChange={(e) => setStoreName(e.target.value)} className="w-full bg-transparent border-0 border-b-2 border-outline-variant/40 py-4 text-2xl font-headline font-bold text-on-surface focus:border-primary-fixed transition-all duration-300 placeholder:text-surface-variant outline-none" placeholder="e.g. NEON VELOCITY" type="text"/>
+</div>
+<div className="relative group">
+<label className="block text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2 group-focus-within:text-primary-fixed transition-colors">{t("Brand Mission")}</label>
+<textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-transparent border-0 border-b-2 border-outline-variant/40 py-4 text-lg font-body text-on-surface focus:border-primary-fixed transition-all duration-300 placeholder:text-surface-variant resize-none outline-none" placeholder="Describe the energy of your products..." rows={2}></textarea>
+</div>
+</div>
+</div>
+
+<div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-12 border-t border-white/5">
+<div className="md:col-span-4">
+<h2 className="text-xl font-headline font-bold text-on-surface mb-2">{t("CATEGORIES")}</h2>
+<p className="text-xs text-on-surface-variant/60 uppercase tracking-widest">{t("Select your niche")}</p>
+</div>
+<div className="md:col-span-8">
+<div className="grid grid-cols-2 gap-4">
+
+<div onClick={() => setCategory('Digital Assets')} className={`glass-panel p-6 rounded-lg border cursor-pointer transition-all group relative overflow-hidden ${category === 'Digital Assets' ? 'border-primary-fixed/80 bg-primary-fixed/10 ring-2 ring-primary-fixed' : 'border-white/5 hover:border-primary-fixed/50'}`}>
+<span className="material-symbols-outlined text-primary-fixed mb-4 block" data-icon="smart_toy">smart_toy</span>
+<h3 className="font-headline font-bold text-on-surface">{t("Digital Assets")}</h3>
+<p className="text-xs text-on-surface-variant">Software &amp; AI tools</p>
+</div>
+
+<div onClick={() => setCategory('Premium Gear')} className={`p-6 rounded-lg cursor-pointer transition-all group relative overflow-hidden ${category === 'Premium Gear' ? 'bg-primary-fixed shadow-[0_0_30px_rgba(255,123,0,0.3)]' : 'glass-panel border border-white/5 hover:border-primary-fixed/50'}`}>
+<span className={`material-symbols-outlined mb-4 block ${category === 'Premium Gear' ? 'text-on-primary-fixed' : 'text-primary-fixed'}`} style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+<h3 className={`font-headline font-bold ${category === 'Premium Gear' ? 'text-on-primary-fixed' : 'text-on-surface'}`}>{t("Premium Gear")}</h3>
+<p className={`text-xs ${category === 'Premium Gear' ? 'text-on-primary-fixed/70' : 'text-on-surface-variant'}`}>Hardware &amp; Equipment</p>
+</div>
+
+<div onClick={() => setCategory('Apparel')} className={`glass-panel p-6 rounded-lg border cursor-pointer transition-all group relative overflow-hidden ${category === 'Apparel' ? 'border-primary-fixed/80 bg-primary-fixed/10 ring-2 ring-primary-fixed' : 'border-white/5 hover:border-primary-fixed/50'}`}>
+<span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed mb-4 block transition-colors" data-icon="apparel">{t("apparel")}</span>
+<h3 className="font-headline font-bold text-on-surface">{t("Apparel")}</h3>
+<p className="text-xs text-on-surface-variant">{t("Performance wear")}</p>
+</div>
+
+<div onClick={() => setCategory('Supplements')} className={`glass-panel p-6 rounded-lg border cursor-pointer transition-all group relative overflow-hidden ${category === 'Supplements' ? 'border-primary-fixed/80 bg-primary-fixed/10 ring-2 ring-primary-fixed' : 'border-white/5 hover:border-primary-fixed/50'}`}>
+<span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed mb-4 block transition-colors" data-icon="bolt">bolt</span>
+<h3 className="font-headline font-bold text-on-surface">{t("Supplements")}</h3>
+<p className="text-xs text-on-surface-variant">Energy &amp; Health</p>
+</div>
+
+</div>
+</div>
+</div>
+
+<div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-12 border-t border-white/5">
+<div className="md:col-span-4">
+<h2 className="text-xl font-headline font-bold text-on-surface mb-2">{t("BANKING")}</h2>
+<p className="text-xs text-on-surface-variant/60 uppercase tracking-widest">{t("Payout configuration")}</p>
+</div>
+<div className="md:col-span-8 glass-panel p-8 rounded-lg border border-white/5">
+<div className="space-y-6">
+<div className="relative">
+<label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">{t("IBAN / Account Number")}</label>
+<div className="flex items-center gap-3 border-b border-outline-variant/40 py-2 focus-within:border-primary-fixed transition-colors">
+<span className="material-symbols-outlined text-on-surface-variant" data-icon="account_balance">account_balance</span>
+<input className="w-full bg-transparent border-none p-0 text-on-surface font-body outline-none focus:ring-0" placeholder="SA 0000 0000 0000 0000 0000" type="text"/>
+</div>
+</div>
+<div className="grid grid-cols-2 gap-6">
+<div className="relative">
+<label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">{t("Swift Code")}</label>
+<input className="w-full bg-transparent border-0 border-b border-outline-variant/40 py-2 text-on-surface font-body outline-none focus:border-primary-fixed focus:ring-0 transition-colors" placeholder="ABCD US XX" type="text"/>
+</div>
+<div className="relative">
+<label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">{t("Currency")}</label>
+<select className="w-full bg-transparent border-0 border-b border-outline-variant/40 py-2 outline-none text-on-surface font-body focus:border-primary-fixed focus:ring-0 transition-colors">
+<option className="bg-surface-container">{t("USD - Dollar")}</option>
+<option className="bg-surface-container">{t("SAR - Riyal")}</option>
+<option className="bg-surface-container">{t("EUR - Euro")}</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</div>
+</form>
+</main>
+
+<div className="fixed bottom-24 right-6 z-50">
+<button onClick={handleRegister} disabled={loading} type="button" className="bg-primary-fixed text-on-primary-fixed p-5 rounded-full shadow-[0_15px_35px_rgba(255,123,0,0.4)] flex items-center gap-3 active:scale-95 duration-200 group disabled:opacity-50 outline-none">
+{loading ? <Loader2 className="animate-spin" /> : <><span className="font-headline font-black tracking-widest text-[10px] uppercase hidden group-hover:block transition-all">{t("Launch Now")}</span><span className="material-symbols-outlined font-bold" data-icon="arrow_forward">{t("arrow_forward")}</span></>}
+</button>
+</div>
+
+<div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10">
+<div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-primary-fixed/5 rounded-full blur-[120px]"></div>
+<div className="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[100px]"></div>
+</div>
+
+    </div>
+  );
 }

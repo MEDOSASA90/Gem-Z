@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GEM Z | Trainee Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,700;0,900;1,900&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#ffd47c",
+              "on-surface-variant": "#d6a072",
+              "error-dim": "#d53d18",
+              "error-container": "#b92902",
+              "surface-bright": "#462300",
+              "surface-variant": "#3d1e00",
+              "secondary-container": "#8e4e00",
+              "inverse-surface": "#fff8f5",
+              "on-secondary": "#4c2700",
+              "on-primary": "#4f2100",
+              "on-error-container": "#ffd2c8",
+              "on-secondary-fixed": "#512a00",
+              "surface-container-lowest": "#000000",
+              "primary-dim": "#fb7900",
+              "on-primary-fixed": "#000000",
+              "on-error": "#450900",
+              "on-secondary-fixed-variant": "#7a4200",
+              "surface-container-highest": "#3d1e00",
+              "tertiary-fixed-dim": "#efb51c",
+              "surface-container": "#2b1400",
+              "outline-variant": "#663f19",
+              "outline": "#9a6b41",
+              "primary-fixed": "#ff7b00",
+              "surface": "#1b0a00",
+              "on-tertiary-container": "#584000",
+              "tertiary-dim": "#efb51c",
+              "error": "#ff7351",
+              "secondary-dim": "#ec8b23",
+              "surface-tint": "#ff9247",
+              "surface-container-high": "#341900",
+              "primary": "#ff9247",
+              "tertiary-fixed": "#ffc32d",
+              "on-surface": "#ffe0c8",
+              "on-tertiary": "#634800",
+              "on-tertiary-fixed-variant": "#634900",
+              "tertiary-container": "#ffc32d",
+              "surface-dim": "#1b0a00",
+              "background": "#1b0a00",
+              "inverse-on-surface": "#754c25",
+              "primary-container": "#ff7b00",
+              "secondary-fixed-dim": "#ffb471",
+              "primary-fixed-dim": "#ea7100",
+              "on-background": "#ffe0c8",
+              "surface-container-low": "#220e00",
+              "on-primary-fixed-variant": "#4b2000",
+              "inverse-primary": "#9a4800",
+              "on-primary-container": "#3d1800",
+              "on-secondary-container": "#fff6f1",
+              "on-tertiary-fixed": "#402d00",
+              "secondary-fixed": "#ffc697",
+              "secondary": "#fd9831"
+            },
+            fontFamily: {
+              "headline": ["Be Vietnam Pro"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .kinetic-ring {
+            transform: rotate(-90deg);
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 h-16">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-fixed shadow-[0_0_10px_rgba(255,123,0,0.3)]">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a determined athlete in a dark gym environment with moody amber rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM9gJXYAIYPzxL2tsHnpYdk-pCSr4GHPNMk3DCY10_exuFxJKOzSah-VXSYsROrn6P_jhb4CzKZlDRpYy0JWW2JPH7rPNsHJxcVYbagBcysL10hakcKF1VwheWnEr6ruSBeelZnHWnDYJHuAyQGzsM2H30nGQinEkAVScY5CSQvMrVOnjqmUUA8BwlZ_VfHgVeegbIIwN8IjHZJPm-4HSSW1gV7nSo7cdJoIv8w29--nt_YSoOPHvTVaEkMzq3DXzgPKcDRLPiAO3u"/>
+</div>
+<span class="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline uppercase">GEM Z</span>
+</div>
+<button class="text-[#ff7b00] font-['Be_Vietnam_Pro'] font-bold tracking-tight hover:text-[#ff7b00] transition-colors active:scale-95 duration-200">
+            العربية
+        </button>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-5xl mx-auto space-y-10">
+<!-- Welcome & Asymmetric Header -->
+<section class="flex flex-col md:flex-row justify-between items-end gap-6">
+<div class="w-full">
+<p class="text-on-surface-variant text-sm font-label uppercase tracking-[0.2em] mb-2">Powering Up</p>
+<h1 class="text-5xl md:text-7xl font-black font-headline tracking-tighter text-white leading-none">
+                    READY, <br/> <span class="text-primary-fixed italic">COMMANDER?</span>
+</h1>
+</div>
+<div class="hidden md:block text-right">
+<span class="text-secondary-fixed text-4xl font-black font-headline">78%</span>
+<p class="text-on-surface-variant text-xs font-label uppercase">Daily Capacity</p>
+</div>
+</section>
+<!-- Kinetic Progress Rings Bento -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Steps -->
+<div class="col-span-2 bg-surface-container-high rounded-lg p-6 flex items-center justify-between group hover:bg-surface-container-highest transition-all duration-300">
+<div class="space-y-1">
+<span class="text-on-surface-variant text-xs font-label uppercase tracking-widest">Daily Steps</span>
+<h3 class="text-3xl font-bold font-headline">8,432</h3>
+<p class="text-primary-dim text-xs">+12% from yesterday</p>
+</div>
+<div class="relative w-20 h-20">
+<svg class="w-full h-full kinetic-ring" viewbox="0 0 100 100">
+<circle class="text-surface-container-highest opacity-20" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="url(#gradient-steps)" stroke-dasharray="251.2" stroke-dashoffset="60" stroke-linecap="round" stroke-width="8"></circle>
+<defs>
+<lineargradient id="gradient-steps" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#ff7b00"></stop>
+<stop offset="100%" stop-color="#fd9831"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="steps">steps</span>
+</div>
+</div>
+</div>
+<!-- Calories -->
+<div class="bg-surface-container-low rounded-lg p-6 flex flex-col justify-between aspect-square group">
+<div class="relative w-16 h-16 mb-4">
+<svg class="w-full h-full kinetic-ring" viewbox="0 0 100 100">
+<circle class="text-surface-container-highest opacity-10" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#ff7351" stroke-dasharray="251.2" stroke-dashoffset="100" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-icon="local_fire_department" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+</div>
+<div>
+<span class="text-on-surface-variant text-[10px] font-label uppercase">Burned</span>
+<h3 class="text-xl font-bold font-headline leading-tight">1,240 <span class="text-xs font-normal">kcal</span></h3>
+</div>
+</div>
+<!-- Water -->
+<div class="bg-surface-container-low rounded-lg p-6 flex flex-col justify-between aspect-square group">
+<div class="relative w-16 h-16 mb-4">
+<svg class="w-full h-full kinetic-ring" viewbox="0 0 100 100">
+<circle class="text-surface-container-highest opacity-10" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#ffd47c" stroke-dasharray="251.2" stroke-dashoffset="180" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="water_drop" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+</div>
+</div>
+<div>
+<span class="text-on-surface-variant text-[10px] font-label uppercase">Hydration</span>
+<h3 class="text-xl font-bold font-headline leading-tight">1.8 <span class="text-xs font-normal">L</span></h3>
+</div>
+</div>
+</div>
+<!-- Main Workout CTA -->
+<div class="relative group cursor-pointer overflow-hidden rounded-xl">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-fixed to-secondary-container opacity-90 transition-transform duration-500 group-hover:scale-110"></div>
+<img class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40" data-alt="Aggressive high-angle shot of a muscular person doing heavy rope slams in a dark, atmospheric industrial gym" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNejk8spGcSWm_0wF2OXyrVfKOSWbY80RvQEwNiTTTF1UDGgPLU7-nF2AXAo2jGLG5cuJme4Av8DOU4Ndgb_37xL_6FL7bGK_ktAEZjUEsE7yrOR8OLypKDhwBTk7q2dxEMgKMPRM6rvQ5fVhwo3F153Nv5NdC8ceU7vOoxZ56K9eprXHJ70HhqxUW5A9ONFhqAmyqOR3poHSD9qKuLjLWs0ZDyWq7Aar_Xbq7d5OsPQOX-s6ITpcFWZT5V_pZNKKdXSP0JxVR11tT"/>
+<div class="relative p-8 md:p-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<h2 class="text-4xl md:text-5xl font-black font-headline text-on-primary-fixed leading-none tracking-tight">START DAILY<br/>WORKOUT</h2>
+<p class="mt-4 text-on-primary-fixed/80 max-w-md font-medium">Chest &amp; Triceps Power Hour. 45 mins. High intensity expected.</p>
+</div>
+<div class="bg-on-primary-fixed text-primary-fixed w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-2xl group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-4xl md:text-5xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<!-- Secondary Actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<button class="flex items-center justify-between p-6 bg-surface-container-high rounded-lg group hover:bg-surface-container-highest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary-fixed">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<div class="text-left">
+<p class="font-bold font-headline text-lg">My Gym Passes</p>
+<p class="text-on-surface-variant text-sm">2 Active subscriptions</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-6 bg-surface-container-high rounded-lg group hover:bg-surface-container-highest transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="trophy">trophy</span>
+</div>
+<div class="text-left">
+<p class="font-bold font-headline text-lg">Achievements</p>
+<p class="text-on-surface-variant text-sm">3 New badges earned</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+</div>
+<!-- Recent Activity Asymmetric List -->
+<section>
+<div class="flex justify-between items-baseline mb-6">
+<h3 class="text-2xl font-black font-headline italic tracking-tight">RECENT KINETICS</h3>
+<a class="text-primary-fixed text-xs font-label uppercase tracking-widest hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg border-l-4 border-primary-fixed">
+<div class="flex items-center gap-4">
+<div class="text-xs font-label text-on-surface-variant w-12 text-center uppercase">06:00 <br/> AM</div>
+<div>
+<p class="font-bold">Heavy HIIT Session</p>
+<p class="text-xs text-on-surface-variant">Central Park Gym • 520 kcal</p>
+</div>
+</div>
+<span class="text-primary-fixed font-bold">+12xp</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg opacity-70">
+<div class="flex items-center gap-4">
+<div class="text-xs font-label text-on-surface-variant w-12 text-center uppercase">Yesterday</div>
+<div>
+<p class="font-bold">Rest Day / Active recovery</p>
+<p class="text-xs text-on-surface-variant">Light Walk • 120 kcal</p>
+</div>
+</div>
+<span class="text-on-surface-variant font-bold">+2xp</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-[#262626]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<!-- Home Active -->
+<a class="flex flex-col items-center justify-center bg-[#ff7b00]/20 text-[#ff7b00] rounded-full p-3 shadow-[0_0_15px_rgba(255,123,0,0.4)] active:scale-90 duration-300 ease-out transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 p-3 hover:text-white transition-all active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</a>
+</nav>
+</body></html>

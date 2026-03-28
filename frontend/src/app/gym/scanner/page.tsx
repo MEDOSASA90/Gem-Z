@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme } from '../../../context/ThemeContext';
 import { GemZApi } from '../../../lib/api';
 import { Scan, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 
 export default function GymScannerPage() {
+    const { t } = useLanguage();
     const { isArabic } = useLanguage();
     const [qrCode, setQrCode] = useState('');
     const [status, setStatus] = useState<'IDLE' | 'SCANNING' | 'SUCCESS' | 'ERROR'>('IDLE');
@@ -84,7 +86,7 @@ export default function GymScannerPage() {
                             style={{ background: 'var(--bg-input)', borderColor: status === 'SUCCESS' ? 'var(--color-primary)' : status === 'ERROR' ? '#ef4444' : 'var(--border-medium)' }}
                             autoFocus
                         />
-                        <button type="submit" className="hidden">Submit</button>
+                        <button type="submit" className="hidden">{t("Submit")}</button>
                     </form>
                 </div>
             </div>

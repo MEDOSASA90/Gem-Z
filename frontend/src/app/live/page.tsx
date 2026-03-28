@@ -1,183 +1,181 @@
 'use client';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import Link from 'next/link';
 import { useLanguage } from '../../context/LanguageContext';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Users, Settings, CircleDot, Lock } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
-export default function LiveVirtualClass() {
-    const { isArabic } = useLanguage();
-    const router = useRouter();
+export default function Page() {
+    const { t } = useLanguage();
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body">
+      
 
-    const [isMuted, setIsMuted] = useState(false);
-    const [isVideoOn, setIsVideoOn] = useState(true);
-    const [showChat, setShowChat] = useState(false);
-    const [isVisitor, setIsVisitor] = useState(false);
-    const [checking, setChecking] = useState(true);
+<header className="bg-black/60 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] no-border tonal-transition-bg">
+<div className="flex items-center gap-4">
+<div className="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border border-primary/20">
+<img className="w-full h-full object-cover" data-alt="Close up of a professional athlete with intense focus, sweating during a workout in a dark gym environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0xOZEaPl48VeXRQTXPqM4jogXEyT_9CsI3OBwsWO3FTdOlDqidmMSgyL8_AXKoRH64FTTjtqJCyBe797DgyH_RWRHiDPaxoxT0oJlvs3uHXGlI9PovdOvBEkm60udxmwuVTMzNBsrL1Pa2gUeSCO9Orh3Gf9nq_0jLxiSzfwZVaOL36584e4Wvzaui5Jud5TuwJjwlmFSxVKRkENh9Ru64oHlskbPPQVPl-owsaVb7WPRI7tmcmwsBT10_XmuzSECaWw5pw4DT_xN"/>
+</div>
+<a href="https://gem-z.shop/"><h1 className="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-['Be_Vietnam_Pro']">{t("GEM Z")}</h1></a>
+</div>
+<div className="hidden md:flex items-center gap-8">
+<span className="text-[#ff7b00] font-['Be_Vietnam_Pro'] font-bold tracking-tight cursor-pointer">{t("Coach")}</span>
+<span className="text-gray-400 font-['Be_Vietnam_Pro'] font-bold tracking-tight hover:text-[#ff7b00] transition-colors cursor-pointer">{t("Shop")}</span>
+<span className="text-gray-400 font-['Be_Vietnam_Pro'] font-bold tracking-tight hover:text-[#ff7b00] transition-colors cursor-pointer">{t("Feed")}</span>
+<span className="text-gray-400 font-['Be_Vietnam_Pro'] font-bold tracking-tight hover:text-[#ff7b00] transition-colors cursor-pointer">{t("Wallet")}</span>
+</div>
+<div className="flex items-center gap-3">
+<div className="bg-primary/10 px-3 py-1 rounded-full flex items-center gap-2 border border-primary/20">
+<span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>{t("diamond")}</span>
+<span className="text-primary font-bold text-xs">1,240</span>
+</div>
+<span className="material-symbols-outlined text-[#ff7b00] cursor-pointer">notifications</span>
+</div>
+</header>
 
-    useEffect(() => {
-        const u = localStorage.getItem('gemz_user');
-        if (!u) {
-            setIsVisitor(true);
-            setTimeout(() => router.push('/login'), 3500);
-        }
-        setChecking(false);
-    }, [router]);
+<main className="flex-1 relative flex flex-col md:flex-row overflow-hidden pb-20">
 
-    if (checking) return null;
+<section className="flex-1 relative bg-black group overflow-hidden">
+<img className="absolute inset-0 w-full h-full object-cover opacity-80" data-alt="Intense high-intensity interval training session in a dark industrial gym with orange neon lighting and atmospheric smoke" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAQvLR3jhkn-MZsOyCFuaXjTkRzK3DivJkQmdbGg5qEj4vGrNEwHyhWEH_gk8XNkaslGrFmtiEOx__PbV4rhsl7Hkw0sODgnQZlElEQEAxI_nmKyA-F3Drw-o9rBs-3nIdaTMbnZ2vdcVqllZFXyz3kpBsD9ypazLfMevnPmA2JJy7upXFyLg33FjNUvz3YJfgig5-_pVKYGvbwV3G_9cJtUuKrnAbe-e-U3-23ON8BsZS6isGSo3kXmFWFKHKW-R1pt8zc-5sZfpW"/>
 
-    if (isVisitor) {
-        return (
-            <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center font-sans">
-                <div className="w-24 h-24 rounded-3xl bg-red-500/10 flex items-center justify-center mb-6 shadow-[#FF0055]/20 shadow-[0_0_40px] border border-red-500/20">
-                    <Lock size={40} className="text-red-500" />
-                </div>
-                <h1 className="text-3xl font-bold mb-3">{isArabic ? 'محتوى حصري للأعضاء' : 'Members Only Content'}</h1>
-                <p className="text-gray-400 mb-8 max-w-md text-center leading-relaxed">
-                    {isArabic ? 'لا يمكن للزوار الوصول إلى جلسات البث المباشر. جاري توجيهك لصفحة تسجيل الدخول...' : 'Visitors cannot access live streaming sessions. Redirecting you to login...'}
-                </p>
-                <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
+<div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 p-6 flex flex-col justify-between">
+<div className="flex justify-between items-start">
+<div className="flex flex-col gap-2">
+<div className="flex items-center gap-2 bg-error/20 backdrop-blur-md px-3 py-1 rounded-full w-fit border border-error/30">
+<span className="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span className="text-error text-xs font-black uppercase tracking-widest">{t("Live")}</span>
+</div>
+<h2 className="text-4xl md:text-6xl font-black text-white font-headline leading-tight tracking-tighter drop-shadow-2xl">{t("HYPER-BURN")}<br/>{t("SESSION")}</h2>
+<p className="text-on-surface-variant text-sm font-medium">{t("with Coach Sarah \"The Blade\" Jenkins")}</p>
+</div>
+<div className="flex flex-col items-end gap-3">
+<div className="bg-black/40 backdrop-blur-xl p-4 rounded-lg flex items-center gap-4">
+<div className="text-center">
+<p className="text-[10px] uppercase tracking-tighter text-on-surface-variant">{t("Heart Rate")}</p>
+<p className="text-2xl font-black text-primary">164</p>
+</div>
+<div className="h-8 w-[1px] bg-outline-variant/30"></div>
+<div className="text-center">
+<p className="text-[10px] uppercase tracking-tighter text-on-surface-variant">{t("Calories")}</p>
+<p className="text-2xl font-black text-tertiary">412</p>
+</div>
+</div>
+</div>
+</div>
+<div className="flex items-end justify-between">
+<div className="flex items-center gap-4 mb-8">
+<button className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-on-primary-fixed kinetic-glow hover:scale-110 transition-transform">
+<span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>{t("pause")}</span>
+</button>
+<div className="flex flex-col">
+<span className="text-white font-bold">24:18 / 45:00</span>
+<div className="w-48 h-1 bg-surface-container-highest rounded-full mt-1 overflow-hidden">
+<div className="w-[54%] h-full bg-gradient-to-r from-primary to-secondary"></div>
+</div>
+</div>
+</div>
 
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen bg-black text-white flex flex-col font-sans">
-
-            {/* Top Bar */}
-            <div className="p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent z-10 absolute top-0 left-0 right-0">
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/20 text-red-500 border border-red-500/30">
-                        <CircleDot size={14} className="animate-pulse" />
-                        <span className="text-xs font-bold tracking-wider">{isArabic ? 'مباشر' : 'LIVE'}</span>
-                    </div>
-                    <div className="px-3 py-1.5 rounded-full bg-white/10 text-white border border-white/20 flex items-center gap-2">
-                        <Users size={14} />
-                        <span className="text-xs font-bold">128</span>
-                    </div>
-                </div>
-
-                <div className="text-center">
-                    <h1 className="font-bold text-sm md:text-base">HIIT Cardio Burn — Coach Tariq</h1>
-                    <p className="text-xs text-gray-400 font-mono">00:42:15</p>
-                </div>
-
-                <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                    <Settings size={20} />
-                </button>
-            </div>
-
-            {/* Main Video Area */}
-            <div className="flex-1 relative flex">
-
-                {/* Simulator Video Stream */}
-                <div className="flex-1 bg-[#111] relative overflow-hidden flex items-center justify-center">
-                    {/* Fake Trainer Video Feed */}
-                    <div className="absolute inset-0 z-0">
-                        <div className="w-full h-full bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] flex flex-col items-center justify-center relative">
-                            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at center, var(--color-primary) 0%, transparent 50%)' }} />
-                            <div className="w-32 h-32 rounded-full border-2 border-[var(--color-primary)] flex items-center justify-center mb-4 neon-glow relative">
-                                <span className="text-6xl">🏃‍♂️</span>
-                                {/* Sound bars animation */}
-                                <div className="absolute -bottom-6 flex gap-1">
-                                    {[1, 2, 3, 4, 5].map((i) => (
-                                        <div key={i} className="w-1 bg-[var(--color-primary)] animate-pulse" style={{ height: `${Math.random() * 20 + 5}px`, animationDelay: `${i * 0.1}s` }} />
-                                    ))}
-                                </div>
-                            </div>
-                            <h2 className="text-2xl font-bold font-heading z-10">{isArabic ? 'كابتن طارق' : 'Coach Tariq'}</h2>
-                            <p className="text-sm text-[var(--color-primary)] z-10">{isArabic ? 'تمرين الضغط العالي' : 'High-Intensity Interval Training'}</p>
+<Link href="/progress" className="mb-8 relative group flex items-center gap-3 bg-gradient-to-r from-primary to-secondary p-1 rounded-full pr-6 hover:shadow-[0_0_30px_rgba(255,123,0,0.5)] transition-all scale-95 active:scale-90">
+<div className="w-12 h-12 rounded-full bg-black/20 flex items-center justify-center">
+<span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>{t("card_giftcard")}</span>
+</div>
+<span className="text-black font-black uppercase text-sm tracking-tighter">{t("Send Gift")}</span>
+<div className="absolute -top-2 -right-2 bg-white text-black text-[10px] px-2 py-0.5 rounded-full font-bold shadow-lg animate-bounce">
+                            +10% XP
                         </div>
-                    </div>
+</Link>
+</div>
+</div>
+</section>
 
-                    {/* Floating Emojis Reaction stream (simulated) */}
-                    <div className="absolute left-4 bottom-24 flex flex-col gap-2 opacity-80 pointer-events-none">
-                        <div className="animate-bounce text-2xl">🔥</div>
-                        <div className="animate-bounce delay-100 text-2xl">💪</div>
-                        <div className="animate-bounce delay-300 text-2xl">💯</div>
-                    </div>
+<aside className="w-full md:w-96 bg-[#0e0e0e] border-l border-outline-variant/10 flex flex-col pb-20">
+<div className="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h3 className="text-lg font-black text-white font-headline">{t("Live Chat")}</h3>
+<div className="flex items-center gap-2 text-on-surface-variant">
+<span className="material-symbols-outlined text-sm">{t("groups")}</span>
+<span className="text-xs font-bold">12.4k watching</span>
+</div>
+</div>
+<div className="flex-1 overflow-y-auto p-4 space-y-4">
 
-                    {/* Own Camera Picture-in-Picture */}
-                    <div className="absolute right-4 bottom-24 w-28 h-40 md:w-36 md:h-48 bg-gray-900 rounded-2xl border-2 border-white/10 overflow-hidden shadow-2xl flex items-center justify-center group">
-                        {isVideoOn ? (
-                            <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                                <span className="text-3xl opacity-50">👤</span>
-                            </div>
-                        ) : (
-                            <div className="w-full h-full bg-black flex flex-col items-center justify-center">
-                                <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center mb-2">
-                                    <span className="text-xl">A</span>
-                                </div>
-                                <VideoOff size={16} className="text-gray-500" />
-                            </div>
-                        )}
-                        <p className="absolute bottom-2 left-2 text-[10px] font-bold bg-black/60 px-1.5 py-0.5 rounded backdrop-blur">
-                            {isArabic ? 'أنت' : 'You'}
-                        </p>
-                        {isMuted && <MicOff size={14} className="absolute top-2 right-2 text-red-500 drop-shadow-md" />}
-                    </div>
-                </div>
+<div className="flex gap-3 items-start">
+<div className="w-8 h-8 rounded-full bg-surface-container-high shrink-0 overflow-hidden border border-outline-variant/30">
+<img className="w-full h-full object-cover" data-alt="Portrait of a young man with a focused expression, athletic appearance, studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBO071PJbha_FPy3cCucaBv-pUe9uPCs4cXF7wcrQ3Mk8vX5WQGgYo2i9bBmcFeoNWUmUMXynzso2_jjOY4J7jOCKaijF6R2e3k5daYQZmkmqm1_qT7vEDbeA7BGh_dZX7yd4VXnPxaPV22KlxzemEB1Fa0c-5NZXFmgPyJkxKkjGL3E0WJ33iAD4gfmymGSYDk_u-yDpbLtj1B3dW6mGEwPSdqr18WBTCZRcqnDDX4oj5Jh_qdfB7A7PdrCMVnxv3yhjyWbtDXRWBH"/>
+</div>
+<div className="flex flex-col">
+<span className="text-xs font-bold text-secondary">{t("Ahmad_Fit")}</span>
+<p className="text-sm text-on-surface">This session is intense! Let's go team! 🔥</p>
+</div>
+</div>
 
-                {/* Side Chat Panel */}
-                {showChat && (
-                    <div className="w-full md:w-80 bg-[#0A0A0A] border-l border-white/10 flex flex-col absolute md:relative right-0 h-full z-20">
-                        <div className="p-4 border-b border-white/10 flex justify-between items-center">
-                            <h3 className="font-bold">{isArabic ? 'الدردشة المباشرة' : 'Live Chat'}</h3>
-                            <button onClick={() => setShowChat(false)} className="md:hidden p-1 bg-white/10 rounded">✕</button>
-                        </div>
+<div className="flex gap-3 items-start flex-row-reverse text-right">
+<div className="w-8 h-8 rounded-full bg-surface-container-high shrink-0 overflow-hidden border border-outline-variant/30">
+<img className="w-full h-full object-cover" data-alt="Arabic male athlete portrait, smiling, natural sunlight, depth of field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNxpiFyFpM6zmsXpJbd42Wf3PEJU78jZdDo3pOrmfV1lT4r1rvT6J7wo3XxB6NV2dqNy8NKPEm2xnuQZ2nl1Qmn-UGWMpm0VqkXTT5i7QWBNJilYL9D_FLTQ8hZJgastuMAbf2XGLgOGhGmDinheFr6TNtebinZSfoHDqoLTQFItRs2Ehq8gGa4LW50LlxKAAcbrHdDfLK6KIRfHCjlsGaqGiite3SdJk7fxE61YZg9_hgZiCNo6B1VBRULGSRT812ADttY7NBvJHx"/>
+</div>
+<div className="flex flex-col">
+<span className="text-xs font-bold text-primary">{t("Omar.K")}</span>
+<p className="text-sm text-on-surface" dir="rtl">تمارين رائعة جداً، شكراً كوتش سارة!</p>
+</div>
+</div>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {[
-                                { user: 'Sara K.', msg: isArabic ? 'تمرين ممتاز جداً!' : 'Awesome workout!', color: 'var(--color-primary)' },
-                                { user: 'Omar Aly', msg: isArabic ? 'مش قادر أكمل 😫' : 'Legs are dead 😫', color: 'var(--color-secondary)' },
-                                { user: 'Nour', msg: '🔥 🔥 🔥', color: 'var(--color-purple)' },
-                                { user: 'Coach Tariq', msg: isArabic ? 'عاش يا شباب 30 ثانية كمان!' : 'Keep pushing! 30 seconds left!', isCoach: true }
-                            ].map((c, i) => (
-                                <div key={i} className="text-sm">
-                                    <span className="font-bold mr-2" style={{ color: c.isCoach ? 'var(--color-warning)' : c.color }}>
-                                        {c.isCoach && '👑 '}{c.user}:
-                                    </span>
-                                    <span className="text-gray-300">{c.msg}</span>
-                                </div>
-                            ))}
-                        </div>
+<div className="bg-primary/5 rounded-xl p-3 border border-primary/10 flex items-center gap-3">
+<span className="material-symbols-outlined text-primary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>{t("stars")}</span>
+<p className="text-xs text-on-surface italic"><span className="font-bold text-primary">{t("Elite Athlete")}</span>{t("donated")}<span className="text-primary font-black">500 Gems</span>!</p>
+</div>
+<div className="flex gap-3 items-start">
+<div className="w-8 h-8 rounded-full bg-surface-container-high shrink-0 overflow-hidden border border-outline-variant/30">
+<img className="w-full h-full object-cover" data-alt="Smiling fitness influencer portrait, energetic vibe, soft focus gym background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5b3zATg6kBCyJbSFDjZZ1RVv0mfEAwRQyUzEbIKIRDG5ty-u2p92oO8KZ49GyciimkiiZ7xiA_zt9728ysEJA2RyYvTB_eB5CNGCb5rLDsOJAZNJz7pFfeFbp4s5swHy0XqeLTJ2r2reIIdua9Mw4bAO91dXMsssmWU0rLDe3ZOkJbBDGCyPdquS7ReTiDDG7EGiYnZH7Q7G_nQVWuhY2tp38DAubhZSWIAvuKvr8VDgM2E6KiWasWnYEMO3IndVtz89PVfEUxEkY"/>
+</div>
+<div className="flex flex-col">
+<span className="text-xs font-bold text-tertiary">{t("Sarah_GymRat")}</span>
+<p className="text-sm text-on-surface">{t("Feeling the burn in my quads already!")}</p>
+</div>
+</div>
 
-                        <div className="p-3 border-t border-white/10">
-                            <div className="flex items-center gap-2 bg-[#1A1A1A] rounded-full p-1 pl-4">
-                                <input type="text" placeholder={isArabic ? 'قل شيئاً...' : 'Say something...'} className="bg-transparent flex-1 outline-none text-sm text-white" />
-                                <button className="w-8 h-8 rounded-full bg-[var(--color-primary)] text-black flex items-center justify-center shrink-0">
-                                    ↗
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
+<div className="flex gap-3 items-start">
+<div className="w-8 h-8 rounded-full bg-surface-container-high shrink-0"></div>
+<div className="flex flex-col gap-1 w-full">
+<div className="h-3 w-20 bg-surface-container rounded"></div>
+<div className="h-3 w-full bg-surface-container-low rounded"></div>
+</div>
+</div>
+</div>
 
-            {/* Bottom Controls Bar */}
-            <div className="p-4 md:p-6 bg-gradient-to-t from-black to-transparent flex justify-center items-center gap-4 z-10 absolute bottom-0 left-0 right-0">
-                <button
-                    onClick={() => setIsMuted(!isMuted)}
-                    className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-colors ${isMuted ? 'bg-red-500/20 text-red-500 border border-red-500/50' : 'bg-white/10 text-white hover:bg-white/20'}`}>
-                    {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
-                </button>
+<div className="p-4 bg-[#131313]">
+<div className="flex items-center gap-2 bg-surface-container-high rounded-full px-4 py-2 border border-outline-variant/20">
+<input className="bg-transparent border-none focus:ring-0 text-sm w-full text-white placeholder:text-gray-600" placeholder="Say something..." type="text"/>
+<button className="text-primary hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
+</button>
+</div>
+</div>
+</aside>
+</main>
 
-                <button
-                    onClick={() => setIsVideoOn(!isVideoOn)}
-                    className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-colors ${!isVideoOn ? 'bg-red-500/20 text-red-500 border border-red-500/50' : 'bg-white/10 text-white hover:bg-white/20'}`}>
-                    {!isVideoOn ? <VideoOff size={24} /> : <Video size={24} />}
-                </button>
-
-                <button className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center text-white shadow-lg mx-2 transition-transform hover:scale-105">
-                    <PhoneOff size={28} />
-                </button>
-
-                <button
-                    onClick={() => setShowChat(!showChat)}
-                    className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-colors ${showChat ? 'bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] border border-[var(--color-secondary)]/50' : 'bg-white/10 text-white hover:bg-white/20'}`}>
-                    <MessageSquare size={24} />
-                </button>
-            </div>
-        </div>
-    );
+<nav className="md:hidden bg-[#1f1f1f]/70 backdrop-blur-2xl fixed bottom-0 w-full rounded-t-[2rem] z-50 flex justify-around items-center pt-3 pb-8 px-4 no-border glassmorphism-surface shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<div className="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] animate-pulse-on-click">
+<span className="material-symbols-outlined">psychology</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Coach")}</span>
+</div>
+<div className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined">shopping_bag</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Shop")}</span>
+</div>
+<div className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined">{t("dynamic_feed")}</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Feed")}</span>
+</div>
+<div className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined">account_balance_wallet</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Wallet")}</span>
+</div>
+<div className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined">{t("groups")}</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Squads")}</span>
+</div>
+</nav>
+<Link href="/squads" className="fixed bottom-24 right-6 md:bottom-10 md:right-10 w-16 h-16 rounded-full bg-black/80 backdrop-blur-xl border border-primary/30 flex items-center justify-center shadow-[0_0_40px_-5px_#ff7b00] hover:shadow-[0_0_50px_0px_#ff7b00] transition-all duration-300 group z-[60] active:scale-90">
+<span className="material-symbols-outlined text-primary text-3xl transition-transform group-hover:scale-125" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+<div className="absolute -inset-1 rounded-full bg-primary/20 animate-ping opacity-20"></div>
+</Link>
+    </div>
+  );
 }

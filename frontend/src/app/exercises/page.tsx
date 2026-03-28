@@ -1,188 +1,163 @@
 'use client';
 import React, { useState } from 'react';
-import {
-    Search, Filter, Play, ChevronRight, Dumbbell, Globe,
-    Zap, Target, TrendingUp, Activity, RotateCcw
-} from 'lucide-react';
-import { useLanguage } from '../../context/LanguageContext';
-import { useTheme } from '../../context/ThemeContext';
 import Link from 'next/link';
-import GemZLogo from '../../components/GemZLogo';
+import { useLanguage } from '../../context/LanguageContext';
 
-const MUSCLE_GROUPS = [
-    { id: 'all', icon: '🏋️', nameEn: 'All Muscles', nameAr: 'الكل' },
-    { id: 'chest', icon: '💪', nameEn: 'Chest', nameAr: 'الصدر' },
-    { id: 'back', icon: '🔙', nameEn: 'Back', nameAr: 'الظهر' },
-    { id: 'shoulders', icon: '🤸', nameEn: 'Shoulders', nameAr: 'الأكتاف' },
-    { id: 'legs', icon: '🦵', nameEn: 'Legs', nameAr: 'الأرجل' },
-    { id: 'arms', icon: '💪', nameEn: 'Arms', nameAr: 'الذراعين' },
-    { id: 'core', icon: '🎯', nameEn: 'Core', nameAr: 'الكور' },
-    { id: 'cardio', icon: '❤️', nameEn: 'Cardio', nameAr: 'كارديو' },
+const MUSCLES = [
+  { id: 'all', label: 'All Muscles', labelAr: 'كل العضلات', icon: 'fitness_center' },
+  { id: 'chest', label: 'Chest', labelAr: 'صدر', icon: 'favorite' },
+  { id: 'back', label: 'Back', labelAr: 'ظهر', icon: 'accessibility_new' },
+  { id: 'legs', label: 'Legs', labelAr: 'أرجل', icon: 'directions_run' },
+  { id: 'shoulders', label: 'Shoulders', labelAr: 'أكتاف', icon: 'sports_martial_arts' },
+  { id: 'arms', label: 'Arms', labelAr: 'ذراعين', icon: 'pan_tool' },
+  { id: 'core', label: 'Core', labelAr: 'وسط', icon: 'radio_button_checked' },
+  { id: 'full', label: 'Full Body', labelAr: 'جسم كامل', icon: 'self_improvement' },
 ];
-
-const DIFFICULTY_COLORS: Record<string, string> = {
-    Beginner: '#34C759', Intermediate: 'var(--color-warning)', Advanced: 'var(--color-danger)',
-};
 
 const EXERCISES = [
-    { id: 1, name: 'Bench Press', nameAr: 'ضغط صدر بالبار', muscle: 'chest', equipment: 'Barbell', difficulty: 'Intermediate', kcalPerMin: 8, desc: 'The king of chest exercises. Targets the entire pectoral region.', descAr: 'ملك تمارين الصدر. يستهدف منطقة الصدر بالكامل.', steps: ['Lie flat on bench', 'Grip bar shoulder-width', 'Lower to chest', 'Press up explosively'], emoji: '🏋️' },
-    { id: 2, name: 'Pull-Up', nameAr: 'عقلة', muscle: 'back', equipment: 'Bodyweight', difficulty: 'Intermediate', kcalPerMin: 10, desc: 'Superior back compound movement for width and thickness.', descAr: 'تمرين مركب ممتاز للظهر في العرض والسماكة.', steps: ['Grip bar wider than shoulders', 'Hang with arms extended', 'Pull up until chin over bar', 'Lower with control'], emoji: '💪' },
-    { id: 3, name: 'Squat', nameAr: 'سكوات', muscle: 'legs', equipment: 'Barbell', difficulty: 'Advanced', kcalPerMin: 12, desc: 'The ultimate lower body builder. Activates 200+ muscles.', descAr: 'المبني الأمثل للجسم السفلي. يُنشّط أكثر من 200 عضلة.', steps: ['Bar on upper traps', 'Feet shoulder-width', 'Descend until thighs parallel', 'Drive through heels'], emoji: '🦵' },
-    { id: 4, name: 'Overhead Press', nameAr: 'ضغط أكتاف', muscle: 'shoulders', equipment: 'Barbell', difficulty: 'Intermediate', kcalPerMin: 9, desc: 'Best exercise for building boulder shoulders.', descAr: 'أفضل تمرين لبناء أكتاف قوية.', steps: ['Grip bar at shoulder width', 'Press overhead', 'Lock elbows out', 'Lower with control'], emoji: '🤸' },
-    { id: 5, name: 'Deadlift', nameAr: 'ديدليفت', muscle: 'back', equipment: 'Barbell', difficulty: 'Advanced', kcalPerMin: 14, desc: 'Full-body powerhouse movement. Builds total strength.', descAr: 'تمرين قوة للجسم بالكامل. يبني القوة الإجمالية.', steps: ['Stand with feet hip-width', 'Hinge and grip bar', 'Keep back flat', 'Drive hips forward'], emoji: '⚡' },
-    { id: 6, name: 'Bicep Curl', nameAr: 'كيرل بايسبس', muscle: 'arms', equipment: 'Dumbbell', difficulty: 'Beginner', kcalPerMin: 6, desc: 'Classic arm builder targeting the biceps brachii.', descAr: 'مبني ذراع كلاسيكي يستهدف عضلة البايسبس.', steps: ['Stand with dumbbells', 'Keep elbows at sides', 'Curl up to shoulder', 'Squeeze at peak'], emoji: '💪' },
-    { id: 7, name: 'Plank', nameAr: 'بلانك', muscle: 'core', equipment: 'Bodyweight', difficulty: 'Beginner', kcalPerMin: 5, desc: 'The ultimate core stability exercise for all levels.', descAr: 'تمرين الاستقرار الأمثل للكور لجميع المستويات.', steps: ['Forearms on ground', 'Body in straight line', 'Engage core tightly', 'Hold for time'], emoji: '🎯' },
-    { id: 8, name: 'Running', nameAr: 'جري', muscle: 'cardio', equipment: 'None', difficulty: 'Beginner', kcalPerMin: 11, desc: 'The most accessible cardio exercise for fat burning.', descAr: 'أكثر تمارين الكارديو للحرق الدهني.', steps: ['Maintain upright posture', 'Land on mid-foot', 'Swing arms naturally', 'Control breathing'], emoji: '🏃' },
-    { id: 9, name: 'Incline DB Press', nameAr: 'ضغط دمبل مائل', muscle: 'chest', equipment: 'Dumbbell', difficulty: 'Intermediate', kcalPerMin: 8, desc: 'Targets the upper chest for a complete pec development.', descAr: 'يستهدف الجزء العلوي للصدر لتطوير كامل.', steps: ['Set bench to 30-45°', 'Hold dumbbells at shoulders', 'Press up and together', 'Lower slowly'], emoji: '💪' },
-    { id: 10, name: 'Leg Press', nameAr: 'ضغط رجل', muscle: 'legs', equipment: 'Machine', difficulty: 'Beginner', kcalPerMin: 9, desc: 'Effective quad-dominant leg exercise using a machine.', descAr: 'تمرين أرجل فعال للرباعية باستخدام الآلة.', steps: ['Sit in machine', 'Place feet hip-width', 'Press plate away', 'Bend knees to 90°'], emoji: '🦵' },
-    { id: 11, name: 'Lateral Raise', nameAr: 'رفع جانبي', muscle: 'shoulders', equipment: 'Dumbbell', difficulty: 'Beginner', kcalPerMin: 5, desc: 'Isolates the medial deltoid for wider-looking shoulders.', descAr: 'يعزل العضلة الدالية الوسطى لأكتاف أعرض.', steps: ['Hold dumbbells at sides', 'Raise arms to sides', 'Stop at shoulder height', 'Lower slowly'], emoji: '🤸' },
-    { id: 12, name: 'Tricep Dips', nameAr: 'دبسات ترايسبس', muscle: 'arms', equipment: 'Bodyweight', difficulty: 'Intermediate', kcalPerMin: 7, desc: 'Compound tricep movement using bodyweight.', descAr: 'تمرين مركب للترايسبس باستخدام وزن الجسم.', steps: ['Grip parallel bars', 'Lower body down', 'Lean forward slightly', 'Press back up'], emoji: '💪' },
+  { id: 1, name: 'BARBELL SQUAT', muscle: 'legs', equipment: 'Barbell', intensity: 'Elite', gems: 420, videoId: 'aclHkVaku9U', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFgMpRUByMUAA5_l5KVJYH51Vn_WBYuEFQ2UcOZVa_wsXdggsQlp-yI6THQ9quq8XPlcQhOP4JPruKcOEZNnc7Q3Ig7PunxeqQfBabFKyfF-22BSBUiGDojLEMNFAoGGamD_Rd89zlrOHlIv0Ij2KwlAbnFQKbgbWaiiXhTJBbQfnQLa85_RPifTw5ViCvp9OGI3ChquYjKcykLzBbE3cjcUtJJudIhXdpsMbKn-a2hRdjsvv7nDdLaf2niB5Jz10V7QO2VY7yz3Dy' },
+  { id: 2, name: 'DUMBBELL PRESS', muscle: 'chest', equipment: 'Dumbbell', intensity: 'Intermediate', gems: 350, videoId: 'VmB1G1K7v94', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATID42co1w5GuFh0piN6orSAuKqMuY57vdWXKMeOsNVnsvEED4Ld4powUuZ9AcLilSsO_Zj7hLEnpQmP72iY1u1h_q84LvTHjZthy9vvM76DG6Vuud7GbPCH-XszhtNmYV3L1h6FmV9D5kBB2013X29svAztxpDWII3Czn952q2WTisppfS0AcJRnNjN1ITu2qpdwTd5k8GTsnnukclFo6HJYNlrgx8SFnXePgja7sT4OLIidrT-XOmE6H' },
+  { id: 3, name: 'WIDE PULL-UPS', muscle: 'back', equipment: 'Bodyweight', intensity: 'Advanced', gems: 480, videoId: 'eGo4IYlbE5g', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqx2TU1UY5-HO-8Jg3n1XszV0jZAbXkfj9E7mpsNLxWiA3ZVCbeOSt_DGNP2NDSEknQWBiy-7dlaKNgLLc-oy_ta-A53OTZ7sA8oEERRaCAdOfSdB4FhO0kmL_qXPvrFFg4ncAwzUKfQmuBxKIlmuySg_G3A6Y0GjRwb6YZMdV51wKgy5eKcd8ZerxrDZKLMF_kJW-e35rw0EcE7tRb8cXhrWsIDmH51sm7EfJTXRUVBBG3zPp1P0qAYEdOD4k-gYAjwzdBMaTMzuS' },
+  { id: 4, name: 'KB SWINGS', muscle: 'full', equipment: 'Kettlebell', intensity: 'Moderate', gems: 290, videoId: 'YSxHifyI6s8', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDh-SU_TQDg1WEJQkVCW2Ikex2p5atQCeGsFcuUF4Iw75Zr6GNTmI0cmF0fAjVUrV3STYYA-TVJQPCIvLL_IP2inyBqjEoPb_kS1vTNnP0FuorWOky018CXIZK90nA0Ak2RFRBXI5nT2bwwug5ysiBU5KuvFxd8z7qGlm66Z0GFMYpY6Tk6ns8FSPEoO4S3lHhojoSToBfLkMQ_pBZ4L3zYJQb_sNcI-qvgrsvUddVDm2InZ1sF8zsLAHkRmDKDQx2mYupQCUiXLMkN' },
+  { id: 5, name: 'LUNGES', muscle: 'legs', equipment: 'Bodyweight', intensity: 'Basic', gems: 150, videoId: 'QOVaHwm-Q6U', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD05vXSkc8sg6pmRfJAwx6D5NZRvkH30P0YjmwW0gRmUdqxCzuuY3NRqGLiucPXj2zEqOF5aDmGAwxF1xx5c-X0tHn877kowIDi76yjrjSSA8Zuu5DLgX_4-E0mLDHAlkNkRuD9kFl9wCjrw7qh8ev-h8DQW26dRv9UAwIobq19mPtEvdJZVSqBm3CshbVzwiZZN2-GEgUVwCXDpfG1Z08a05BQeZSAJbAocQS2S' },
+  { id: 6, name: 'BAR DIPS', muscle: 'arms', equipment: 'Bars', intensity: 'Advanced', gems: 510, videoId: '2z8JmcrW-As', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBvWqF7k_qqoQZyu-cCzUWmNi15hosjnqrrL92NArqFz3AFs7M7e_ecueDvxXqKQPr05P-ljDNwJeEvhH0c91W4NPOTfqjqR4wVS4aB8jECPCSi8OiICywbr4OrRxmKY-hEMwSWlNMWDe0JI2UCEAqXshyc7EFvvGW5v8Gyh6OCXYlw9zYxC86ZaWYdoYivo8sohaRvyxsBlga_GuDvp2ML1o_qP8GsO2frlDdzBlmIHOk00hhJLmsCkt8bdSTD_bWM4XXgrahc4dto' },
+  { id: 7, name: 'OVERHEAD PRESS', muscle: 'shoulders', equipment: 'Barbell', intensity: 'Advanced', gems: 440, videoId: '_RlRDWO2jfg', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80' },
+  { id: 8, name: 'PLANK', muscle: 'core', equipment: 'Bodyweight', intensity: 'Basic', gems: 120, videoId: 'ASdvSXt5KLI', img: 'https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=400&q=80' },
 ];
 
-export default function ExerciseLibraryPage() {
-    const { isArabic, toggleLanguage } = useLanguage();
-    const { theme, toggleTheme } = useTheme();
-    const isDark = theme === 'dark';
-    const [selectedMuscle, setSelectedMuscle] = useState('all');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-    const [selectedExercise, setSelectedExercise] = useState<typeof EXERCISES[0] | null>(null);
+export default function Page() {
+    const { t, isArabic } = useLanguage();
+    const [activeMuscle, setActiveMuscle] = useState('all');
+    const [search, setSearch] = useState('');
+    const [playingId, setPlayingId] = useState<number | null>(null);
 
-    const filtered = EXERCISES.filter(ex => {
-        const matchMuscle = selectedMuscle === 'all' || ex.muscle === selectedMuscle;
-        const matchSearch = ex.name.toLowerCase().includes(searchQuery.toLowerCase()) || ex.nameAr.includes(searchQuery);
-        const matchDiff = selectedDifficulty === 'all' || ex.difficulty === selectedDifficulty;
-        return matchMuscle && matchSearch && matchDiff;
+    const filtered = EXERCISES.filter(e => {
+        const matchMuscle = activeMuscle === 'all' || e.muscle === activeMuscle;
+        const matchSearch = e.name.toLowerCase().includes(search.toLowerCase()) || e.equipment.toLowerCase().includes(search.toLowerCase());
+        return matchMuscle && matchSearch;
     });
 
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen font-sans" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            {/* Nav */}
-            <nav className="sticky top-0 z-40 px-6 py-4 flex items-center justify-between border-b" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-subtle)', backdropFilter: 'blur(16px)' }}>
-                <div className="flex items-center gap-4">
-                    <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
-                    <div>
-                        <h1 className="font-bold font-heading">{isArabic ? 'مكتبة التمارين' : 'Exercise Library'}</h1>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{EXERCISES.length} {isArabic ? 'تمرين' : 'exercises'}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
-                    <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
-                </div>
-            </nav>
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body">
 
-            <div className="max-w-7xl mx-auto p-6">
-                {/* Search + Filter */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <div className="flex-1 relative">
-                        <Search size={16} className="absolute top-1/2 -translate-y-1/2 start-4" style={{ color: 'var(--text-muted)' }} />
-                        <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                            placeholder={isArabic ? 'ابحث عن تمرين...' : 'Search exercises...'}
-                            className="w-full ps-10 pe-4 py-3 rounded-xl text-sm input-base" />
-                    </div>
-                    <select value={selectedDifficulty} onChange={e => setSelectedDifficulty(e.target.value)}
-                        className="px-4 py-3 rounded-xl text-sm input-base">
-                        <option value="all">{isArabic ? 'كل المستويات' : 'All Levels'}</option>
-                        <option value="Beginner">{isArabic ? 'مبتدئ' : 'Beginner'}</option>
-                        <option value="Intermediate">{isArabic ? 'متوسط' : 'Intermediate'}</option>
-                        <option value="Advanced">{isArabic ? 'متقدم' : 'Advanced'}</option>
-                    </select>
-                </div>
+<header className="bg-black/60 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] no-border tonal-transition-bg">
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/20">
+<a href="#" className="cursor-pointer hover:opacity-80 transition-opacity w-full h-full block" onClick={(e) => { e.preventDefault(); try { const r=JSON.parse(localStorage.getItem('gemz_user')||'{}').role; window.location.href=r==='trainer'?'/trainer':r==='gym_admin'?'/gym':(r==='store_owner'||r==='store_admin')?'/store/dashboard':'/trainee'; } catch(err) { window.location.href='/login'; } }}><img alt="User Profile" data-alt="Close up portrait of a focused professional athlete" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR4vwFCo22gKurzbuDQjxj5QZkzmMP0Hl4jRt3d2-RI24pBGkYNOSCcVUahJWlM05y360QQG6CRNZVGeMnGcixFWDi8LDA1UYOlQ1KBB5cEZz3bK3PjUDY94IvNlkAE3pYAH9sAS7xZUiehKgiEOvfSFhxo3fuMmQkRDtsKJgzCJnpWJRiINRpji3EymwGA6rJ8eg3LM1L8YcDRRr8vuxhJV7uyKmYxt0mEeA6RG-UAqGsxeZuw_eeqSUWvgNj_qhQCuNW9GZtKtXW"/></a>
+</div>
+<a href="https://gem-z.shop/"><h1 className="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline">{t("GEM Z")}</h1></a>
+</div>
+<div className="flex items-center gap-4">
+<button className="text-gray-400 hover:text-[#ff7b00] transition-colors scale-95 active:duration-150">
+<span className="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+</div>
+</header>
 
-                {/* Muscle Group Pills */}
-                <div className="flex gap-3 overflow-x-auto pb-4 mb-6 scrollbar-none">
-                    {MUSCLE_GROUPS.map(mg => (
-                        <button key={mg.id} onClick={() => setSelectedMuscle(mg.id)}
-                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap shrink-0 transition-all"
-                            style={{ background: selectedMuscle === mg.id ? 'var(--color-primary)' : 'var(--bg-card)', color: selectedMuscle === mg.id ? '#000' : 'var(--text-secondary)', border: `1px solid ${selectedMuscle === mg.id ? 'var(--color-primary)' : 'var(--border-subtle)'}` }}>
-                            <span>{mg.icon}</span> {isArabic ? mg.nameAr : mg.nameEn}
-                        </button>
-                    ))}
-                </div>
+<main className="pb-32 px-6 pt-8 max-w-7xl mx-auto">
 
-                {/* Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {filtered.map(ex => (
-                        <div key={ex.id} onClick={() => setSelectedExercise(ex)}
-                            className="rounded-2xl p-5 cursor-pointer transition-all hover:scale-[1.02] group"
-                            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            {/* Header */}
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="text-4xl">{ex.emoji}</div>
-                                <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: `${DIFFICULTY_COLORS[ex.difficulty]}15`, color: DIFFICULTY_COLORS[ex.difficulty], border: `1px solid ${DIFFICULTY_COLORS[ex.difficulty]}40` }}>
-                                    {ex.difficulty}
-                                </span>
-                            </div>
-                            <h3 className="font-bold mb-1">{isArabic ? ex.nameAr : ex.name}</h3>
-                            <p className="text-xs mb-3 line-clamp-2" style={{ color: 'var(--text-secondary)' }}>{isArabic ? ex.descAr : ex.desc}</p>
-                            <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
-                                <span className="flex items-center gap-1"><Dumbbell size={12} />{ex.equipment}</span>
-                                <span className="flex items-center gap-1"><Zap size={12} />{ex.kcalPerMin} kcal/min</span>
-                            </div>
-                            <button className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all group-hover:bg-[var(--color-primary)] group-hover:text-black"
-                                style={{ background: 'var(--bg-input)', border: '1px solid var(--border-medium)' }}>
-                                <Play size={14} /> {isArabic ? 'عرض التمرين' : 'View Exercise'}
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+<section className="mb-10">
+<h2 className="text-6xl md:text-8xl font-black font-headline tracking-tighter leading-[0.9] text-white uppercase opacity-90 mb-4">{t("Elite")}<br/><span className="text-primary">{t("Catalog")}</span></h2>
+<p className="text-on-surface-variant max-w-md font-body text-lg">{t("High-performance movement library optimized for biometric tracking and form analysis.")}</p>
+</section>
 
-            {/* Exercise Detail Modal */}
-            {selectedExercise && (
-                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedExercise(null)}>
-                    <div className="w-full max-w-lg rounded-3xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }} onClick={e => e.stopPropagation()}>
-                        <div className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                                <div>
-                                    <div className="text-5xl mb-2">{selectedExercise.emoji}</div>
-                                    <h2 className="text-2xl font-bold font-heading">{isArabic ? selectedExercise.nameAr : selectedExercise.name}</h2>
-                                    <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? selectedExercise.descAr : selectedExercise.desc}</p>
-                                </div>
-                                <span className="text-xs font-bold px-3 py-1.5 rounded-full" style={{ background: `${DIFFICULTY_COLORS[selectedExercise.difficulty]}15`, color: DIFFICULTY_COLORS[selectedExercise.difficulty] }}>
-                                    {selectedExercise.difficulty}
-                                </span>
-                            </div>
+{/* Search + Muscle Filter */}
+<section className="mb-8 space-y-5">
+<div className="relative">
+<span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+<input value={search} onChange={e => setSearch(e.target.value)} className="w-full bg-surface-container-low border-b-2 border-outline-variant/20 focus:border-primary transition-all py-5 pl-14 pr-6 rounded-t-lg font-headline text-xl outline-none placeholder:text-outline-variant" placeholder={isArabic ? 'ابحث عن تمرين...' : 'Search movements...'} type="text"/>
+</div>
 
-                            <div className="grid grid-cols-3 gap-3 mb-5">
-                                {[
-                                    { label: isArabic ? 'المعدات' : 'Equipment', value: selectedExercise.equipment, icon: Dumbbell },
-                                    { label: isArabic ? 'العضلة' : 'Muscle', value: selectedExercise.muscle, icon: Target },
-                                    { label: isArabic ? 'الحرق' : 'Burn', value: `${selectedExercise.kcalPerMin} kcal/m`, icon: Zap },
-                                ].map((s, i) => (
-                                    <div key={i} className="p-3 rounded-xl text-center" style={{ background: 'var(--bg-input)' }}>
-                                        <s.icon size={16} className="mx-auto mb-1 text-[var(--color-primary)]" />
-                                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{s.label}</p>
-                                        <p className="font-bold text-sm capitalize">{s.value}</p>
-                                    </div>
-                                ))}
-                            </div>
+<div>
+<p className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-3">{isArabic ? 'فلتر حسب العضلة' : 'Filter by Muscle Group'}</p>
+<div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+{MUSCLES.map(m => (
+<button key={m.id} onClick={() => setActiveMuscle(m.id)} className={`flex items-center gap-2 whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider transition-all ${
+  activeMuscle === m.id
+    ? 'bg-[#ff7b00] text-black shadow-[0_0_16px_rgba(255,123,0,0.4)]'
+    : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest border border-white/5'
+}`}>
+<span className="material-symbols-outlined text-sm">{m.icon}</span>
+{isArabic ? m.labelAr : m.label}
+</button>
+))}
+</div>
+</div>
+<p className="text-on-surface-variant text-sm">{filtered.length} {isArabic ? 'تمرين' : 'exercises'}</p>
+</section>
 
-                            <div>
-                                <h4 className="font-bold mb-3">{isArabic ? 'خطوات التنفيذ:' : 'How to perform:'}</h4>
-                                <div className="space-y-2">
-                                    {selectedExercise.steps.map((step, i) => (
-                                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-input)' }}>
-                                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-black shrink-0" style={{ background: 'var(--color-primary)' }}>{i + 1}</div>
-                                            <p className="text-sm">{step}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+{/* Exercise Grid */}
+<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+{filtered.length === 0 ? (
+<div className="col-span-3 text-center py-16 text-on-surface-variant">
+<span className="material-symbols-outlined text-5xl mb-4 block">search_off</span>
+<p className="font-bold">{isArabic ? 'لا توجد تمارين بهذه المعايير' : 'No exercises match these filters'}</p>
+</div>
+) : (
+filtered.map(ex => (
+<div key={ex.id} className="group relative overflow-hidden rounded-lg bg-surface-container-low border border-white/5 hover:border-primary/40 transition-all duration-500">
+<div className="aspect-[4/5] relative">
+{playingId === ex.id ? (
+<iframe className="w-full h-full" src={`https://www.youtube.com/embed/${ex.videoId}?autoplay=1&controls=1`} allow="autoplay; encrypted-media" allowFullScreen title={ex.name} />
+) : (
+<>
+<img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 brightness-75 group-hover:brightness-100" src={ex.img} alt={ex.name} />
+<div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+<button onClick={() => setPlayingId(ex.id)} className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div className="w-16 h-16 rounded-full bg-[#ff7b00]/90 flex items-center justify-center shadow-[0_0_30px_rgba(255,123,0,0.6)] hover:scale-110 transition-all">
+<span className="material-symbols-outlined text-black text-3xl" style={{fontVariationSettings:"'FILL' 1"}}>play_arrow</span>
+</div>
+</button>
+<div className="absolute top-4 left-4 flex gap-2">
+{(() => { const m = MUSCLES.find(x => x.id === ex.muscle); return <span className="bg-primary/20 backdrop-blur-md text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-primary/30">{isArabic ? m?.labelAr : m?.label}</span>; })()}
+<span className="bg-white/10 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">{ex.equipment}</span>
+</div>
+<div className="absolute top-4 right-4">
+<span className="material-symbols-outlined text-white/70 bg-black/40 rounded-full p-1">play_circle</span>
+</div>
+</>
+)}
+</div>
+<div className="p-6">
+<h3 className="text-2xl font-black font-headline italic tracking-tighter mb-2">{t(ex.name)}</h3>
+<div className="flex justify-between items-center text-on-surface-variant text-sm font-medium">
+<span>{isArabic ? 'شدة: ' : 'Intensity: '}{ex.intensity}</span>
+<div className="flex items-center gap-1 text-primary">
+<span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+<span>{ex.gems} Gems</span>
+</div>
+</div>
+</div>
+</div>
+))
+)}
+</section>
+</main>
 
-                            <div className="flex gap-3 mt-5">
-                                <button className="flex-1 py-3 rounded-xl font-bold text-black" style={{ background: 'var(--color-primary)' }}>
-                                    {isArabic ? '➕ إضافة للتمرين' : '➕ Add to Workout'}
-                                </button>
-                                <button onClick={() => setSelectedExercise(null)} className="px-5 py-3 rounded-xl font-bold" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                                    {isArabic ? 'إغلاق' : 'Close'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+<nav className="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/70 backdrop-blur-2xl z-50 rounded-t-[2rem] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] no-border glassmorphism-surface">
+<Link href="/ai-coach" className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Coach")}</span>
+</Link>
+<Link href="/shop" className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Shop")}</span>
+</Link>
+<Link href="/social" className="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="dynamic_feed">dynamic_feed</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Feed")}</span>
+</Link>
+<Link href="/wallet" className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Wallet")}</span>
+</Link>
+<Link href="/squads" className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="groups">groups</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Squads")}</span>
+</Link>
+</nav>
+
+    </div>
+  );
 }

@@ -1,179 +1,231 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import {
-    Tag, Clock, Zap, ShoppingBag, Star, Globe, Filter,
-    Flame, ChevronRight, ArrowRight
-} from 'lucide-react';
-import { useLanguage } from '../../context/LanguageContext';
-import { useTheme } from '../../context/ThemeContext';
+import React from 'react';
 import Link from 'next/link';
-import GemZLogo from '../../components/GemZLogo';
+import { useLanguage } from '../../context/LanguageContext';
 
-function useCountdown(endTime: number) {
-    const [timeLeft, setTimeLeft] = useState(endTime - Date.now());
-    useEffect(() => {
-        const timer = setInterval(() => setTimeLeft(prev => Math.max(0, prev - 1000)), 1000);
-        return () => clearInterval(timer);
-    }, []);
-    const h = Math.floor(timeLeft / 3600000);
-    const m = Math.floor((timeLeft % 3600000) / 60000);
-    const s = Math.floor((timeLeft % 60000) / 1000);
-    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
+export default function Page() {
+    const { t } = useLanguage();
+  return (
+    <div className="bg-surface-container-lowest text-on-surface min-h-screen relative font-body">
+      
 
-const now = Date.now();
-const FLASH_DEALS = [
-    { id: 1, type: 'supplement', emoji: '🥤', nameEn: 'Whey Protein 5LB — Gold Standard', nameAr: 'واي بروتين 5 باوند — الجولد ستاندرد', store: 'Muscle Pharm', storeAr: 'ماسل فارم', originalPrice: 1200, discountedPrice: 840, discount: 30, endTime: now + 3.5 * 3600 * 1000, sold: 47, total: 100, rating: 4.9, reviews: 328, color: 'var(--color-primary)', tags: ['Beginner-friendly', 'Best Seller'], tagsAr: ['للمبتدئين', 'الأكثر مبيعاً'], badge: '🔥 HOT' },
-    { id: 2, type: 'gym', emoji: '🏋️', nameEn: 'Gold Gym — 3-Month Subscription', nameAr: 'جولد جيم — اشتراك 3 شهور', store: 'Gold Gym Elite', storeAr: 'جولد جيم إيليت', originalPrice: 2550, discountedPrice: 1785, discount: 30, endTime: now + 1.2 * 3600 * 1000, sold: 82, total: 100, rating: 4.8, reviews: 1240, color: 'var(--color-warning)', tags: ['Limited', 'All Branches'], tagsAr: ['محدود', 'جميع الفروع'], badge: '⚡ ENDING SOON' },
-    { id: 3, type: 'supplement', emoji: '💊', nameEn: 'Creatine Monohydrate 500g', nameAr: 'كرياتين مونوهيدرات 500 جرام', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 380, discountedPrice: 228, discount: 40, endTime: now + 5.8 * 3600 * 1000, sold: 23, total: 50, rating: 4.7, reviews: 89, color: 'var(--color-purple)', tags: ['Unflavored', 'Pure'], tagsAr: ['بدون نكهة', 'نقي 100%'], badge: null },
-    { id: 4, type: 'gear', emoji: '🩱', nameEn: 'GEM Z Training Set (Top + Shorts)', nameAr: 'طقم تدريب GEM Z (تيشيرت + شورت)', store: 'GEM Z Official', storeAr: 'جيم زد الرسمي', originalPrice: 450, discountedPrice: 270, discount: 40, endTime: now + 8 * 3600 * 1000, sold: 65, total: 200, rating: 4.6, reviews: 55, color: 'var(--color-secondary)', tags: ['Exclusive', 'Breathable'], tagsAr: ['حصري', 'شبكي مريح'], badge: '✨ EXCLUSIVE' },
-    { id: 5, type: 'supplement', emoji: '🧴', nameEn: 'BCAA 300g — Tropical Burst', nameAr: 'BCAA 300 جرام — فواكه استوائية', store: 'NutriZone', storeAr: 'نيوتري زون', originalPrice: 320, discountedPrice: 224, discount: 30, endTime: now + 11 * 3600 * 1000, sold: 18, total: 80, rating: 4.5, reviews: 42, color: 'var(--color-orange)', tags: ['Tropical Flavor'], tagsAr: ['نكهة استوائية'], badge: null },
-    { id: 6, type: 'gym', emoji: '🧘', nameEn: 'Yoga Flow Studio — Monthly Pass', nameAr: 'يوغا فلو ستوديو — اشتراك شهري', store: 'Yoga Flow', storeAr: 'يوغا فلو', originalPrice: 600, discountedPrice: 360, discount: 40, endTime: now + 6 * 3600 * 1000, sold: 34, total: 50, rating: 4.9, reviews: 178, color: '#34C759', tags: ['Online + In-Person'], tagsAr: ['أونلاين + حضوري'], badge: '🧘 WELLNESS' },
-];
+<header className="bg-black/60 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(255,123,0,0.12)] flex justify-between items-center px-6 py-4 w-full">
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<a href="#" className="cursor-pointer hover:opacity-80 transition-opacity w-full h-full block" onClick={(e) => { e.preventDefault(); try { const r=JSON.parse(localStorage.getItem('gemz_user')||'{}').role; window.location.href=r==='trainer'?'/trainer':r==='gym_admin'?'/gym':(r==='store_owner'||r==='store_admin')?'/store/dashboard':'/trainee'; } catch(err) { window.location.href='/login'; } }}><img alt="User Profile" className="w-full h-full object-cover" data-alt="Close up portrait of a professional athlete with focused expression, high contrast lighting, dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTjeeSrTEbqEvBqLkE9CTc0SYdo6hzwcOUtAaw4zga8L4hl63nVAQ9sJ1u9rNv-PU0RHqDofI0NLJzDMTHQN8SDtRJCjJ3xkkrGE1aLq-cGbucCp2mgK8F6O6qzFzH02afbJB47YwpZ4TQJfl6NvPNA1C7q7gKwvDS4Zt8-_iFLUMlQHrMWPuKJlwOAJoLpeObsbX5OwabKftbWwVGL2yxIhI3pBI-pbcm3D-HrlAQ1LAn1DTqMRBqVlehwCnRQtPHK740fMyLpoOJ"/></a>
+</div>
+<a href="https://gem-z.shop/"><span className="text-2xl font-black italic text-[#ff7b00] tracking-tighter font-headline uppercase">{t("GEM Z")}</span></a>
+</div>
+<div className="flex items-center gap-4">
+<button className="text-gray-400 hover:text-[#ff7b00] transition-colors scale-95 active:duration-150">
+<span className="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button className="text-gray-400 hover:text-[#ff7b00] transition-colors scale-95 active:duration-150 md:hidden">
+<span className="material-symbols-outlined" data-icon="menu">{t("menu")}</span>
+</button>
+</div>
+</header>
+<main className="min-h-screen pb-32">
 
-function DealCard({ deal, isArabic }: { deal: typeof FLASH_DEALS[0], isArabic: boolean }) {
-    const countdown = useCountdown(deal.endTime);
-    const progress = (deal.sold / deal.total) * 100;
-    const isUrgent = deal.endTime - Date.now() < 2 * 3600 * 1000;
+<section className="relative w-full h-[530px] flex flex-col justify-end p-8 overflow-hidden">
+<div className="absolute inset-0 z-0">
+<img className="w-full h-full object-cover" data-alt="Cinematic shot of high-end carbon fiber wireless headphones floating in a dark void with orange laser beams and smoke" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI5iJ9pTRcNzck7BEGf0AYt00iK6JhWClQoZi8bBFDUu2ViIvvCJQe-qpQywolZTkFyLMaGNx3yTTOKpLoJnOmnaITZZnN2ovZPJhofAbx5goxmmCQ8JS66rVO_hsdKwaiWWsMSl7epE8A0Tzj7MIm6ruDriSWjBolzYQnVI9lrQ5bwQ7U2GhnqWJOOVk2ZXvyi6k0ofA4Y4met7nAWBWIkNE06wJgSCauSq6DcI5wpsJmI1Wslpjom7lkVFA0Eql0F2K9WqkC2KJQ"/>
+<div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/60 to-transparent"></div>
+</div>
+<div className="relative z-10 max-w-4xl">
+<div className="flex items-center gap-2 mb-4">
+<span className="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest animate-pulse">{t("Live Now")}</span>
+<div className="glass-panel px-3 py-1 rounded-full border border-primary/30 flex items-center gap-2">
+<span className="material-symbols-outlined text-xs text-primary" data-icon="timer">{t("timer")}</span>
+<span className="text-primary font-mono font-bold text-sm tracking-tighter">04:12:59</span>
+</div>
+</div>
+<h1 className="font-headline text-5xl md:text-7xl font-black text-on-surface uppercase leading-[0.9] tracking-tighter mb-4">{t("TITAN X")}<br/><span className="text-primary">{t("PRO BUDS")}</span>
+</h1>
+<p className="text-on-surface-variant text-lg max-w-md mb-8">{t("Ultimate sensory isolation. 48-hour battery. Liquid metal finish.")}</p>
+<div className="flex items-center gap-6">
+<button className="kinetic-gradient text-on-primary-fixed px-10 py-4 rounded-xl font-black uppercase tracking-tighter text-xl neon-glow-primary hover:scale-105 transition-transform flex items-center gap-3">{t("Buy Now")}<span className="material-symbols-outlined" data-icon="bolt" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+</button>
+<div className="flex flex-col">
+<span className="text-on-surface-variant line-through text-sm">499 GEMS</span>
+<span className="text-on-surface text-3xl font-black tracking-tighter">249 GEMS</span>
+</div>
+</div>
+</div>
+</section>
 
-    return (
-        <div className="rounded-3xl overflow-hidden transition-all hover:scale-[1.02] cursor-pointer"
-            style={{ background: 'var(--bg-card)', border: `1px solid ${deal.color}40` }}>
-            {/* Header */}
-            <div className="p-5 relative overflow-hidden" style={{ background: `${deal.color}10` }}>
-                <div className="absolute -top-6 -right-6 text-[100px] opacity-10">{deal.emoji}</div>
-                <div className="relative">
-                    {deal.badge && (
-                        <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3 text-black"
-                            style={{ background: deal.color }}>{deal.badge}</span>
-                    )}
-                    <div className="text-3xl mb-2">{deal.emoji}</div>
-                    <h3 className="font-bold text-lg font-heading leading-tight">{isArabic ? deal.nameAr : deal.nameEn}</h3>
-                    <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{isArabic ? deal.storeAr : deal.store}</p>
-                </div>
-            </div>
+<section className="px-6 py-12">
+<div className="flex justify-between items-end mb-10">
+<div>
+<h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">{t("Flash Deals")}</h2>
+<p className="text-on-surface-variant text-sm">{t("Exclusive drops. Limited quantities. High speed only.")}</p>
+</div>
+<div className="hidden md:flex gap-2">
+<button className="w-10 h-10 rounded-full border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span className="material-symbols-outlined" data-icon="arrow_back">{t("arrow_back")}</span>
+</button>
+<button className="w-10 h-10 rounded-full border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span className="material-symbols-outlined" data-icon="arrow_forward">{t("arrow_forward")}</span>
+</button>
+</div>
+</div>
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            <div className="p-5">
-                {/* Price */}
-                <div className="flex items-end gap-3 mb-4">
-                    <span className="text-3xl font-bold font-mono" style={{ color: deal.color }} dir="ltr">EGP {deal.discountedPrice.toLocaleString('en-US')}</span>
-                    <div>
-                        <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }} dir="ltr">EGP {deal.originalPrice.toLocaleString('en-US')}</span>
-                        <span className="block text-xs font-bold text-[var(--color-danger)]">-{deal.discount}% {isArabic ? 'خصم' : 'OFF'}</span>
-                    </div>
-                </div>
+<div className="group relative bg-surface-container rounded-lg overflow-hidden transition-all duration-300 hover:translate-y-[-8px]">
+<div className="h-64 relative overflow-hidden">
+<img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Sleek neon red running shoes on a pitch black background with sharp dramatic rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjhJcDfrzLkX_W03h2BdxzrAyiuUVo2VN1599I4PNXZLVvqmaLFLgK82_wvdwOetLUDWA_4y0ewL7O7qEJxPpygiuUA1_w85SoJfAq4QAZltUisL1FXVRhnmF77b0Ja5zM7nD0wAaU8UMrQ__syH_RAVqBuQVgUzf5i5wHoixG0umYXIHlp_7fAqOxAR00uKjmCkYu5ko4HL-KWlzvIu3Lgj4Uib_Fgwdzi86sPXYd3etqOmCJ63HuTDWS7eNWJ4TAzBp3SxRl7XHF"/>
+<div className="absolute top-4 left-4 glass-panel px-3 py-1 rounded-full border border-white/10 text-[10px] font-bold tracking-widest uppercase">
+                            -40% OFF
+                        </div>
+</div>
+<div className="p-6">
+<div className="flex justify-between items-start mb-2">
+<h3 className="font-headline font-bold text-xl uppercase tracking-tighter">{t("Velocity Pro-1")}</h3>
+<div className="flex flex-col items-end">
+<span className="text-primary font-black text-xl italic">120 GEMS</span>
+</div>
+</div>
+<div className="w-full bg-surface-container-high h-1.5 rounded-full mb-6 overflow-hidden">
+<div className="bg-primary h-full w-3/4 shadow-[0_0_8px_#ff7b00]"></div>
+</div>
+<div className="flex justify-between items-center text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-6">
+<span>{t("Only 12 left")}</span>
+<span className="text-primary">{t("Ends in 02h : 15m")}</span>
+</div>
+<button className="w-full bg-surface-container-highest border border-outline-variant/30 py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-on-primary-fixed transition-all">{t("Add to Cart")}</button>
+</div>
+</div>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                    {(isArabic ? deal.tagsAr : deal.tags).map((tag, i) => (
-                        <span key={i} className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${deal.color}15`, color: deal.color }}>{tag}</span>
-                    ))}
-                </div>
-
-                {/* Countdown */}
-                <div className={`flex items-center gap-2 p-3 rounded-xl mb-4 ${isUrgent ? 'animate-pulse' : ''}`}
-                    style={{ background: isUrgent ? 'rgba(255,59,48,0.1)' : 'var(--bg-input)', border: `1px solid ${isUrgent ? 'rgba(255,59,48,0.3)' : 'var(--border-medium)'}` }}>
-                    <Clock size={14} style={{ color: isUrgent ? 'var(--color-danger)' : deal.color }} />
-                    <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'ينتهي خلال:' : 'Ends in:'}</span>
-                    <span className="font-mono font-bold text-sm" style={{ color: isUrgent ? 'var(--color-danger)' : deal.color }}>{countdown}</span>
-                </div>
-
-                {/* Stock Bar */}
-                <div className="mb-4">
-                    <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>
-                        <span>{isArabic ? 'المباع:' : 'Sold:'} {deal.sold}/{deal.total}</span>
-                        <span style={{ color: progress > 80 ? 'var(--color-danger)' : deal.color }}>{Math.round(progress)}% {isArabic ? 'نفد' : 'gone'}</span>
-                    </div>
-                    <div className="h-2 rounded-full" style={{ background: 'var(--bg-input)' }}>
-                        <div className="h-2 rounded-full transition-all" style={{ width: `${progress}%`, background: progress > 80 ? 'var(--color-danger)' : deal.color }} />
-                    </div>
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center gap-2 mb-4 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    <div className="flex">
-                        {[...Array(5)].map((_, i) => <Star key={i} size={11} className="fill-[var(--color-warning)] text-[var(--color-warning)]" />)}
-                    </div>
-                    <span className="font-bold">{deal.rating}</span>
-                    <span>({deal.reviews} {isArabic ? 'تقييم' : 'reviews'})</span>
-                </div>
-
-                <button className="w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90 flex items-center justify-center gap-2 text-black"
-                    style={{ background: `linear-gradient(to right, ${deal.color}, ${deal.color}cc)` }}>
-                    <ShoppingBag size={16} /> {isArabic ? '⚡ اشتري الآن' : '⚡ Buy Now'}
-                </button>
-            </div>
-        </div>
-    );
-}
-
-export default function FlashSalesPage() {
-    const { isArabic, toggleLanguage } = useLanguage();
-    const { theme, toggleTheme } = useTheme();
-    const isDark = theme === 'dark';
-    const [filter, setFilter] = useState('all');
-
-    const filters = [
-        { id: 'all', en: 'All Deals', ar: 'كل العروض', icon: '🔥' },
-        { id: 'supplement', en: 'Supplements', ar: 'مكملات', icon: '🥤' },
-        { id: 'gym', en: 'Gym Plans', ar: 'اشتراكات', icon: '🏋️' },
-        { id: 'gear', en: 'Gear', ar: 'معدات', icon: '👕' },
-    ];
-
-    const displayed = filter === 'all' ? FLASH_DEALS : FLASH_DEALS.filter(d => d.type === filter);
-
-    return (
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen font-sans pb-20" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            {/* Nav */}
-            <nav className="sticky top-0 z-40 px-6 py-4 flex items-center justify-between border-b" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-subtle)', backdropFilter: 'blur(16px)' }}>
-                <div className="flex items-center gap-4">
-                    <Link href="/trainee"><GemZLogo size={32} variant="icon" /></Link>
-                    <div>
-                        <h1 className="font-bold font-heading flex items-center gap-2"><Zap size={18} className="text-[var(--color-orange)]" />{isArabic ? 'عروض فلاش ⚡' : 'Flash Deals ⚡'}</h1>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isArabic ? 'عروض لفترة محدودة — اشتري قبل انتهاء الوقت!' : 'Limited-time deals — buy before time runs out!'}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>{isDark ? '☀️' : '🌙'}</button>
-                    <button onClick={toggleLanguage} className="p-2 rounded-xl" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}><Globe size={16} /></button>
-                </div>
-            </nav>
-
-            {/* Hero Banner */}
-            <div className="px-6 py-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A1A0A, #0A0A1A)' }}>
-                <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)]/5 to-[var(--color-orange)]/5" />
-                <div className="max-w-4xl mx-auto text-center relative">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 text-sm font-bold" style={{ background: 'rgba(255,107,53,0.15)', border: '1px solid rgba(255,107,53,0.3)', color: 'var(--color-orange)' }}>
-                        <Flame size={14} className="animate-pulse" /> {isArabic ? 'عروض لفترة محدودة جداً' : 'Time-sensitive deals only on GEM Z'}
-                    </div>
-                    <h2 className="text-3xl md:text-5xl font-bold font-heading text-white mb-2">
-                        {isArabic ? 'عروض فلاش ⚡' : 'Flash Deals ⚡'}
-                    </h2>
-                    <p className="text-white/60 mb-4">{isArabic ? 'خصومات حتى 40% على مكملات، اشتراكات، ومعدات رياضية' : 'Up to 40% off supplements, gym plans, and gear'}</p>
-                    <div className="flex items-center justify-center gap-2 text-white/80 text-sm">
-                        <ShoppingBag size={14} />
-                        <span>{isArabic ? `${FLASH_DEALS.length} عروض نشطة الآن` : `${FLASH_DEALS.length} active deals right now`}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="max-w-7xl mx-auto px-6 py-6">
-                {/* Category Filters */}
-                <div className="flex gap-3 mb-8 overflow-x-auto pb-2 scrollbar-none">
-                    {filters.map(f => (
-                        <button key={f.id} onClick={() => setFilter(f.id)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap shrink-0 transition-all"
-                            style={{ background: filter === f.id ? 'var(--color-orange)' : 'var(--bg-card)', color: filter === f.id ? '#fff' : 'var(--text-secondary)', border: `1px solid ${filter === f.id ? 'var(--color-orange)' : 'var(--border-subtle)'}` }}>
-                            <span>{f.icon}</span> {isArabic ? f.ar : f.en}
+<div className="group relative bg-surface-container rounded-lg overflow-hidden transition-all duration-300 hover:translate-y-[-8px]">
+<div className="h-64 relative overflow-hidden">
+<img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Luxury minimalist smart watch with black leather strap on a dark textured surface with subtle amber reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABS5h25oay9wX0pdxien2-3mJnzBfBAxumc15zzeMrXDY5u6XfO4bgeN0BcaEMhjEwyU4tTMjei-W394BPHgX_VCXsljaadfiEYVxMvIcAF15I8hqqjY7Lpgpoopylhlm3LA28ONbLYmvscIUFbreqq17-9Xs_piWunq9YA2-UaKQC0xgQwnba3nJtBqcIURFq9_g28nrIVxjc3WvqrQFVlgDHZlw3oxBd85la-cx7Sh011iZ0dfypEUqFDhyjRahVsVQWizpVsO0f"/>
+<div className="absolute top-4 right-4 glass-panel px-3 py-1 rounded-full border border-white/10 text-[10px] font-bold tracking-widest uppercase font-arabic" dir="rtl">
+                            خصم ٦٠٪
+                        </div>
+</div>
+<div className="p-6" dir="rtl">
+<div className="flex justify-between items-start mb-2">
+<h3 className="font-arabic font-bold text-xl tracking-tight">ساعة زينيث الذكية</h3>
+<div className="flex flex-col items-start">
+<span className="text-primary font-black text-xl italic">٨٥ جوهرة</span>
+</div>
+</div>
+<div className="w-full bg-surface-container-high h-1.5 rounded-full mb-6 overflow-hidden">
+<div className="bg-primary h-full w-1/4 shadow-[0_0_8px_#ff7b00]"></div>
+</div>
+<div className="flex justify-between items-center text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-6 font-arabic">
+<span>بقي ٤ فقط</span>
+<span className="text-primary">ينتهي في: ٠٠:٤٥:١٢</span>
+</div>
+<button className="w-full bg-surface-container-highest border border-outline-variant/30 py-3 rounded-xl font-arabic font-bold uppercase tracking-widest text-sm hover:bg-primary hover:text-on-primary-fixed transition-all">
+                            شراء الآن
                         </button>
-                    ))}
-                </div>
+</div>
+</div>
 
-                {/* Deals Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {displayed.map(deal => <DealCard key={deal.id} deal={deal} isArabic={isArabic} />)}
-                </div>
-            </div>
-        </div>
-    );
+<div className="group relative bg-surface-container rounded-lg overflow-hidden transition-all duration-300 hover:translate-y-[-8px]">
+<div className="h-64 relative overflow-hidden">
+<img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Premium matte black metal water bottle with orange neon accents sitting on a dark volcanic rock" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxuzr9nJb3UPqY8OIxDYX7-u5GLplom8xuDk9ZKXJtoVbkiageVrffILlZWGlRPpcp7-10Ska7PVw9WO7ICtDqbn529Z3PpwlRh-6quyDYShyijJN2o-PT2_pfBjA91z6ykw3pggEsyCLq_vMv3cviBTIeVsVeMzjokJgHpXps6zTigS8-jJtEU4PfkwOQiA64gLURsIIOB3WaXE7W0rhONdRGT-uLDL4rFqZP5cMgN1mD0D9voxcLkQWC8HQeYBB6OLK9QOOjr6kv"/>
+<div className="absolute top-4 left-4 glass-panel px-3 py-1 rounded-full border border-white/10 text-[10px] font-bold tracking-widest uppercase">{t("LIMITED EDITION")}</div>
+</div>
+<div className="p-6">
+<div className="flex justify-between items-start mb-2">
+<h3 className="font-headline font-bold text-xl uppercase tracking-tighter">{t("Cryo Flask 2.0")}</h3>
+<div className="flex flex-col items-end">
+<span className="text-primary font-black text-xl italic">45 GEMS</span>
+</div>
+</div>
+<div className="w-full bg-surface-container-high h-1.5 rounded-full mb-6 overflow-hidden">
+<div className="bg-primary h-full w-1/2 shadow-[0_0_8px_#ff7b00]"></div>
+</div>
+<div className="flex justify-between items-center text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-6">
+<span>Sold 250+</span>
+<span className="text-primary">{t("Restocking in 4 days")}</span>
+</div>
+<button className="w-full bg-surface-container-highest border border-outline-variant/30 py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-on-primary-fixed transition-all">{t("Add to Cart")}</button>
+</div>
+</div>
+</div>
+</section>
+
+<section className="mt-8 px-6">
+<h4 className="text-[10px] uppercase font-black tracking-[0.3em] text-on-surface-variant mb-6">{t("Upcoming Auctions")}</h4>
+<div className="flex gap-4 overflow-x-auto no-scrollbar pb-8">
+<div className="min-w-[280px] bg-surface-container-low p-6 rounded-lg border-l-4 border-primary/40">
+<span className="material-symbols-outlined text-primary mb-4" data-icon="gavel">gavel</span>
+<h5 className="font-headline font-bold text-lg mb-1">{t("Elite Trainer Session")}</h5>
+<p className="text-on-surface-variant text-sm mb-4">{t("Starting bid: 500 Gems")}</p>
+<div className="text-[10px] font-black text-primary uppercase tracking-widest">{t("Starts in 2h 45m")}</div>
+</div>
+<div className="min-w-[280px] bg-surface-container-low p-6 rounded-lg border-l-4 border-outline-variant/40">
+<span className="material-symbols-outlined text-on-surface-variant mb-4" data-icon="military_tech">military_tech</span>
+<h5 className="font-headline font-bold text-lg mb-1">{t("Legendary Badge")}</h5>
+<p className="text-on-surface-variant text-sm mb-4">{t("Starting bid: 1,200 Gems")}</p>
+<div className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">{t("Starts in 5h 20m")}</div>
+</div>
+<div className="min-w-[280px] bg-surface-container-low p-6 rounded-lg border-l-4 border-outline-variant/40">
+<span className="material-symbols-outlined text-on-surface-variant mb-4" data-icon="restaurant">restaurant</span>
+<h5 className="font-headline font-bold text-lg mb-1">{t("VIP Nutrition Plan")}</h5>
+<p className="text-on-surface-variant text-sm mb-4">{t("Starting bid: 300 Gems")}</p>
+<div className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">{t("Starts in 12h 10m")}</div>
+</div>
+</div>
+</section>
+</main>
+
+<nav className="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-[#1f1f1f]/70 backdrop-blur-2xl rounded-t-[2rem] z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/ai-coach">
+<span className="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Coach")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-[#cf7502] drop-shadow-[0_0_8px_rgba(207,117,2,0.6)] hover:scale-110 transition-transform" href="/shop">
+<span className="material-symbols-outlined" data-icon="shopping_bag" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_bag</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Shop")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/social">
+<span className="material-symbols-outlined" data-icon="dynamic_feed">{t("dynamic_feed")}</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Feed")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/wallet">
+<span className="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Wallet")}</span>
+</Link>
+<Link className="flex flex-col items-center justify-center text-gray-500 hover:scale-110 transition-transform" href="/squads">
+<span className="material-symbols-outlined" data-icon="groups">{t("groups")}</span>
+<span className="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">{t("Squads")}</span>
+</Link>
+</nav>
+
+<aside className="hidden lg:flex fixed left-0 top-0 h-full w-80 bg-[#0e0e0e] rounded-r-[lg] shadow-2xl shadow-orange-900/20 flex-col p-6 z-[60]">
+<div className="flex items-center gap-4 mb-10 pb-6 border-b border-outline-variant/10">
+<div className="w-12 h-12 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Avatar" className="w-full h-full object-cover" data-alt="Portrait of a female fitness athlete with professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP6xi29HUsJzHwsQlENQ31m1T1EhMAt7NRONb3ukcImlPcuVG91QBPiLpw305kE1OLEdWwd9VxqwDc0A4qDG-03HEmzDRlT-z1IC8kM58d5nr2cpyP-_3Kz9V5L3-ZqvoMfaluQ2kidNOYdbNE0oYDHokhsJtsB6TNiGSP3jZ1kDWUsLsc8HXqVDQgp7bfDO9G16svYHzrwd4OsRh7tM5bzsooSN3b3zNGZ-10dbgNi-2VjswyEzGSYKDaU3aFr0ED_Bc1aUeY-q-W"/>
+</div>
+<div>
+<div className="font-headline font-black text-[#ff7b00] text-sm uppercase">{t("Elite Athlete")}</div>
+<div className="text-xs text-gray-400">Level 42 • 1,240 Gems</div>
+</div>
+</div>
+<nav className="flex flex-col gap-2">
+<Link className="flex items-center gap-4 px-4 py-3 text-gray-300 hover:bg-[#1f1f1f] rounded-xl transition-all font-headline text-lg" href="/">
+<span className="material-symbols-outlined text-[#ff7b00]" data-icon="accessibility_new">{t("accessibility_new")}</span>{t("AI Form Analysis")}</Link>
+<Link className="flex items-center gap-4 px-4 py-3 text-gray-300 hover:bg-[#1f1f1f] rounded-xl transition-all font-headline text-lg" href="/ai-nutritionist">
+<span className="material-symbols-outlined text-[#ff7b00]" data-icon="restaurant">restaurant</span>{t("Nutritionist")}</Link>
+<Link className="flex items-center gap-4 px-4 py-3 bg-gradient-to-r from-[#ff7b00]/20 to-transparent text-[#ff7b00] border-l-4 border-[#ff7b00] rounded-r-xl transition-all font-headline text-lg" href="/progress">
+<span className="material-symbols-outlined" data-icon="bolt" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>{t("Flash Deals")}</Link>
+<Link className="flex items-center gap-4 px-4 py-3 text-gray-300 hover:bg-[#1f1f1f] rounded-xl transition-all font-headline text-lg" href="/bidding">
+<span className="material-symbols-outlined text-[#ff7b00]" data-icon="gavel">gavel</span>{t("Auctions")}</Link>
+<Link className="flex items-center gap-4 px-4 py-3 text-gray-300 hover:bg-[#1f1f1f] rounded-xl transition-all font-headline text-lg" href="/challenges">
+<span className="material-symbols-outlined text-[#ff7b00]" data-icon="military_tech">military_tech</span>{t("Challenges")}</Link>
+<div className="mt-auto">
+<Link className="flex items-center gap-4 px-4 py-3 text-gray-300 hover:bg-[#1f1f1f] rounded-xl transition-all font-headline text-lg" href="/">
+<span className="material-symbols-outlined text-[#ff7b00]" data-icon="settings">settings</span>{t("Settings")}</Link>
+</div>
+</nav>
+</aside>
+<Link className="fixed bottom-32 end-6 z-[60] w-16 h-16 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-xl border border-primary/30 shadow-[0_0_20px_rgba(255,123,0,0.5)] group transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(255,123,0,0.7)] active:scale-95" href="/squads">
+<span className="material-symbols-outlined text-primary text-3xl transition-transform group-hover:rotate-12" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+</Link>
+    </div>
+  );
 }
