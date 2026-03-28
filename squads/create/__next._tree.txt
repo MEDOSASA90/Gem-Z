@@ -1,0 +1,13 @@
+:HL["/_next/static/chunks/7867f91c6edc2016.css","style"]
+:HL["/_next/static/chunks/3b9dc7e078c11068.css","style"]
+:HL["/_next/static/media/00ea0ef410d3b1a3-s.p.1491abd8.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/3c285486269019b7-s.p.f6eddd95.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/48e6fa8a5baca31f-s.p.33d01b36.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/4b676bcffc00356a-s.p.c22aaca1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/6f42e0a3b0519c4d-s.p.7183773d.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/d54db18e8cd5f74f-s.p.0e8eb956.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/e9f32d51db34fd0c-s.p.28c55982.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200","style"]
+0:{"buildId":"S1GS-cxEQkHv47pTE7J6A","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"squads","paramType":null,"paramKey":"squads","hasRuntimePrefetch":false,"slots":{"children":{"name":"create","paramType":null,"paramKey":"create","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
