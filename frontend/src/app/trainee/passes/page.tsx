@@ -25,10 +25,11 @@ export default function PassesPage() {
         setLoading(true);
         try {
             const [passesRes, gymsRes] = await Promise.all([
-                GemZApi.Gym.getTraineePasses(),
+                GemZApi.Trainee.getPasses(),
                 GemZApi.request('/search?query=gym') // Quick way to get gyms list
             ]);
-            if (passesRes.success) setPasses(passesRes.passes);
+            const passItems = (passesRes as any).data?.passes ?? (passesRes as any).passes ?? [];
+            setPasses(passItems);
             
             // Extract gyms from search results
             if (gymsRes.success && gymsRes.results?.users) {

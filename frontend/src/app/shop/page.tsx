@@ -15,9 +15,8 @@ export default function Page() {
         const fetchProducts = async () => {
             try {
                 const res = await GemZApi.Store.getProducts();
-                if (res.success && res.products) {
-                    setProducts(res.products);
-                }
+                const items = (res as any).data?.products ?? (res as any).products ?? [];
+                setProducts(items);
             } catch (err) {
                 console.error("Failed to load products:", err);
             } finally {

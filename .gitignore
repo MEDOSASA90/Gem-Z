@@ -8,6 +8,16 @@ node_modules/
 /build
 /.next
 /out
+dist/
+build/
+.next/
+out/
+backend/dist/
+frontend/.next/
+frontend/out/
+tmp_deploy/
+backend_temp_for_zip/
+ftptest/
 
 # Environment variables
 .env
@@ -42,3 +52,5 @@ temp/
 
 # Misc
 *.log
+*.zip
+*_deploy/

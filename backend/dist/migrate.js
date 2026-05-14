@@ -22,8 +22,12 @@ async function migrate() {
         const schemaFiles = [
             '../../database/schema.sql',
             '../../database/schema_v2_additions.sql',
+            '../../database/schema_v3_additions.sql',
             '../../database/schema_v4_additions.sql',
             '../../database/schema_v5_ecosystem.sql',
+            '../../database/schema_v6_wallet_system.sql',
+            '../../database/schema_v7_email_security.sql',
+            '../../database/schema_v8_user_kyc.sql',
             '../../database/seed_pricing.sql'
         ];
         for (const file of schemaFiles) {

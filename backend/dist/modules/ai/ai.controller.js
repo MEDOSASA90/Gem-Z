@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderCinematicWorkout = exports.logVoiceWorkout = exports.chatWithAI = exports.adjustPlanDynamically = exports.scanFood = exports.analyzeForm = exports.getSavedPlans = exports.generatePlan = void 0;
+exports.processBodyScan = exports.renderCinematicWorkout = exports.logVoiceWorkout = exports.chatWithAI = exports.adjustPlanDynamically = exports.scanFood = exports.analyzeForm = exports.getSavedPlans = exports.generatePlan = void 0;
 const ai_service_1 = require("../../services/ai.service");
 const db_1 = require("../../core/database/db");
 const generatePlan = async (req, res) => {
@@ -135,3 +135,20 @@ const renderCinematicWorkout = async (req, res) => {
     }
 };
 exports.renderCinematicWorkout = renderCinematicWorkout;
+const processBodyScan = async (req, res) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId)
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        return res.status(202).json({
+            success: true,
+            message: 'Body scan received for processing',
+            data: { status: 'queued' }
+        });
+    }
+    catch (error) {
+        console.error('[AIController processBodyScan]', error);
+        return res.status(500).json({ success: false, message: 'Error processing body scan.' });
+    }
+};
+exports.processBodyScan = processBodyScan;

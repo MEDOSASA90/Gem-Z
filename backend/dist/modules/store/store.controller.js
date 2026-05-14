@@ -3,14 +3,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StoreController = void 0;
 const db_1 = require("../../core/database/db");
 class StoreController {
+    static async getStoreIdForOwner(userId) {
+        if (!userId)
+            return null;
+        const result = await db_1.db.query('SELECT id FROM stores WHERE owner_user_id = $1 LIMIT 1', [userId]);
+        return result.rowCount && result.rowCount > 0 ? result.rows[0].id : null;
+    }
     /**
      * POST /api/v1/store/products
      * Store owners can add new products.
      */
     static async addProduct(req, res) {
         try {
-            const storeId = req.user?.userId;
+            const storeId = await StoreController.getStoreIdForOwner(req.user?.userId);
             const { name, description, price, stock, category, discount = 0, images = [] } = req.body;
+            if (!storeId) {
+                return res.status(404).json({ success: false, message: 'Store profile not found' });
+            }
             if (!name || !price || stock === undefined) {
                 return res.status(400).json({ success: false, message: 'Missing product details' });
             }
@@ -36,7 +45,7 @@ class StoreController {
             const { rows } = await db_1.db.query(`
                 SELECT p.id, p.name, p.description, p.price_egp as price, p.stock_qty as stock, p.category, p.images, p.is_active, s.name as store_name 
                 FROM store_products p
-                JOIN stores s ON p.store_id = s.owner_user_id
+                JOIN stores s ON p.store_id = s.id
                 WHERE p.stock_qty > 0
                 ORDER BY p.created_at DESC
             `);
@@ -44,6 +53,27 @@ class StoreController {
         }
         catch (error) {
             console.error('[StoreController] getProducts:', error);
+            res.status(500).json({ success: false, message: 'Server Error' });
+        }
+    }
+    static async getProductById(req, res) {
+        try {
+            const { rows } = await db_1.db.query(`
+                SELECT p.id, p.name, p.description, p.price_egp as price, p.stock_qty as stock,
+                       p.category, p.discount_pct as discount, p.images, p.is_active,
+                       s.name as store_name
+                FROM store_products p
+                JOIN stores s ON p.store_id = s.id
+                WHERE p.id = $1
+                LIMIT 1
+            `, [req.params.id]);
+            if (rows.length === 0) {
+                return res.status(404).json({ success: false, message: 'Product not found' });
+            }
+            return res.status(200).json({ success: true, product: rows[0] });
+        }
+        catch (error) {
+            console.error('[StoreController] getProductById:', error);
             res.status(500).json({ success: false, message: 'Server Error' });
         }
     }
@@ -63,7 +93,13 @@ class StoreController {
             let totalTotal = 0;
             for (const item of items) {
                 // 1. Verify stock and price
-                const { rows: productRows } = await client.query('SELECT * FROM store_products WHERE id = $1 FOR UPDATE', [item.productId]);
+                const { rows: productRows } = await client.query(`
+                    SELECT p.*, s.owner_user_id as store_owner_user_id
+                    FROM store_products p
+                    JOIN stores s ON p.store_id = s.id
+                    WHERE p.id = $1
+                    FOR UPDATE
+                `, [item.productId]);
                 if (productRows.length === 0)
                     throw new Error(`Product ${item.productId} not found`);
                 const product = productRows[0];
@@ -81,7 +117,7 @@ class StoreController {
                 await client.query(`
                     INSERT INTO financial_transactions (user_id, buyer_id, amount, platform_fee, net_amount, type)
                     VALUES ($1, $2, $3, $4, $5, 'STORE_SALE')
-                `, [product.store_id, buyerId, lineTotal, platformFee, netAmount]);
+                `, [product.store_owner_user_id, buyerId, lineTotal, platformFee, netAmount]);
             }
             await client.query('COMMIT');
             return res.status(200).json({ success: true, message: 'Checkout successful', totalPaid: totalTotal });

@@ -3,8 +3,12 @@ const { Pool } = pkg;
 import fs from 'fs';
 import path from 'path';
 
+if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is required to run migrations.');
+}
+
 const pool = new Pool({
-    connectionString: "postgresql://gemz_admin:Mahmoud%4001023122530@72.61.167.3:5432/gemz_db"
+    connectionString: process.env.DATABASE_URL
 });
 
 async function run() {

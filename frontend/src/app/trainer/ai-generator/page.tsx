@@ -53,7 +53,7 @@ export default function AIGeneratorPage() {
             });
 
             if (res.success) {
-                setResult(res.planData);
+                setResult((res as any)?.data?.planData ?? (res as any)?.planData ?? res.data ?? res);
             } else {
                 throw new Error(res.message || 'Generation failed.');
             }

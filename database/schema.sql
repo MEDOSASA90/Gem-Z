@@ -34,6 +34,11 @@ CREATE TABLE users (
     date_of_birth       DATE,
     country             VARCHAR(100)    DEFAULT 'Egypt',
     city                VARCHAR(100),
+
+    -- 👇 إضافات جديدة لحل المشكلة
+    country_code        VARCHAR(10),
+    fitness_level       VARCHAR(50),
+
     referral_code       VARCHAR(32)     UNIQUE DEFAULT substr(md5(random()::text), 1, 8),
     referred_by_user_id UUID            REFERENCES users(id) ON DELETE SET NULL,
     email_verified_at   TIMESTAMPTZ,

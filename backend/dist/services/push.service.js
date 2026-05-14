@@ -6,11 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PushNotificationService = void 0;
 const web_push_1 = __importDefault(require("web-push"));
 const db_1 = require("../core/database/db");
-// VAPID keys should be generated using `webpush.generateVAPIDKeys()` and stored in ENV
-// We use placeholder keys here or check ENV variables.
-const publicVapidKey = process.env.VAPID_PUBLIC_KEY || 'BM_Mock_Public_Key_Gem_Z_Alpha_Numeric_String';
-const privateVapidKey = process.env.VAPID_PRIVATE_KEY || 'Mock_Private_Key_Keep_Secure';
-web_push_1.default.setVapidDetails('mailto:support@gem-z.com', publicVapidKey, privateVapidKey);
+const publicVapidKey = process.env.VAPID_PUBLIC_KEY;
+const privateVapidKey = process.env.VAPID_PRIVATE_KEY;
+const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:support@gem-z.com';
+const pushEnabled = Boolean(publicVapidKey && privateVapidKey);
+if (pushEnabled) {
+    web_push_1.default.setVapidDetails(vapidSubject, publicVapidKey, privateVapidKey);
+}
+else {
+    console.warn('[Push] VAPID keys are not configured. Push delivery is disabled.');
+}
 class PushNotificationService {
     /**
      * Subscribe a user's device to Web Push notifications.
@@ -48,8 +53,6 @@ class PushNotificationService {
             // const res = await client.query('SELECT subscription_json FROM push_subscriptions WHERE user_id = $1', [userId]);
             // if (res.rows.length === 0) return;
             // const sub = res.rows[0].subscription_json;
-            // Mock subscription for simulation logs
-            const mockSub = { endpoint: 'https://fcm.googleapis.com/fcm/send/mock', keys: { p256dh: '', auth: '' } };
             // 2. Format payload for service worker
             const pushPayload = JSON.stringify({
                 title: payload.title,
@@ -60,6 +63,10 @@ class PushNotificationService {
                 }
             });
             // 3. Dispatch Web Push
+            if (!pushEnabled) {
+                console.warn(`[Push] Skipped notification for ${userId}: VAPID keys are missing.`);
+                return;
+            }
             try {
                 // In production: await webpush.sendNotification(sub, pushPayload);
                 console.log(`[Push] Sent to ${userId} -> Title: "${payload.title}"`);

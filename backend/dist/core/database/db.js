@@ -37,8 +37,12 @@ exports.db = void 0;
 const pg_1 = require("pg");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString && process.env.NODE_ENV === 'production') {
+    throw new Error('DATABASE_URL is required in production.');
+}
 exports.db = new pg_1.Pool({
-    connectionString: process.env.DATABASE_URL || "postgresql://gemz_admin:Mahmoud%4001023122530@72.61.167.3:5432/gemz_db",
+    connectionString: connectionString || 'postgresql://postgres:postgres@localhost:5432/gemz_db',
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,

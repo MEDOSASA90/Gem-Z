@@ -4,10 +4,12 @@ import "./globals.css";
 import { LanguageProvider } from "../context/LanguageContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import { SocketProvider } from "../context/SocketContext";
+import { ToastProvider } from "../context/ToastContext";
 import FloatingSupportWidget from "../components/FloatingSupportWidget";
 import GlobalToggles from "../components/GlobalToggles";
 import SideNav from "../components/SideNav";
 import TopNav from "../components/TopNav";
+
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "600", "700", "800"], variable: "--font-outfit" });
@@ -44,15 +46,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning className="font-body selection:bg-primary-fixed selection:text-on-primary-fixed bg-surface-container-lowest text-on-surface antialiased min-h-screen transition-colors duration-300">
         <ThemeProvider>
           <LanguageProvider>
-            <SocketProvider>
-              <GlobalToggles />
-              {/* <TopNav /> Removed for Stitch Integration */}
-              <main className="max-w-[1440px] mx-auto min-h-screen flex flex-col relative w-full overflow-x-hidden">
-                {children}
-              </main>
-              {/* <SideNav /> Removed for Stitch Integration */}
-              <FloatingSupportWidget />
-            </SocketProvider>
+            <ToastProvider>
+              <SocketProvider>
+                <GlobalToggles />
+                {/* <TopNav /> Removed for Stitch Integration */}
+                <main className="max-w-[1440px] mx-auto min-h-screen flex flex-col relative w-full overflow-x-hidden">
+                  {children}
+                </main>
+                {/* <SideNav /> Removed for Stitch Integration */}
+                <FloatingSupportWidget />
+              </SocketProvider>
+            </ToastProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>

@@ -15,4 +15,5 @@ router.post('/dynamic-plan', auth_middleware_1.verifyToken, ai_controller_1.adju
 router.post('/chat', auth_middleware_1.verifyToken, ai_controller_1.chatWithAI);
 router.post('/voice-logger', auth_middleware_1.verifyToken, ai_controller_1.logVoiceWorkout);
 router.post('/cinematics/render', auth_middleware_1.verifyToken, ai_controller_1.renderCinematicWorkout);
+router.post('/body-scan', auth_middleware_1.verifyToken, ai_controller_1.processBodyScan);
 exports.default = router;

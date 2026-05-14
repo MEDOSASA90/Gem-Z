@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEquipmentTutorial = exports.getLiveCrowdTracker = exports.unlockSmartLocker = exports.getTraineePasses = exports.scanDailyPass = exports.buyDailyPass = exports.getGymStats = void 0;
+exports.getEquipmentTutorial = exports.setOffPeakPricing = exports.scanGymBarcode = exports.getLiveCrowdTracker = exports.unlockSmartLocker = exports.getTraineePasses = exports.scanDailyPass = exports.buyDailyPass = exports.getGymStats = void 0;
 const db_1 = require("../../core/database/db");
 const getGymStats = async (req, res) => {
     try {
@@ -94,12 +94,15 @@ exports.buyDailyPass = buyDailyPass;
 const scanDailyPass = async (req, res) => {
     try {
         const scannerUserId = req.user?.userId; // This is the Gym Owner's ID
-        const { qrCode } = req.body;
+        const qrCode = req.body.qrCode || req.body.barcode;
         if (!qrCode)
             return res.status(400).json({ success: false, message: 'Missing QR Code' });
         // Resolve Gym ID from scanner user ID
-        const gymRes = await db_1.db.query('SELECT user_id FROM gyms WHERE user_id = $1', [scannerUserId]);
-        const gymId = gymRes.rowCount && gymRes.rowCount > 0 ? gymRes.rows[0].user_id : scannerUserId;
+        const gymRes = await db_1.db.query('SELECT id FROM gyms WHERE owner_user_id = $1', [scannerUserId]);
+        if (gymRes.rowCount === 0) {
+            return res.status(404).json({ success: false, message: 'Gym profile not found' });
+        }
+        const gymId = gymRes.rows[0].id;
         // Verify Pass
         const passRes = await db_1.db.query(`
             SELECT * FROM gym_daily_passes
@@ -133,9 +136,9 @@ const getTraineePasses = async (req, res) => {
     try {
         const traineeId = req.user?.userId;
         const { rows } = await db_1.db.query(`
-            SELECT p.*, g.gym_name 
+            SELECT p.*, g.name as gym_name
             FROM gym_daily_passes p
-            JOIN gyms g ON p.gym_id = g.user_id
+            JOIN gyms g ON p.gym_id = g.id
             WHERE p.trainee_id = $1
             ORDER BY p.created_at DESC
         `, [traineeId]);
@@ -174,6 +177,46 @@ const getLiveCrowdTracker = async (req, res) => {
     }
 };
 exports.getLiveCrowdTracker = getLiveCrowdTracker;
+exports.scanGymBarcode = exports.scanDailyPass;
+const setOffPeakPricing = async (req, res) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId)
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        const { isActive, discountPercentage } = req.body;
+        const gymRes = await db_1.db.query('SELECT id FROM gyms WHERE owner_user_id = $1', [userId]);
+        if (gymRes.rowCount === 0) {
+            return res.status(404).json({ success: false, message: 'Gym profile not found' });
+        }
+        const updateResult = await db_1.db.query(`
+            UPDATE gym_pricing_rules
+            SET is_active = $1,
+                discount_pct = COALESCE($2, discount_pct)
+            WHERE branch_id IN (SELECT id FROM gym_branches WHERE gym_id = $3)
+        `, [Boolean(isActive), discountPercentage ?? null, gymRes.rows[0].id]);
+        if (updateResult.rowCount === 0) {
+            const branchRes = await db_1.db.query('SELECT id FROM gym_branches WHERE gym_id = $1 ORDER BY created_at ASC LIMIT 1', [gymRes.rows[0].id]);
+            if (branchRes.rowCount === 0) {
+                return res.status(404).json({ success: false, message: 'Gym branch not found' });
+            }
+            await db_1.db.query(`
+                INSERT INTO gym_pricing_rules
+                    (branch_id, name, discount_pct, valid_days, start_time, end_time, is_active)
+                VALUES ($1, 'Off-Peak', $2, ARRAY[0,1,2,3,4,5,6]::smallint[], '12:00', '16:00', $3)
+            `, [branchRes.rows[0].id, discountPercentage ?? 15, Boolean(isActive)]);
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Off-peak pricing updated',
+            data: { isActive: Boolean(isActive), discountPercentage }
+        });
+    }
+    catch (error) {
+        console.error('[GymController] setOffPeakPricing:', error);
+        return res.status(500).json({ success: false, message: 'Failed to update off-peak pricing' });
+    }
+};
+exports.setOffPeakPricing = setOffPeakPricing;
 const getEquipmentTutorial = async (req, res) => {
     try {
         const { qrCode } = req.params;

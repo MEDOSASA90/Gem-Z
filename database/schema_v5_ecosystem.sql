@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS financial_payouts (
 -- 4. Gym QR Check-ins
 CREATE TABLE IF NOT EXISTS gym_daily_passes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    gym_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    gym_id UUID REFERENCES gyms(id) ON DELETE CASCADE,
     trainee_id UUID REFERENCES users(id) ON DELETE CASCADE,
     price_paid DECIMAL(10, 2) NOT NULL,
     qr_code VARCHAR(255) UNIQUE NOT NULL,

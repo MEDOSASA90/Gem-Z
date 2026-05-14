@@ -1,8 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_gem_z_super_secure';
+import { db } from '../database/db';
+import { verifyAccessToken } from '../../services/token.service';
 
 interface AuthenticatedSocket extends Socket {
     user?: {
@@ -35,7 +34,7 @@ export class SocketService {
             }
 
             try {
-                const decoded = jwt.verify(token, JWT_SECRET) as any;
+                const decoded = verifyAccessToken(token);
                 socket.user = decoded;
                 next();
             } catch (err) {
@@ -69,14 +68,20 @@ export class SocketService {
             socket.on('private_message', async (data: { receiverId: string, content: string }) => {
                 if (!userId || !data.receiverId || !data.content) return;
                 try {
-                    // Import db dynamically or use query directly
-                    const { db } = require('../../database/db');
-                    
-                    // 1. Save to Database
+                    const participants = [userId, data.receiverId].sort();
+                    const roomResult = await db.query(`
+                        INSERT INTO chat_rooms (participant_one, participant_two)
+                        VALUES ($1, $2)
+                        ON CONFLICT (participant_one, participant_two)
+                        DO UPDATE SET last_message_at = NOW()
+                        RETURNING id
+                    `, [participants[0], participants[1]]);
+                    const roomId = roomResult.rows[0].id;
+
                     const { rows } = await db.query(`
-                        INSERT INTO chat_messages (sender_id, receiver_id, content) 
+                        INSERT INTO chat_messages (room_id, sender_id, content)
                         VALUES ($1, $2, $3) RETURNING *
-                    `, [userId, data.receiverId, data.content]);
+                    `, [roomId, userId, data.content]);
 
                     const msg = rows[0];
 

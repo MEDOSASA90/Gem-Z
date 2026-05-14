@@ -2,16 +2,16 @@ import webpush from 'web-push';
 import { db as pool } from '../core/database/db';
 
 
-// VAPID keys should be generated using `webpush.generateVAPIDKeys()` and stored in ENV
-// We use placeholder keys here or check ENV variables.
-const publicVapidKey = process.env.VAPID_PUBLIC_KEY || 'BM_Mock_Public_Key_Gem_Z_Alpha_Numeric_String';
-const privateVapidKey = process.env.VAPID_PRIVATE_KEY || 'Mock_Private_Key_Keep_Secure';
+const publicVapidKey = process.env.VAPID_PUBLIC_KEY;
+const privateVapidKey = process.env.VAPID_PRIVATE_KEY;
+const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:support@gem-z.com';
+const pushEnabled = Boolean(publicVapidKey && privateVapidKey);
 
-webpush.setVapidDetails(
-    'mailto:support@gem-z.com',
-    publicVapidKey,
-    privateVapidKey
-);
+if (pushEnabled) {
+    webpush.setVapidDetails(vapidSubject, publicVapidKey!, privateVapidKey!);
+} else {
+    console.warn('[Push] VAPID keys are not configured. Push delivery is disabled.');
+}
 
 export class PushNotificationService {
 
@@ -51,9 +51,6 @@ export class PushNotificationService {
             // if (res.rows.length === 0) return;
             // const sub = res.rows[0].subscription_json;
 
-            // Mock subscription for simulation logs
-            const mockSub = { endpoint: 'https://fcm.googleapis.com/fcm/send/mock', keys: { p256dh: '', auth: '' } };
-
             // 2. Format payload for service worker
             const pushPayload = JSON.stringify({
                 title: payload.title,
@@ -65,6 +62,11 @@ export class PushNotificationService {
             });
 
             // 3. Dispatch Web Push
+            if (!pushEnabled) {
+                console.warn(`[Push] Skipped notification for ${userId}: VAPID keys are missing.`);
+                return;
+            }
+
             try {
                 // In production: await webpush.sendNotification(sub, pushPayload);
                 console.log(`[Push] Sent to ${userId} -> Title: "${payload.title}"`);

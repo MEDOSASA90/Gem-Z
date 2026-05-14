@@ -1,12 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketService = void 0;
 const socket_io_1 = require("socket.io");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_gem_z_super_secure';
+const db_1 = require("../database/db");
+const token_service_1 = require("../../services/token.service");
 class SocketService {
     io;
     constructor(server) {
@@ -27,7 +24,7 @@ class SocketService {
                 return next(new Error('Authentication Error: Token missing'));
             }
             try {
-                const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
+                const decoded = (0, token_service_1.verifyAccessToken)(token);
                 socket.user = decoded;
                 next();
             }
@@ -59,13 +56,19 @@ class SocketService {
                 if (!userId || !data.receiverId || !data.content)
                     return;
                 try {
-                    // Import db dynamically or use query directly
-                    const { db } = require('../../database/db');
-                    // 1. Save to Database
-                    const { rows } = await db.query(`
-                        INSERT INTO chat_messages (sender_id, receiver_id, content) 
+                    const participants = [userId, data.receiverId].sort();
+                    const roomResult = await db_1.db.query(`
+                        INSERT INTO chat_rooms (participant_one, participant_two)
+                        VALUES ($1, $2)
+                        ON CONFLICT (participant_one, participant_two)
+                        DO UPDATE SET last_message_at = NOW()
+                        RETURNING id
+                    `, [participants[0], participants[1]]);
+                    const roomId = roomResult.rows[0].id;
+                    const { rows } = await db_1.db.query(`
+                        INSERT INTO chat_messages (room_id, sender_id, content)
                         VALUES ($1, $2, $3) RETURNING *
-                    `, [userId, data.receiverId, data.content]);
+                    `, [roomId, userId, data.content]);
                     const msg = rows[0];
                     // 2. Emit to Receiver
                     socket.to(`user_${data.receiverId}`).emit('receive_message', msg);

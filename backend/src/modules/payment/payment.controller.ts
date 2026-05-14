@@ -8,8 +8,15 @@ export class PaymentWebhookController {
 
         console.log(`[Webhook:Fawry] Received payment update for Ref: ${referenceNumber}, Status: ${status}`);
 
-        const secret = process.env.FAWRY_SECURE_KEY || 'simulated_secret';
+        const secret = process.env.FAWRY_SECURE_KEY;
+        if (!secret) {
+            return res.status(500).json({ received: true, success: false, message: 'Fawry secret is not configured' });
+        }
         const expectedSig = crypto.createHmac('sha256', secret).update(`${referenceNumber}${amount}${status}`).digest('hex');
+
+        if (signature !== expectedSig) {
+            return res.status(401).json({ received: false, success: false, message: 'Invalid webhook signature' });
+        }
 
         if (status !== 'PAID') {
             return res.status(200).json({ received: true, ignored: true });

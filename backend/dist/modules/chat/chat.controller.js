@@ -14,17 +14,28 @@ class ChatController {
             if (!userId || !contactId)
                 return res.status(400).json({ success: false, message: 'Invalid request' });
             const { rows } = await db_1.db.query(`
-                SELECT * FROM chat_messages
-                WHERE (sender_id = $1 AND receiver_id = $2)
-                   OR (sender_id = $2 AND receiver_id = $1)
-                ORDER BY created_at ASC
+                SELECT m.*
+                FROM chat_messages m
+                JOIN chat_rooms r ON r.id = m.room_id
+                WHERE (
+                    (r.participant_one = $1 AND r.participant_two = $2)
+                    OR (r.participant_one = $2 AND r.participant_two = $1)
+                )
+                ORDER BY m.created_at ASC
                 LIMIT 100
             `, [userId, contactId]);
             // Mark unread messages as read
             await db_1.db.query(`
-                UPDATE chat_messages 
-                SET is_read = TRUE 
-                WHERE receiver_id = $1 AND sender_id = $2 AND is_read = FALSE
+                UPDATE chat_messages m
+                SET is_read = TRUE
+                FROM chat_rooms r
+                WHERE m.room_id = r.id
+                  AND m.sender_id = $2
+                  AND m.is_read = FALSE
+                  AND (
+                    (r.participant_one = $1 AND r.participant_two = $2)
+                    OR (r.participant_one = $2 AND r.participant_two = $1)
+                  )
             `, [userId, contactId]);
             return res.status(200).json({ success: true, messages: rows });
         }
@@ -42,11 +53,11 @@ class ChatController {
             const userId = req.user?.userId;
             // Simple distinct contacts who messaged us or we messaged them
             const { rows } = await db_1.db.query(`
-                SELECT DISTINCT u.id, u.full_name, u.role, u.profile_pic
+                SELECT DISTINCT u.id, u.full_name, u.role, u.avatar_url
                 FROM users u
-                JOIN chat_messages m ON (u.id = m.sender_id OR u.id = m.receiver_id)
-                WHERE (m.sender_id = $1 OR m.receiver_id = $1)
-                AND u.id != $1
+                JOIN chat_rooms r ON (u.id = r.participant_one OR u.id = r.participant_two)
+                WHERE (r.participant_one = $1 OR r.participant_two = $1)
+                  AND u.id != $1
             `, [userId]);
             return res.status(200).json({ success: true, contacts: rows });
         }

@@ -18,9 +18,8 @@ export default function Page() {
         const fetchFeed = async () => {
             try {
                 const res = await GemZApi.Social.getFeed();
-                if (res.success && res.posts) {
-                    setPosts(res.posts);
-                }
+                const feedPosts = (res as any).data?.posts ?? (res as any).posts ?? [];
+                setPosts(feedPosts);
             } catch (err) {
                 console.error("Failed to load social feed:", err);
                 // Setup some default mock posts if API fails
@@ -58,8 +57,9 @@ export default function Page() {
         setIsPosting(true);
         try {
             const res = await GemZApi.Social.createPost(newPostContent);
-            if (res.success && res.post) {
-                setPosts([res.post, ...posts]);
+            const createdPost = (res as any).data?.post ?? (res as any).post;
+            if (res.success && createdPost) {
+                setPosts([createdPost, ...posts]);
                 setNewPostContent('');
                 setIsPosting(false);
                 return;

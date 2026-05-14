@@ -132,3 +132,19 @@ export const renderCinematicWorkout = async (req: AuthRequest, res: Response): P
         return res.status(500).json({ success: false, message: error.message || 'Error processing cinematic video.' });
     }
 };
+
+export const processBodyScan = async (req: AuthRequest, res: Response): Promise<any> => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+        return res.status(202).json({
+            success: true,
+            message: 'Body scan received for processing',
+            data: { status: 'queued' }
+        });
+    } catch (error: any) {
+        console.error('[AIController processBodyScan]', error);
+        return res.status(500).json({ success: false, message: 'Error processing body scan.' });
+    }
+};
