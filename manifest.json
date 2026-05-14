@@ -1,0 +1,52 @@
+{
+  "name": "GEM Z — Fitness Ecosystem",
+  "short_name": "GEM Z",
+  "description": "The ultimate fitness platform connecting trainees, trainers, gyms, and stores — powered by AI.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#00FFA3",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/gem-z-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/gem-z-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Workout",
+      "short_name": "Workout",
+      "description": "View today's workout plan",
+      "url": "/trainee",
+      "icons": [{ "src": "/gem-z-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Diet Plan",
+      "short_name": "Diet",
+      "description": "View today's meal plan",
+      "url": "/ai-nutritionist",
+      "icons": [{ "src": "/gem-z-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Coach AI",
+      "short_name": "Coach",
+      "description": "Ask your AI fitness coach",
+      "url": "/ai-coach",
+      "icons": [{ "src": "/gem-z-logo.png", "sizes": "96x96" }]
+    }
+  ],
+  "categories": ["health", "fitness", "sports", "lifestyle"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}
