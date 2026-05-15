@@ -56,6 +56,10 @@ export const config = {
         path: process.env.UPLOAD_PATH || './public/uploads',
     },
 
+    // ─── Pi Network ───────────────────────────────
+    piApiKey: process.env.PI_API_KEY || '',
+    piWalletSeed: process.env.PI_WALLET_SEED || '',
+
     // ─── Rate Limits ──────────────────────────────
     rateLimit: {
         general: { windowMs: 60 * 1000, max: 100 },

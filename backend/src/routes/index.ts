@@ -20,6 +20,7 @@ import socialRoutes from '../modules/social/social.routes';
 import squadRoutes from '../modules/squads/squad.routes';
 import trainerRoutes from '../modules/trainer/trainer.routes';
 import paymentRoutes from '../modules/payment/payment.routes';
+import { createPiRoutes } from '../modules/pi/pi.routes';
 
 import { db } from '../core/database/db';
 
@@ -155,6 +156,11 @@ router.post(
 );
 
 // ─── Trainee Routes ───────────────────────────────────────────
+
+// ─── Pi Network Routes ────────────────────────────────────────
+
+const piRoutes = createPiRoutes(db);
+router.use('/pi', piRoutes);
 
 router.get('/trainee/dashboard', authenticateRequest, TraineeController.getDashboardData);
 
