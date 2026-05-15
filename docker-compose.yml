@@ -1,0 +1,151 @@
+# =============================================================================
+# GEM Z — Development Stack
+# PostgreSQL 16 + PostGIS | Redis 7 | Backend API | Next.js Frontend
+# =============================================================================
+
+version: "3.9"
+
+services:
+  # ─── PostgreSQL 16 with PostGIS ──────────────────────────────────────────
+  postgres:
+    image: postgis/postgis:16-3.5-alpine
+    container_name: gemz-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-gemz}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-gemz_dev_password}
+      POSTGRES_DB: ${DB_NAME:-gemz}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d:ro
+    networks:
+      - gemz-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-gemz} -d ${DB_NAME:-gemz}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ─── Redis 7 (Alpine) ────────────────────────────────────────────────────
+  redis:
+    image: redis:7.4-alpine
+    container_name: gemz-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec
+    volumes:
+      - redis_data:/data
+    networks:
+      - gemz-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # ─── Backend API (Express.js + TypeScript) ───────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: gemz-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      DATABASE_URL: postgresql://${DB_USER:-gemz}:${DB_PASSWORD:-gemz_dev_password}@postgres:5432/${DB_NAME:-gemz}
+      REDIS_URL: redis://redis:6379
+      CLIENT_URL: http://localhost:3000
+      API_URL: http://localhost:5000
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_production}
+      REFRESH_SECRET: ${REFRESH_SECRET:-dev_refresh_secret_change_in_production}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-Gem Z <noreply@gemz.app>}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:dev@gemz.app}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      PAYMENT_GATEWAY: ${PAYMENT_GATEWAY:-fawry}
+      PAYMENT_API_KEY: ${PAYMENT_API_KEY:-}
+      PAYMENT_SECRET: ${PAYMENT_SECRET:-}
+    volumes:
+      - uploads_data:/app/public/uploads
+    networks:
+      - gemz-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ─── Frontend (Next.js 16) ───────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: gemz-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      API_URL: http://backend:5000
+      NEXT_PUBLIC_API_URL: http://localhost:5000
+    networks:
+      - gemz-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# VOLUMES
+# ═══════════════════════════════════════════════════════════════════════════════
+volumes:
+  postgres_data:
+    name: gemz-postgres-data
+    driver: local
+  redis_data:
+    name: gemz-redis-data
+    driver: local
+  uploads_data:
+    name: gemz-uploads-data
+    driver: local
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NETWORKS
+# ═══════════════════════════════════════════════════════════════════════════════
+networks:
+  gemz-network:
+    name: gemz-network
+    driver: bridge

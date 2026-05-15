@@ -1,0 +1,86 @@
+# =============================================================================
+# GEM Z Frontend — Production Dockerfile
+# Multi-stage build: deps → builder → production
+# Node.js 20 LTS Alpine | Next.js 16 Standalone
+# =============================================================================
+
+ARG NODE_VERSION=20.18.1-alpine
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STAGE 1: Dependencies — Install & cache node_modules
+# ═══════════════════════════════════════════════════════════════════════════════
+FROM node:${NODE_VERSION} AS deps
+
+WORKDIR /app
+
+# Copy package files for efficient caching
+COPY frontend/package.json frontend/package-lock.json ./
+
+# Install dependencies
+RUN npm ci --ignore-scripts
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STAGE 2: Builder — Build Next.js application
+# ═══════════════════════════════════════════════════════════════════════════════
+FROM node:${NODE_VERSION} AS builder
+
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json ./package.json
+
+# Copy all source files
+COPY frontend ./
+
+# Replace next.config with Docker-optimized standalone config
+COPY frontend/next.config.docker.mjs next.config.docker.mjs
+RUN mv next.config.mjs next.config.original.mjs && \
+    mv next.config.docker.mjs next.config.mjs
+
+# Set production environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build Next.js app (outputs .next/standalone/)
+RUN npm run build
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STAGE 3: Production — Minimal standalone runtime
+# ═══════════════════════════════════════════════════════════════════════════════
+FROM node:${NODE_VERSION} AS production
+
+LABEL maintainer="GEM Z DevOps <devops@gemz.app>"
+LABEL description="GEM Z Frontend — Next.js 16 Standalone"
+LABEL version="1.0.0"
+
+# Security: Create non-root user
+RUN apk add --no-cache curl ca-certificates \
+    && addgroup -g 1001 -S nodejs \
+    && adduser -S node -u 1001 -G nodejs
+
+WORKDIR /app
+
+# Copy standalone output from builder
+COPY --from=builder --chown=node:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=node:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=node:nodejs /app/public ./public
+
+# Switch to non-root user
+USER node
+
+# Expose frontend port
+EXPOSE 3000
+
+# Environment
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME="0.0.0.0"
+
+# Health check: Verify frontend root page responds
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:3000/ || exit 1
+
+# Start Next.js standalone server
+CMD ["node", "server.js"]

@@ -1,15 +1,15 @@
 import { Pool } from 'pg';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { config } from '../../config';
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString && process.env.NODE_ENV === 'production') {
-    throw new Error('DATABASE_URL is required in production.');
+if (!config.databaseUrl) {
+    throw new Error(
+        'DATABASE_URL is required but not set in environment variables. ' +
+        'Please add it to your .env file and restart the server.'
+    );
 }
 
 export const db = new Pool({
-    connectionString: connectionString || 'postgresql://postgres:postgres@localhost:5432/gemz_db',
+    connectionString: config.databaseUrl,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,

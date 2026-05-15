@@ -15,9 +15,6 @@ out/
 backend/dist/
 frontend/.next/
 frontend/out/
-tmp_deploy/
-backend_temp_for_zip/
-ftptest/
 
 # Environment variables
 .env
@@ -25,6 +22,8 @@ ftptest/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.env.staging
 
 # OS generated files
 .DS_Store
@@ -35,6 +34,8 @@ Thumbs.db
 tsconfig.tsbuildinfo
 
 # Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -42,15 +43,34 @@ yarn-error.log*
 # Editor
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # Uploads / media
 uploads/
 temp/
+tmp/
+
+# Large assets
+*.mp4
+*.mov
+*.avi
+*.pdf
+*.png
+*.jpg
+*.jpeg
 
 # Git
 .git/
 
 # Misc
-*.log
 *.zip
+backend_deploy.zip
+deploy_frontend*.zip
+gemz_*_prod.zip
+frontend_deploy.zip
+frontend_public_html.zip
 *_deploy/
+tmp_deploy/
+backend_temp_for_zip/
+ftptest/

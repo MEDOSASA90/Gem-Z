@@ -1,10 +1,21 @@
 import OpenAI from 'openai';
 import { db } from '../core/database/db';
+import { config } from '../config';
 
-let openai: OpenAI;
-try {
-    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'fake-key-to-skip-crash-on-startup' });
-} catch (e) {}
+let openai: OpenAI | null = null;
+
+if (config.openaiApiKey) {
+    try {
+        openai = new OpenAI({ apiKey: config.openaiApiKey });
+    } catch (e) {
+        console.error('[AIService] Failed to initialize OpenAI client:', e);
+    }
+} else {
+    console.warn(
+        '\u26A0\uFE0F  [AIService] OPENAI_API_KEY is not set in environment variables. ' +
+        'AI features (diet plans, ID extraction, form analysis, chatbot) will be disabled.'
+    );
+}
 
 
 interface UserProfile {
@@ -17,10 +28,20 @@ interface UserProfile {
 export class AIService {
 
     /**
+     * Helper: ensures OpenAI is initialized before use.
+     */
+    private static checkOpenAI() {
+        if (!openai) {
+            throw new Error('AI features are disabled. OPENAI_API_KEY is not configured in environment variables.');
+        }
+    }
+
+    /**
      * Constructs strict prompt to generate JSON diet plan based on OCR Medical Report JSONB.
      */
     static async generateDietPlan(medicalReportJson: any, profile: UserProfile) {
         try {
+            this.checkOpenAI();
             const prompt = `
         You are an expert sports nutritionist AI for the "GEM Z" fitness platform.
         Generate a strictly structured 7-day diet plan based on the following context.
@@ -95,6 +116,7 @@ export class AIService {
      */
     static async extractIdData(idFrontBase64: string, idBackBase64: string) {
         try {
+            this.checkOpenAI();
             const prompt = `
             You are an expert AI system for the "GEM Z" fitness platform.
             Extract the following information from the provided ID card images (front and back).
@@ -144,6 +166,7 @@ export class AIService {
      */
     static async generateComprehensivePlan(profile: any, trainerId: string) {
         try {
+            this.checkOpenAI();
             const prompt = `
             You are an elite sports nutritionist and personal trainer AI for "GEM Z".
             Create a highly optimal, structured 7-day Diet & Workout Plan based on the trainee's profile.
@@ -218,6 +241,7 @@ export class AIService {
      */
     static async analyzeForm(imageUrl: string, exerciseName: string) {
         try {
+            this.checkOpenAI();
             const prompt = `
             You are an expert AI personal trainer specializing in biomechanics and exercise form.
             Analyze the provided image of a user performing the exercise: ${exerciseName}.
@@ -260,6 +284,7 @@ export class AIService {
      */
     static async scanFood(imageUrl: string) {
         try {
+            this.checkOpenAI();
             const prompt = `
             You are an expert AI nutritionist.
             Analyze the provided image of food and estimate its macronutrients and calories.
@@ -301,6 +326,7 @@ export class AIService {
      */
     static async adjustPlanDynamically(planId: string, feedback: any) {
         try {
+            this.checkOpenAI();
             const prompt = `
             You are an expert AI personal trainer.
             Adjust the workout plan dynamically based on user feedback (fatigue, sleep, muscle soreness).
@@ -336,6 +362,7 @@ export class AIService {
      */
     static async chatWithAI(userId: string, message: string) {
         try {
+            this.checkOpenAI();
             const prompt = `
             You are the "GEM Z" AI Fitness Coach. 
             Answer the user's fitness, diet, or health-related question accurately, enthusiastically, and concisely.

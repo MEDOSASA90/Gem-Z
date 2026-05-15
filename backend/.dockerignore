@@ -1,0 +1,14 @@
+# Backend specific Docker ignore
+node_modules
+npm-debug.log*
+dist
+coverage
+.env*
+*.log
+ts_errors.txt
+seed.js
+replace_logo.js
+run_v3.mjs
+.DS_Store
+.vscode
+.idea

@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken, AccessTokenPayload } from '../../services/token.service';
+import jwt from 'jsonwebtoken';
+import { config } from '../../config';
+import { AccessTokenPayload } from '../../services/token.service';
 
 /**
  * GEM Z — Authentication Middleware
@@ -28,7 +30,7 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
     const token = authHeader.split(' ')[1];
 
     try {
-        const decoded: AccessTokenPayload = verifyAccessToken(token);
+        const decoded = jwt.verify(token, config.jwtSecret) as AccessTokenPayload;
         req.user = decoded;
         next();
     } catch (error) {

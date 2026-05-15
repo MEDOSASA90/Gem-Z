@@ -1,0 +1,242 @@
+# =============================================================================
+# GEM Z — Production Stack
+# PostgreSQL 16 + PostGIS | Redis 7 | Backend API (x2) | Next.js Frontend (x2)
+# Nginx Reverse Proxy + SSL (Let's Encrypt)
+# =============================================================================
+
+version: "3.9"
+
+services:
+  # ─── PostgreSQL 16 with PostGIS ──────────────────────────────────────────
+  postgres:
+    image: postgis/postgis:16-3.5-alpine
+    container_name: gemz-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gemz-prod-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+
+  # ─── Redis 7 (Alpine) ────────────────────────────────────────────────────
+  redis:
+    image: redis:7.4-alpine
+    container_name: gemz-redis-prod
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec
+      --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    networks:
+      - gemz-prod-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
+  # ─── Backend API (2 replicas behind Nginx) ───────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      CLIENT_URL: ${CLIENT_URL}
+      API_URL: ${API_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      REFRESH_SECRET: ${REFRESH_SECRET}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_SUBJECT: ${VAPID_SUBJECT}
+      SENTRY_DSN: ${SENTRY_DSN}
+      PAYMENT_GATEWAY: ${PAYMENT_GATEWAY}
+      PAYMENT_API_KEY: ${PAYMENT_API_KEY}
+      PAYMENT_SECRET: ${PAYMENT_SECRET}
+    volumes:
+      - uploads_data:/app/public/uploads
+    networks:
+      - gemz-prod-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+
+  # ─── Frontend (2 replicas behind Nginx) ──────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_URL: http://backend:5000
+      NEXT_PUBLIC_API_URL: ${API_URL}
+    networks:
+      - gemz-prod-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
+  # ─── Nginx Reverse Proxy + Load Balancer ─────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: gemz-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NGINX_HOST=${DOMAIN:-localhost}
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl.conf:/etc/nginx/conf.d/ssl.conf:ro
+      - ./nginx/includes:/etc/nginx/includes:ro
+      - certbot_data:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    networks:
+      - gemz-prod-network
+    depends_on:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 64M
+    security_opt:
+      - no-new-privileges:true
+
+  # ─── Certbot (Let's Encrypt SSL) ─────────────────────────────────────────
+  certbot:
+    image: certbot/certbot:v3.1.0
+    container_name: gemz-certbot
+    restart: unless-stopped
+    volumes:
+      - certbot_data:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - gemz-prod-network
+    profiles:
+      - ssl
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# VOLUMES
+# ═══════════════════════════════════════════════════════════════════════════════
+volumes:
+  postgres_data:
+    name: gemz-prod-postgres-data
+    driver: local
+  redis_data:
+    name: gemz-prod-redis-data
+    driver: local
+  uploads_data:
+    name: gemz-prod-uploads-data
+    driver: local
+  certbot_data:
+    name: gemz-certbot-data
+    driver: local
+  certbot_www:
+    name: gemz-certbot-www
+    driver: local
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NETWORKS
+# ═══════════════════════════════════════════════════════════════════════════════
+networks:
+  gemz-prod-network:
+    name: gemz-prod-network
+    driver: bridge

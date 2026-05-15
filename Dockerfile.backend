@@ -1,0 +1,79 @@
+# =============================================================================
+# GEM Z Backend — Production Dockerfile
+# Multi-stage build: builder → production
+# Node.js 20 LTS Alpine | Express.js + TypeScript
+# =============================================================================
+
+ARG NODE_VERSION=20.18.1-alpine
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STAGE 1: Builder — Install dependencies & compile TypeScript
+# ═══════════════════════════════════════════════════════════════════════════════
+FROM node:${NODE_VERSION} AS builder
+
+# Install build dependencies required for native modules (bcrypt, pg, etc.)
+RUN apk add --no-cache python3 make g++ curl
+
+WORKDIR /build
+
+# Copy dependency manifests first (maximize Docker layer cache)
+COPY backend/package.json backend/package-lock.json ./
+
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci --ignore-scripts
+
+# Copy source code
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
+COPY database ../database
+
+# Compile TypeScript → dist/
+RUN npx tsc
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STAGE 2: Production — Minimal runtime image
+# ═══════════════════════════════════════════════════════════════════════════════
+FROM node:${NODE_VERSION} AS production
+
+LABEL maintainer="GEM Z DevOps <devops@gemz.app>"
+LABEL description="GEM Z Backend API — Express.js + TypeScript"
+LABEL version="1.0.0"
+
+# Security: Install only runtime necessities
+RUN apk add --no-cache curl ca-certificates \
+    && addgroup -g 1001 -S nodejs \
+    && adduser -S node -u 1001 -G nodejs
+
+WORKDIR /app
+
+# Copy dependency manifests
+COPY backend/package.json backend/package-lock.json ./
+
+# Install production dependencies only
+RUN npm ci --omit=dev --ignore-scripts \
+    && npm cache clean --force \
+    && chown -R node:nodejs /app
+
+# Copy compiled application from builder
+COPY --from=builder --chown=node:nodejs /build/dist ./dist
+COPY --from=builder --chown=node:nodejs /build/migrate.js ./migrate.js
+
+# Copy seed data for migrations
+COPY --from=builder --chown=node:nodejs /database ../database
+
+# Create uploads directory with proper permissions
+RUN mkdir -p /app/public/uploads \
+    && chown -R node:nodejs /app/public/uploads
+
+# Switch to non-root user
+USER node
+
+# Expose backend port
+EXPOSE 5000
+
+# Health check: Verify API health endpoint is responding
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:5000/api/v1/health || exit 1
+
+# Run migrations then start server
+CMD ["sh", "-c", "node dist/migrate.js && node dist/index.js"]

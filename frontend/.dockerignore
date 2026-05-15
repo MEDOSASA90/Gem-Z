@@ -1,0 +1,23 @@
+# Frontend specific Docker ignore
+node_modules
+npm-debug.log*
+.next
+dist
+build
+coverage
+.env*
+*.log
+*.zip
+fix*.js
+fix*.mjs
+import_*.mjs
+i18n_extractor.mjs
+link_mapper.mjs
+super_link_mapper.mjs
+missing_*.json
+unfix_link.mjs
+undo_numerals.js
+update.js
+.DS_Store
+.vscode
+.idea
