@@ -1,0 +1,200 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # RECIPES ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /recipes:
+    get:
+      summary: List recipes
+      description: |
+        Returns a list of recipes with optional filtering.
+        
+        **Filter by:**
+        - Category (breakfast, lunch, dinner, snack)
+        - Diet type (vegan, keto, high-protein, etc.)
+        - Calories range
+        - Prep time
+        - Difficulty
+      tags: [Recipes]
+      operationId: listRecipes
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [breakfast, lunch, dinner, snack]
+        - name: diet
+          in: query
+          schema:
+            type: string
+            enum: [vegan, vegetarian, keto, paleo, high_protein, low_carb, gluten_free]
+        - name: maxCalories
+          in: query
+          schema:
+            type: integer
+        - name: maxPrepTime
+          in: query
+          schema:
+            type: integer
+          description: Maximum prep time in minutes
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+            enum: [easy, medium, hard]
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by recipe name or ingredient
+        - name: saved
+          in: query
+          schema:
+            type: boolean
+          description: Only show saved recipes
+      responses:
+        '200':
+          description: List of recipes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recipe'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /recipes/{id}/toggle-save:
+    post:
+      summary: Toggle save recipe
+      description: Save or unsave a recipe to the user's collection.
+      tags: [Recipes]
+      operationId: toggleSave
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Save toggled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      saved:
+                        type: boolean
+                      recipe:
+                        $ref: '#/components/schemas/Recipe'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /recipes/grocery-list:
+    get:
+      summary: Generate grocery list
+      description: |
+        Generates a consolidated grocery list from saved recipes.
+        
+        Items are grouped by category for easy shopping:
+        - Produce, Protein, Dairy, Grains, Pantry, Frozen
+      tags: [Recipes]
+      operationId: generateGroceryList
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: recipeIds
+          in: query
+          schema:
+            type: string
+          description: Comma-separated recipe IDs (uses all saved if omitted)
+      responses:
+        '200':
+          description: Grocery list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/GroceryList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /recipes/live-stream:
+    post:
+      summary: Start live cook-along
+      description: |
+        Start a live cook-along session where users can follow a recipe together in real-time.
+        
+        Uses WebSockets for real-time interaction.
+      tags: [Recipes]
+      operationId: startLiveCookAlong
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [recipeId]
+              properties:
+                recipeId:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                  example: "Sunday Meal Prep Session"
+                scheduledAt:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Live cook-along started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/LiveCookAlong'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

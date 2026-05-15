@@ -1,0 +1,294 @@
+schemas:
+  # ─── Gym ───────────────────────────────────────────────────────
+  Gym:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: "Iron Gym Cairo"
+      description:
+        type: string
+        nullable: true
+      location_url:
+        type: string
+        format: uri
+        example: "https://maps.google.com/?q=30.0444,31.2357"
+      logo_url:
+        type: string
+        format: uri
+        nullable: true
+      female_hours:
+        type: string
+        example: "Sun-Thu 6:00-12:00"
+      amenities:
+        type: array
+        items:
+          type: string
+        example: ["pool", "sauna", "parking", "wifi"]
+      rating:
+        type: number
+        minimum: 0
+        maximum: 5
+        example: 4.5
+      status:
+        type: string
+        enum: [pending, approved, rejected, suspended]
+        example: "approved"
+      owner_user_id:
+        type: string
+        format: uuid
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── Gym Daily Pass Purchase ───────────────────────────────────
+  DailyPassRequest:
+    type: object
+    required: [gymId, date]
+    properties:
+      gymId:
+        type: string
+        format: uuid
+      date:
+        type: string
+        format: date
+        example: "2024-01-20"
+      paymentMethod:
+        type: string
+        enum: [wallet, fawry, paymob]
+        default: wallet
+
+  # ─── Daily Pass ────────────────────────────────────────────────
+  DailyPass:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      gym_id:
+        type: string
+        format: uuid
+      gym_name:
+        type: string
+        example: "Iron Gym Cairo"
+      user_id:
+        type: string
+        format: uuid
+      pass_date:
+        type: string
+        format: date
+      price:
+        type: number
+        example: 150.00
+      status:
+        type: string
+        enum: [active, used, expired, cancelled]
+      qr_code:
+        type: string
+        example: "PASS-abc123"
+        description: QR code for turnstile scanning
+      valid_from:
+        type: string
+        format: date-time
+      valid_until:
+        type: string
+        format: date-time
+
+  # ─── Turnstile Access Request ──────────────────────────────────
+  TurnstileAccessRequest:
+    type: object
+    required: [deviceId, qrCode]
+    properties:
+      deviceId:
+        type: string
+        example: "TURNSTILE-GYM01-A"
+        description: Turnstile device identifier
+      qrCode:
+        type: string
+        example: "PASS-abc123"
+        description: QR code from daily pass
+
+  # ─── Turnstile Access Response ─────────────────────────────────
+  TurnstileAccessResponse:
+    type: object
+    properties:
+      access:
+        type: boolean
+        example: true
+      passId:
+        type: string
+      gymName:
+        type: string
+      message:
+        type: string
+        example: "Access granted. Welcome to Iron Gym Cairo!"
+
+  # ─── Smart Locker Request ──────────────────────────────────────
+  SmartLockerRequest:
+    type: object
+    required: [gymId, lockerNumber]
+    properties:
+      gymId:
+        type: string
+        format: uuid
+      lockerNumber:
+        type: integer
+        example: 42
+      duration:
+        type: integer
+        default: 120
+        description: Duration in minutes
+
+  # ─── Smart Locker ──────────────────────────────────────────────
+  SmartLocker:
+    type: object
+    properties:
+      lockerNumber:
+        type: integer
+        example: 42
+      status:
+        type: string
+        enum: [occupied, available, maintenance]
+      assigned_at:
+        type: string
+        format: date-time
+      expires_at:
+        type: string
+        format: date-time
+      accessCode:
+        type: string
+        example: "5847"
+        description: Numeric access code
+
+  # ─── Crowd Tracker ─────────────────────────────────────────────
+  CrowdTracker:
+    type: object
+    properties:
+      gym_id:
+        type: string
+        format: uuid
+      gym_name:
+        type: string
+        example: "Iron Gym Cairo"
+      currentOccupancy:
+        type: integer
+        example: 45
+      maxCapacity:
+        type: integer
+        example: 150
+      occupancyPercent:
+        type: integer
+        example: 30
+      status:
+        type: string
+        enum: [quiet, moderate, busy, full]
+        example: "moderate"
+      peakHours:
+        type: array
+        items:
+          type: object
+          properties:
+            hour:
+              type: string
+              example: "18:00"
+            predictedOccupancy:
+              type: integer
+              example: 120
+
+  # ─── Equipment Tutorial Request ────────────────────────────────
+  EquipmentTutorialRequest:
+    type: object
+    required: [qrCode]
+    properties:
+      qrCode:
+        type: string
+        example: "EQ-BENCHPRESS-01"
+        description: QR code on gym equipment
+
+  # ─── Equipment Tutorial ────────────────────────────────────────
+  EquipmentTutorial:
+    type: object
+    properties:
+      equipmentName:
+        type: string
+        example: "Incline Bench Press"
+      muscleGroup:
+        type: string
+        example: "chest, shoulders, triceps"
+      instructions:
+        type: array
+        items:
+          type: string
+        example:
+          - "Adjust the bench to 30-45 degree incline"
+          - "Grip the bar slightly wider than shoulder width"
+          - "Lower the bar to upper chest with controlled motion"
+          - "Press up until arms are fully extended"
+          - "Recommended: 3-4 sets of 8-12 reps"
+      safetyTips:
+        type: array
+        items:
+          type: string
+        example:
+          - "Always use a spotter for heavy sets"
+          - "Keep feet flat on the floor"
+      videoUrl:
+        type: string
+        format: uri
+        nullable: true
+
+  # ─── Off-Peak Pricing Request ──────────────────────────────────
+  OffPeakPricingRequest:
+    type: object
+    required: [gymId]
+    properties:
+      gymId:
+        type: string
+        format: uuid
+      discountPercent:
+        type: integer
+        minimum: 5
+        maximum: 50
+        example: 20
+        description: Discount percentage for off-peak hours
+      offPeakHours:
+        type: string
+        example: "06:00-10:00, 14:00-17:00"
+
+  # ─── Gym Stats ─────────────────────────────────────────────────
+  GymStats:
+    type: object
+    properties:
+      gymId:
+        type: string
+        format: uuid
+      totalMembers:
+        type: integer
+        example: 1200
+      activeMembers:
+        type: integer
+        example: 850
+      dailyPasses:
+        type: integer
+        example: 45
+      monthlyRevenue:
+        type: number
+        example: 185000.00
+      avgSessionDuration:
+        type: integer
+        description: Average session duration in minutes
+        example: 67
+      topTrainers:
+        type: array
+        items:
+          type: object
+          properties:
+            trainerId:
+              type: string
+            name:
+              type: string
+            sessions:
+              type: integer

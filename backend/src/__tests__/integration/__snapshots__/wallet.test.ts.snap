@@ -1,0 +1,23 @@
+// Jest Snapshot v1
+
+exports[`Integration — Wallet API Response Snapshots topup response matches snapshot format: topup-success-response 1`] = `
+{
+  "data": {
+    "amount": 5000,
+    "currency": "EGP",
+    "expiresAt": Any<String>,
+    "gateway": "fawry",
+    "merchantRef": "TOPUP-user-tps",
+    "paymentUrl": "https://gateway.example.com/pay?ref=TOPUP-user-tps&amount=5000",
+  },
+  "message": "Payment intent created. Complete payment via the gateway.",
+  "success": true,
+}
+`;
+
+exports[`Integration — Wallet API Response Snapshots error response matches snapshot format: unauthorized-wallet-response 1`] = `
+{
+  "message": "Access denied: No token provided",
+  "success": false,
+}
+`;

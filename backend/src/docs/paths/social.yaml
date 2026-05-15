@@ -1,0 +1,150 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # SOCIAL ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /social/feed:
+    get:
+      summary: Get social feed
+      description: |
+        Returns a personalized social feed with posts from friends, squads, and followed trainers.
+        
+        **Post types:**
+        - text: Simple text posts
+        - photo: Image posts
+        - video: Video posts
+        - workout_checkin: Workout completion posts
+        - achievement: Milestone/achievement posts
+      tags: [Social]
+      operationId: getFeed
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Social feed
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SocialPost'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /social/posts:
+    post:
+      summary: Create post
+      description: Create a new social post with optional media and workout data.
+      tags: [Social]
+      operationId: createPost
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostRequest'
+            example:
+              content: "Just hit a new PR on deadlifts! 180kg x 5 reps!"
+              type: "workout_checkin"
+              workoutData:
+                exercise: "deadlift"
+                sets: 5
+                reps: 5
+                weight: 180
+      responses:
+        '201':
+          description: Post created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/SocialPost'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Media files too large
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /social/buddy-match:
+    get:
+      summary: Find workout buddy
+      description: |
+        AI-powered workout buddy matching based on fitness level, goals, schedule, and location.
+        
+        **Matching criteria:**
+        - Fitness level compatibility
+        - Shared workout goals
+        - Compatible schedules
+        - Geographic proximity
+      tags: [Social]
+      operationId: findWorkoutBuddy
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: fitnessLevel
+          in: query
+          schema:
+            type: string
+            enum: [beginner, intermediate, advanced]
+        - name: goals
+          in: query
+          schema:
+            type: string
+          description: Comma-separated goals
+        - name: preferredTime
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: gender
+          in: query
+          schema:
+            type: string
+            enum: [male, female, any]
+            default: any
+      responses:
+        '200':
+          description: Workout buddy matches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BuddyProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

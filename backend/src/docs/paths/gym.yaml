@@ -1,0 +1,386 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # GYM ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /gym/stats:
+    get:
+      summary: Get gym statistics
+      description: Returns comprehensive statistics for a gym (admin view).
+      tags: [Gym]
+      operationId: getGymStats
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: gymId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Gym ID
+      responses:
+        '200':
+          description: Gym statistics
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/GymStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/passes/buy:
+    post:
+      summary: Buy daily pass
+      description: Purchase a daily gym pass. Payment is deducted from wallet.
+      tags: [Gym]
+      operationId: buyDailyPass
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyPassRequest'
+            example:
+              gymId: "550e8400-e29b-41d4-a716-446655440010"
+              date: "2024-01-20"
+              paymentMethod: "wallet"
+      responses:
+        '201':
+          description: Daily pass purchased
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            Idempotency-Replayed:
+              schema: { type: boolean }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/DailyPass'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/passes/scan:
+    post:
+      summary: Scan daily pass
+      description: Scan a QR code to validate and use a daily pass at the gym.
+      tags: [Gym]
+      operationId: scanDailyPass
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [qrCode]
+              properties:
+                qrCode:
+                  type: string
+                  example: "PASS-abc123"
+      responses:
+        '200':
+          description: Pass validated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      passId:
+                        type: string
+                      gymName:
+                        type: string
+                      valid:
+                        type: boolean
+                      expiresAt:
+                        type: string
+                        format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/scan:
+    post:
+      summary: Scan gym barcode
+      description: Scan a gym's barcode for quick check-in or information retrieval.
+      tags: [Gym]
+      operationId: scanGymBarcode
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [barcode]
+              properties:
+                barcode:
+                  type: string
+                  example: "GYM-550e8400"
+      responses:
+        '200':
+          description: Gym found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Gym'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/off-peak:
+    post:
+      summary: Set off-peak pricing
+      description: Configure discounted pricing for off-peak hours (gym admin only).
+      tags: [Gym]
+      operationId: setOffPeakPricing
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OffPeakPricingRequest'
+      responses:
+        '200':
+          description: Off-peak pricing set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /trainee/passes:
+    get:
+      summary: Get trainee passes
+      description: Returns all daily passes owned by the authenticated trainee.
+      tags: [Gym]
+      operationId: getTraineePasses
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, used, expired, cancelled]
+      responses:
+        '200':
+          description: List of passes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TraineePass'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/lockers/unlock:
+    post:
+      summary: Unlock smart locker
+      description: Request a smart locker assignment and receive an access code.
+      tags: [Gym]
+      operationId: unlockSmartLocker
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmartLockerRequest'
+      responses:
+        '200':
+          description: Locker assigned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/SmartLocker'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/crowd:
+    get:
+      summary: Get live crowd tracker
+      description: Returns real-time crowd data for a gym including current occupancy and peak hour predictions.
+      tags: [Gym]
+      operationId: getLiveCrowdTracker
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: gymId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Crowd data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/CrowdTracker'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/equipment/{qrCode}:
+    get:
+      summary: Get equipment tutorial
+      description: Returns usage instructions and safety tips for gym equipment by scanning its QR code.
+      tags: [Gym]
+      operationId: getEquipmentTutorial
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: qrCode
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "EQ-BENCHPRESS-01"
+      responses:
+        '200':
+          description: Equipment tutorial
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/EquipmentTutorial'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gym/turnstile/verify:
+    post:
+      summary: Turnstile access verification
+      description: |
+        Verifies turnstile access for gym entry. **No user auth** — device authenticates via its own token/signature.
+        
+        Used by IoT turnstile devices to validate QR codes.
+      tags: [Gym]
+      operationId: verifyTurnstileAccess
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnstileAccessRequest'
+      responses:
+        '200':
+          description: Access decision
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/TurnstileAccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid device credentials
+        '500':
+          $ref: '#/components/responses/InternalServerError'

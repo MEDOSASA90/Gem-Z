@@ -1,0 +1,77 @@
+schemas:
+  # ─── Trainee Dashboard ─────────────────────────────────────────
+  TraineeDashboard:
+    type: object
+    properties:
+      user:
+        $ref: '#/components/schemas/User'
+      wallet:
+        $ref: '#/components/schemas/Wallet'
+      stats:
+        type: object
+        properties:
+          totalWorkouts:
+            type: integer
+            example: 42
+          totalMinutes:
+            type: integer
+            example: 2520
+          currentStreak:
+            type: integer
+            example: 7
+          bestStreak:
+            type: integer
+            example: 21
+          caloriesBurned:
+            type: integer
+            example: 15400
+      todayPlan:
+        type: object
+        nullable: true
+        properties:
+          id:
+            type: string
+          title:
+            type: string
+          exercises:
+            type: integer
+          estimatedDuration:
+            type: integer
+      activeChallenges:
+        type: array
+        items:
+          $ref: '#/components/schemas/Challenge'
+      recentActivity:
+        type: array
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+            description:
+              type: string
+            timestamp:
+              type: string
+            metadata:
+              type: object
+
+  # ─── Trainee Passes ────────────────────────────────────────────
+  TraineePass:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      gym_id:
+        type: string
+        format: uuid
+      gym_name:
+        type: string
+      pass_date:
+        type: string
+        format: date
+      status:
+        type: string
+        enum: [active, used, expired, cancelled]
+      qr_code:
+        type: string

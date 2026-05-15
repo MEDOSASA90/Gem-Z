@@ -1,0 +1,169 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # HEALTH ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /health:
+    get:
+      summary: Health check
+      description: Simple liveness probe. Returns OK if the server is running.
+      tags: [Health]
+      operationId: healthCheck
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Server is healthy
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: "OK" }
+                  message: { type: string, example: "GEM Z API is running optimally." }
+                  timestamp: { type: string, format: date-time }
+                  version: { type: string, example: "1.0.0" }
+              example:
+                status: "OK"
+                message: "GEM Z API is running optimally."
+                timestamp: "2024-01-15T10:30:00.000Z"
+                version: "1.0.0"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /health/detailed:
+    get:
+      summary: Detailed health check
+      description: |
+        Returns detailed health status including:
+        - **Database**: PostgreSQL connection status and query latency
+        - **Redis**: Cache connection status
+        - **Queue**: BullMQ queue system status
+        - **Email**: SMTP connection status
+        - **External services**: Payment gateway connectivity
+      tags: [Health]
+      operationId: detailedHealthCheck
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Detailed health status
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                    example: "healthy"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  uptime:
+                    type: integer
+                    description: Server uptime in seconds
+                    example: 86400
+                  services:
+                    type: object
+                    properties:
+                      database:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [up, down, degraded]
+                          latencyMs:
+                            type: integer
+                            description: Query latency in milliseconds
+                            example: 12
+                          connectionPool:
+                            type: object
+                            properties:
+                              total:
+                                type: integer
+                              idle:
+                                type: integer
+                              waiting:
+                                type: integer
+                      redis:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [up, down]
+                          latencyMs:
+                            type: integer
+                      queue:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [up, down]
+                          activeJobs:
+                            type: integer
+                          waitingJobs:
+                            type: integer
+                          failedJobs:
+                            type: integer
+                      email:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [up, down]
+                          lastError:
+                            type: string
+                            nullable: true
+              example:
+                status: "healthy"
+                timestamp: "2024-01-15T10:30:00.000Z"
+                version: "1.0.0"
+                uptime: 86400
+                services:
+                  database:
+                    status: "up"
+                    latencyMs: 12
+                    connectionPool:
+                      total: 20
+                      idle: 8
+                      waiting: 0
+                  redis:
+                    status: "up"
+                    latencyMs: 3
+                  queue:
+                    status: "up"
+                    activeJobs: 2
+                    waitingJobs: 5
+                    failedJobs: 0
+                  email:
+                    status: "up"
+                    lastError: null
+        '503':
+          description: One or more services are degraded or down
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "degraded"
+                  services:
+                    type: object
+        '500':
+          $ref: '#/components/responses/InternalServerError'

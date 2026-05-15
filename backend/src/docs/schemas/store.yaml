@@ -1,0 +1,271 @@
+schemas:
+  # ─── Store Product ─────────────────────────────────────────────
+  StoreProduct:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: "Premium Whey Protein"
+      description:
+        type: string
+        example: "24g protein per serving, chocolate flavor"
+      price_egp:
+        type: number
+        example: 450.00
+      price_usd:
+        type: number
+        nullable: true
+        example: 14.50
+      stock_qty:
+        type: integer
+        example: 150
+      images:
+        type: array
+        items:
+          type: string
+          format: uri
+      category:
+        type: string
+        example: "protein"
+      store_id:
+        type: string
+        format: uuid
+      store_name:
+        type: string
+        example: "FitFuel Supplements"
+      is_active:
+        type: boolean
+        example: true
+      rating:
+        type: number
+        example: 4.5
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── Add Product Request ───────────────────────────────────────
+  AddProductRequest:
+    type: object
+    required: [name, price_egp, stock_qty, category]
+    properties:
+      name:
+        type: string
+        example: "Premium Whey Protein"
+      description:
+        type: string
+      price_egp:
+        type: number
+        minimum: 1
+        example: 450.00
+      price_usd:
+        type: number
+        nullable: true
+      stock_qty:
+        type: integer
+        minimum: 0
+        example: 100
+      category:
+        type: string
+        example: "protein"
+      images:
+        type: array
+        items:
+          type: string
+        description: Base64-encoded product images
+
+  # ─── Cart Item ─────────────────────────────────────────────────
+  CartItem:
+    type: object
+    properties:
+      productId:
+        type: string
+        format: uuid
+      quantity:
+        type: integer
+        minimum: 1
+        example: 2
+
+  # ─── Checkout Request ──────────────────────────────────────────
+  CheckoutRequest:
+    type: object
+    required: [items, paymentMethod]
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/components/schemas/CartItem'
+      paymentMethod:
+        type: string
+        enum: [wallet, fawry, paymob, cash_on_delivery]
+        example: "wallet"
+      shippingAddress:
+        $ref: '#/components/schemas/Address'
+      couponCode:
+        type: string
+        example: "FIT2024"
+
+  # ─── Order ─────────────────────────────────────────────────────
+  Order:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      user_id:
+        type: string
+        format: uuid
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            productId:
+              type: string
+            name:
+              type: string
+            quantity:
+              type: integer
+            price:
+              type: number
+            subtotal:
+              type: number
+      subtotal:
+        type: number
+      discount:
+        type: number
+      shipping:
+        type: number
+      total:
+        type: number
+      status:
+        type: string
+        enum: [pending, confirmed, shipped, delivered, cancelled, refunded]
+      payment_status:
+        type: string
+        enum: [pending, paid, failed, refunded]
+      shipping_address:
+        $ref: '#/components/schemas/Address'
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── Marketplace Item ──────────────────────────────────────────
+  MarketplaceItem:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      title:
+        type: string
+        example: "Used Olympic Barbell 20kg"
+      description:
+        type: string
+      price:
+        type: number
+        example: 2500.00
+      condition:
+        type: string
+        enum: [new, like_new, good, fair]
+      seller_id:
+        type: string
+        format: uuid
+      seller_name:
+        type: string
+      images:
+        type: array
+        items:
+          type: string
+          format: uri
+      status:
+        type: string
+        enum: [active, sold, reserved, cancelled]
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── List Marketplace Item Request ─────────────────────────────
+  ListMarketplaceItemRequest:
+    type: object
+    required: [title, price, condition]
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+        minimum: 0
+      condition:
+        type: string
+        enum: [new, like_new, good, fair]
+      images:
+        type: array
+        items:
+          type: string
+        description: Base64-encoded images
+
+  # ─── Workout Template ──────────────────────────────────────────
+  WorkoutTemplate:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      title:
+        type: string
+        example: "Full Body HIIT"
+      description:
+        type: string
+      difficulty:
+        type: string
+        enum: [beginner, intermediate, advanced]
+      duration:
+        type: integer
+        description: Duration in minutes
+      exercises:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            sets:
+              type: integer
+            reps:
+              type: integer
+            restSeconds:
+              type: integer
+      tags:
+        type: array
+        items:
+          type: string
+
+  # ─── NFT Mint Request ──────────────────────────────────────────
+  NFTMintRequest:
+    type: object
+    required: [name, description, type]
+    properties:
+      name:
+        type: string
+        example: "100 Workouts Milestone"
+      description:
+        type: string
+      type:
+        type: string
+        enum: [achievement, collectible, membership]
+      image:
+        type: string
+        description: Base64-encoded image or image URL
+      attributes:
+        type: array
+        items:
+          type: object
+          properties:
+            trait_type:
+              type: string
+            value:
+              type: string

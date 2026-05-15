@@ -1,0 +1,39 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # TRAINEE ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /trainee/dashboard:
+    get:
+      summary: Get trainee dashboard
+      description: |
+        Returns a comprehensive trainee dashboard with:
+        - User profile and wallet
+        - Workout statistics (total, streak, calories)
+        - Today's workout plan
+        - Active challenges
+        - Recent activity feed
+      tags: [Trainee]
+      operationId: getDashboardData
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Trainee dashboard
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/TraineeDashboard'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

@@ -1,0 +1,69 @@
+schemas:
+  # ─── Bid ───────────────────────────────────────────────────────
+  Bid:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      trainerId:
+        type: string
+        format: uuid
+      trainerName:
+        type: string
+      traineeId:
+        type: string
+        format: uuid
+      amount:
+        type: number
+        example: 250.00
+        description: Bid amount per session (EGP)
+      sessions:
+        type: integer
+        example: 12
+        description: Number of sessions offered
+      message:
+        type: string
+        example: "I'll create a personalized 12-week program for you"
+      status:
+        type: string
+        enum: [pending, accepted, rejected, expired]
+      created_at:
+        type: string
+        format: date-time
+      expires_at:
+        type: string
+        format: date-time
+
+  # ─── Place Bid Request ─────────────────────────────────────────
+  PlaceBidRequest:
+    type: object
+    required: [traineeId, amount, sessions]
+    properties:
+      traineeId:
+        type: string
+        format: uuid
+      amount:
+        type: number
+        minimum: 50
+        example: 250.00
+        description: Price per session in EGP
+      sessions:
+        type: integer
+        minimum: 1
+        example: 12
+      message:
+        type: string
+        maxLength: 500
+
+  # ─── Bid Response ──────────────────────────────────────────────
+  BidResponse:
+    type: object
+    required: [bidId, accept]
+    properties:
+      bidId:
+        type: string
+        format: uuid
+      accept:
+        type: boolean
+        example: true

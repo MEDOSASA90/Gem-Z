@@ -1,0 +1,388 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # ADMIN ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /admin/users:
+    get:
+      summary: List all users
+      description: |
+        **Admin only.** Returns a paginated list of all platform users.
+        Supports filtering by role, status, and KYC status.
+      tags: [Admin]
+      operationId: listAllUsers
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [trainee, trainer, gym_admin, store_admin, super_admin]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, suspended, pending_verification, banned]
+        - name: kycStatus
+          in: query
+          schema:
+            type: string
+            enum: [unverified, pending, verified, rejected]
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by name or email
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/User'
+                      stats:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          byRole:
+                            type: object
+                          byStatus:
+                            type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/users/{id}:
+    get:
+      summary: Get user details
+      description: **Admin only.** Returns detailed user information including wallet and activity.
+      tags: [Admin]
+      operationId: getUserDetails
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/User'
+                      - type: object
+                        properties:
+                          wallet:
+                            $ref: '#/components/schemas/Wallet'
+                          activity:
+                            type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/users/{id}/suspend:
+    put:
+      summary: Suspend user
+      description: **Admin only.** Suspends a user account, preventing login and transactions.
+      tags: [Admin]
+      operationId: suspendUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  example: "Violation of community guidelines"
+      responses:
+        '200':
+          description: User suspended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/users/{id}/activate:
+    put:
+      summary: Activate user
+      description: **Admin only.** Reactivates a suspended user account.
+      tags: [Admin]
+      operationId: activateUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/withdrawals:
+    get:
+      summary: List all withdrawals
+      description: **Admin only.** Returns all withdrawal requests across the platform.
+      tags: [Admin]
+      operationId: listAllWithdrawals
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, processing, completed]
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of withdrawals
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      withdrawals:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Withdrawal'
+                      summary:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          pending:
+                            type: integer
+                          totalAmount:
+                            type: number
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/reconciliation:
+    get:
+      summary: Get reconciliation summary
+      description: |
+        **Admin only.** Returns a summary of financial reconciliation data.
+        Includes daily, weekly, and monthly transaction summaries.
+      tags: [Admin]
+      operationId: getReconciliationSummary
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month, quarter, year]
+            default: day
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Reconciliation summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: string
+                      totalTopups:
+                        type: number
+                      totalWithdrawals:
+                        type: number
+                      totalPayments:
+                        type: number
+                      totalFees:
+                        type: number
+                      netFlow:
+                        type: number
+                      transactionCount:
+                        type: integer
+                      discrepancyCount:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /admin/platform-stats:
+    get:
+      summary: Get platform statistics
+      description: |
+        **Admin only.** Returns high-level platform analytics.
+        
+        **Includes:**
+        - User growth and retention
+        - Revenue metrics
+        - Transaction volumes
+        - Active sessions
+        - Top gyms and trainers
+      tags: [Admin]
+      operationId: getPlatformStats
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month, quarter, year]
+            default: month
+      responses:
+        '200':
+          description: Platform statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      users:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          new:
+                            type: integer
+                          active:
+                            type: integer
+                          byRole:
+                            type: object
+                      revenue:
+                        type: object
+                        properties:
+                          total:
+                            type: number
+                          topups:
+                            type: number
+                          payments:
+                            type: number
+                          fees:
+                            type: number
+                      transactions:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          volume:
+                            type: number
+                      gyms:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          active:
+                            type: integer
+                      topTrainers:
+                        type: array
+                        items:
+                          type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

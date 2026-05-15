@@ -1,0 +1,156 @@
+schemas:
+  # ─── Challenge ─────────────────────────────────────────────────
+  Challenge:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      title:
+        type: string
+        example: "30-Day Summer Shred"
+      description:
+        type: string
+        example: "Complete 30 workouts in 30 days and win exclusive rewards!"
+      type:
+        type: string
+        enum: [individual, squad, corporate]
+        example: "squad"
+      difficulty:
+        type: string
+        enum: [beginner, intermediate, advanced, all_levels]
+      category:
+        type: string
+        enum: [strength, cardio, consistency, weight_loss, hybrid]
+      startDate:
+        type: string
+        format: date-time
+      endDate:
+        type: string
+        format: date-time
+      prize:
+        type: object
+        properties:
+          type:
+            type: string
+            enum: [coins, cash, nft, badge]
+          value:
+            type: number
+          description:
+            type: string
+      participants:
+        type: integer
+        example: 156
+      isJoined:
+        type: boolean
+        example: false
+      requirements:
+        type: object
+        properties:
+          minWorkouts:
+            type: integer
+          targetMetric:
+            type: string
+          targetValue:
+            type: number
+      leaderboard:
+        type: array
+        items:
+          type: object
+          properties:
+            rank:
+              type: integer
+            user:
+              $ref: '#/components/schemas/PublicUser'
+            score:
+              type: number
+      status:
+        type: string
+        enum: [upcoming, active, completed, cancelled]
+
+  # ─── Join Challenge Request ────────────────────────────────────
+  JoinChallengeRequest:
+    type: object
+    properties:
+      challengeId:
+        type: string
+        format: uuid
+      squadId:
+        type: string
+        format: uuid
+        nullable: true
+        description: Optional squad ID for squad challenges
+
+  # ─── Live Squad Challenge Request ──────────────────────────────
+  LiveSquadChallengeRequest:
+    type: object
+    required: [title, description, squadIds]
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      squadIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+      duration:
+        type: integer
+        description: Duration in hours
+        example: 24
+      target:
+        type: object
+        properties:
+          metric:
+            type: string
+            example: "total_calories"
+          value:
+            type: number
+            example: 50000
+
+  # ─── Habit Track Request ───────────────────────────────────────
+  HabitTrackRequest:
+    type: object
+    required: [habit, completed]
+    properties:
+      habit:
+        type: string
+        enum: [protein_intake, water_intake, sleep_8h, no_sugar, meditation, steps_10k]
+        example: "water_intake"
+      completed:
+        type: boolean
+        example: true
+      value:
+        type: number
+        nullable: true
+        description: Optional numeric value (e.g., liters of water)
+
+  # ─── Corporate Leaderboard ─────────────────────────────────────
+  CorporateLeaderboard:
+    type: object
+    properties:
+      company:
+        type: string
+        example: "TechCorp Egypt"
+      totalParticipants:
+        type: integer
+        example: 45
+      departments:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            totalScore:
+              type: number
+            avgActivity:
+              type: number
+            topPerformer:
+              type: object
+              properties:
+                name:
+                  type: string
+                score:
+                  type: number

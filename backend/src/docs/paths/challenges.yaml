@@ -1,0 +1,234 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # CHALLENGES ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /challenges:
+    get:
+      summary: List challenges
+      description: |
+        Returns a list of fitness challenges with optional filtering.
+        
+        **Challenge types:**
+        - individual: Solo challenges
+        - squad: Team-based challenges
+        - corporate: Company-wide challenges
+      tags: [Challenges]
+      operationId: listChallenges
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [individual, squad, corporate]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [upcoming, active, completed]
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [strength, cardio, consistency, weight_loss, hybrid]
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+            enum: [beginner, intermediate, advanced, all_levels]
+      responses:
+        '200':
+          description: List of challenges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Challenge'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /challenges/{id}/join:
+    post:
+      summary: Join challenge
+      description: Join a fitness challenge as an individual or with a squad.
+      tags: [Challenges]
+      operationId: joinChallenge
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinChallengeRequest'
+      responses:
+        '200':
+          description: Joined challenge
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      challenge:
+                        $ref: '#/components/schemas/Challenge'
+                      participant:
+                        type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Already joined this challenge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /challenges/live-squad:
+    post:
+      summary: Create live squad challenge
+      description: Create a real-time squad vs squad challenge with a live leaderboard.
+      tags: [Challenges]
+      operationId: createLiveSquadChallenge
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiveSquadChallengeRequest'
+            example:
+              title: "Weekend Calorie Burn Battle"
+              description: "Which squad can burn the most calories this weekend?"
+              squadIds:
+                - "550e8400-e29b-41d4-a716-446655440040"
+                - "550e8400-e29b-41d4-a716-446655440041"
+              duration: 48
+              target:
+                metric: "total_calories"
+                value: 50000
+      responses:
+        '201':
+          description: Live challenge created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Challenge'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /challenges/track-habit:
+    post:
+      summary: Track user habit
+      description: Log daily habit completion for habit-based challenges.
+      tags: [Challenges]
+      operationId: trackUserHabit
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HabitTrackRequest'
+            example:
+              habit: "water_intake"
+              completed: true
+              value: 3.5
+      responses:
+        '200':
+          description: Habit tracked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      streak:
+                        type: integer
+                      totalPoints:
+                        type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /challenges/corporate:
+    get:
+      summary: Get corporate leaderboard
+      description: Returns the corporate wellness leaderboard with department-level rankings.
+      tags: [Challenges]
+      operationId: getCorporateLeaderboard
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: challengeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Corporate leaderboard
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/CorporateLeaderboard'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

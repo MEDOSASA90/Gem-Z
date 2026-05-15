@@ -1,0 +1,137 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # BIDDING ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /bids:
+    get:
+      summary: List bids
+      description: Returns a list of bids for the authenticated trainer or trainee.
+      tags: [Bidding]
+      operationId: listBids
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, accepted, rejected, expired]
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [sent, received]
+          description: Filter by bid direction
+      responses:
+        '200':
+          description: List of bids
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bid'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bids:
+    post:
+      summary: Place bid
+      description: |
+        A trainer places a bid to train a specific trainee.
+        
+        **Minimum amount**: 50 EGP per session
+      tags: [Bidding]
+      operationId: placeBid
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceBidRequest'
+            example:
+              traineeId: "550e8400-e29b-41d4-a716-446655440050"
+              amount: 250.00
+              sessions: 12
+              message: "I'll create a personalized 12-week program for you"
+      responses:
+        '201':
+          description: Bid placed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Bid'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bids/{id}/respond:
+    post:
+      summary: Respond to bid
+      description: A trainee accepts or rejects a bid from a trainer.
+      tags: [Bidding]
+      operationId: respondToBid
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BidResponse'
+      responses:
+        '200':
+          description: Bid response recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Bid'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Bid already responded to
+        '500':
+          $ref: '#/components/responses/InternalServerError'

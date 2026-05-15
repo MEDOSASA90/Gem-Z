@@ -1,0 +1,415 @@
+schemas:
+  # ─── Wallet ────────────────────────────────────────────────────
+  Wallet:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440001"
+      available_bal:
+        type: number
+        format: decimal
+        example: 1500.00
+        description: Available balance for spending
+      pending_bal:
+        type: number
+        format: decimal
+        example: 250.00
+        description: Pending balance (unsettled transactions)
+      frozen_bal:
+        type: number
+        format: decimal
+        example: 0.00
+        description: Frozen/held balance (disputes, chargebacks)
+      lifetime_earned:
+        type: number
+        format: decimal
+        example: 5000.00
+        description: Total amount ever deposited
+      lifetime_spent:
+        type: number
+        format: decimal
+        example: 3500.00
+        description: Total amount ever spent
+      currency:
+        type: string
+        enum: [EGP, USD]
+        example: "EGP"
+      is_frozen:
+        type: boolean
+        example: false
+        description: Whether the wallet is frozen
+      version:
+        type: integer
+        description: Optimistic locking version
+        example: 12
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+
+  # ─── Wallet Summary (with limits + recent txns) ────────────────
+  WalletSummary:
+    type: object
+    properties:
+      wallet:
+        $ref: '#/components/schemas/Wallet'
+      limits:
+        type: object
+        properties:
+          daily_topup_limit:
+            type: number
+            example: 50000.00
+          daily_topup_used:
+            type: number
+            example: 1500.00
+          daily_topup_remaining:
+            type: number
+            example: 48500.00
+          daily_withdraw_limit:
+            type: number
+            example: 25000.00
+          daily_withdraw_used:
+            type: number
+            example: 0.00
+          daily_withdraw_remaining:
+            type: number
+            example: 25000.00
+      recent_transactions:
+        type: array
+        items:
+          $ref: '#/components/schemas/Transaction'
+
+  # ─── Transaction ───────────────────────────────────────────────
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440002"
+      wallet_id:
+        type: string
+        format: uuid
+      reference_no:
+        type: string
+        example: "TXN-20240115-ABC123"
+        description: Human-readable transaction reference
+      amount:
+        type: number
+        format: decimal
+        example: 250.00
+      type:
+        type: string
+        enum: [topup, withdrawal, payment, p2p_transfer, p2p_receive, refund, fee, adjustment, coin_redemption]
+        example: "topup"
+        description: Transaction type
+      status:
+        type: string
+        enum: [pending, completed, failed, cancelled, reversed]
+        example: "completed"
+      description:
+        type: string
+        example: "Wallet top-up via Fawry"
+        description: Human-readable description
+      metadata:
+        type: object
+        nullable: true
+        description: Additional transaction data (gateway response, etc.)
+      entry_type:
+        type: string
+        enum: [debit, credit]
+        example: "credit"
+        description: Accounting entry type
+      running_balance:
+        type: number
+        format: decimal
+        example: 1750.00
+        description: Balance after this transaction
+      created_at:
+        type: string
+        format: date-time
+        example: "2024-01-15T10:30:00.000Z"
+
+  # ─── Transaction History Query ─────────────────────────────────
+  TransactionHistoryQuery:
+    type: object
+    properties:
+      entryType:
+        type: string
+        enum: [debit, credit]
+        description: Filter by entry type
+      fromDate:
+        type: string
+        format: date
+        example: "2024-01-01"
+        description: Start date filter
+      toDate:
+        type: string
+        format: date
+        example: "2024-12-31"
+        description: End date filter
+      limit:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+      offset:
+        type: integer
+        minimum: 0
+        default: 0
+
+  # ─── Top Up Request ────────────────────────────────────────────
+  TopUpRequest:
+    type: object
+    required: [amount, gateway]
+    properties:
+      amount:
+        type: number
+        minimum: 10
+        example: 500
+        description: Amount to top up (minimum 10 EGP)
+      gateway:
+        type: string
+        enum: [fawry, paymob, instapay]
+        example: "fawry"
+        description: Payment gateway to use
+
+  # ─── Top Up Response ───────────────────────────────────────────
+  TopUpResponse:
+    type: object
+    properties:
+      paymentIntent:
+        type: object
+        properties:
+          gateway:
+            type: string
+          amount:
+            type: number
+          currency:
+            type: string
+          merchantRef:
+            type: string
+          paymentUrl:
+            type: string
+            format: uri
+            description: Gateway checkout URL (if applicable)
+          status:
+            type: string
+            enum: [pending, initiated, completed, failed]
+
+  # ─── Withdraw Request ──────────────────────────────────────────
+  WithdrawRequest:
+    type: object
+    required: [amount, method]
+    properties:
+      amount:
+        type: number
+        minimum: 50
+        example: 1000
+        description: Amount to withdraw (minimum 50 EGP)
+      method:
+        type: string
+        enum: [instapay, vodafone_cash, bank_transfer]
+        example: "instapay"
+        description: Withdrawal method
+      accountDetails:
+        type: object
+        properties:
+          accountNumber:
+            type: string
+            example: "1234567890"
+          accountName:
+            type: string
+            example: "Ahmed Mohamed"
+          bankName:
+            type: string
+            example: "National Bank of Egypt"
+          phoneNumber:
+            type: string
+            example: "+201012345678"
+
+  # ─── Withdrawal ────────────────────────────────────────────────
+  Withdrawal:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      amount:
+        type: number
+      method:
+        type: string
+        enum: [instapay, vodafone_cash, bank_transfer]
+      status:
+        type: string
+        enum: [pending, approved, rejected, processing, completed, cancelled]
+      requested_at:
+        type: string
+        format: date-time
+      processed_at:
+        type: string
+        format: date-time
+        nullable: true
+      rejection_reason:
+        type: string
+        nullable: true
+
+  # ─── P2P Transfer Request ──────────────────────────────────────
+  P2PTransferRequest:
+    type: object
+    required: [recipientId, amount, pin]
+    properties:
+      recipientId:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440003"
+        description: Recipient user ID
+      amount:
+        type: number
+        minimum: 1
+        example: 200
+        description: Amount to transfer
+      pin:
+        type: string
+        pattern: '^[0-9]{4,6}$'
+        example: "1234"
+        description: Wallet PIN for authorization
+      note:
+        type: string
+        maxLength: 200
+        example: "Gym membership split"
+        description: Optional transfer note
+
+  # ─── Payment Request ───────────────────────────────────────────
+  PaymentRequest:
+    type: object
+    required: [type, amount]
+    properties:
+      type:
+        type: string
+        enum: [subscription, order, service, squad_contribution]
+        example: "subscription"
+        description: Type of payment
+      amount:
+        type: number
+        minimum: 1
+        example: 500
+      entityId:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440004"
+        description: ID of the entity being paid for (gym, product, etc.)
+      pin:
+        type: string
+        pattern: '^[0-9]{4,6}$'
+        example: "1234"
+        description: Wallet PIN for authorization
+      metadata:
+        type: object
+        description: Additional payment context
+        properties:
+          planType:
+            type: string
+            example: "monthly"
+          couponCode:
+            type: string
+            example: "FIT2024"
+
+  # ─── Coin Redemption Request ───────────────────────────────────
+  CoinRedemptionRequest:
+    type: object
+    required: [coins]
+    properties:
+      coins:
+        type: integer
+        minimum: 100
+        example: 1000
+        description: Number of coins to redeem (minimum 100)
+
+  # ─── Coin Redemption Response ──────────────────────────────────
+  CoinRedemptionResponse:
+    type: object
+    properties:
+      coinsRedeemed:
+        type: integer
+        example: 1000
+      egpCredited:
+        type: number
+        example: 100.00
+      exchangeRate:
+        type: number
+        example: 0.10
+        description: EGP per coin
+
+  # ─── Reconciliation Report ─────────────────────────────────────
+  ReconciliationReport:
+    type: object
+    properties:
+      date:
+        type: string
+        format: date
+        example: "2024-01-15"
+      totalTopups:
+        type: number
+        example: 150000.00
+      totalWithdrawals:
+        type: number
+        example: 75000.00
+      totalPayments:
+        type: number
+        example: 45000.00
+      totalTransfers:
+        type: number
+        example: 12000.00
+      totalFees:
+        type: number
+        example: 3000.00
+      netFlow:
+        type: number
+        example: 15000.00
+      transactionCount:
+        type: integer
+        example: 342
+      discrepancies:
+        type: array
+        items:
+          type: object
+          properties:
+            transactionId:
+              type: string
+            expectedAmount:
+              type: number
+            actualAmount:
+              type: number
+            description:
+              type: string
+
+  # ─── Wallet Freeze Request ─────────────────────────────────────
+  WalletFreezeRequest:
+    type: object
+    required: [reason]
+    properties:
+      reason:
+        type: string
+        example: "Suspicious activity detected"
+        description: Reason for freezing the wallet
+
+  # ─── Balance Adjustment Request ────────────────────────────────
+  BalanceAdjustmentRequest:
+    type: object
+    required: [amount, reason]
+    properties:
+      amount:
+        type: number
+        example: 500.00
+        description: Amount to adjust (positive = credit, negative = debit)
+      reason:
+        type: string
+        example: "Refund for disputed transaction"
+      reference:
+        type: string
+        example: "ADJ-2024-001"

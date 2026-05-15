@@ -1,0 +1,191 @@
+schemas:
+  # ─── Base API Response ─────────────────────────────────────────
+  ApiResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+        description: Indicates if the request was successful
+      message:
+        type: string
+        example: "Operation completed successfully"
+        description: Human-readable status message
+      data:
+        type: object
+        description: Response payload (varies by endpoint)
+
+  # ─── Error Response ────────────────────────────────────────────
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: false
+        description: Always false for error responses
+      message:
+        type: string
+        example: "Validation failed: email is required"
+        description: Human-readable error description
+      code:
+        type: string
+        example: "VALIDATION_ERROR"
+        description: Machine-readable error code for programmatic handling
+      requestId:
+        type: string
+        example: "req_abc123def456"
+        description: Unique request ID for tracing and debugging
+      errors:
+        type: array
+        description: Detailed validation errors (if applicable)
+        items:
+          type: object
+          properties:
+            field:
+              type: string
+              description: Field that failed validation
+            message:
+              type: string
+              description: Validation error message
+
+  # ─── Pagination Query Parameters ───────────────────────────────
+  PaginationParams:
+    type: object
+    properties:
+      page:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+        description: Page number (1-based indexing)
+      limit:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
+        description: Number of items per page
+
+  # ─── Paginated Response Wrapper ────────────────────────────────
+  PaginatedResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        description: Array of result items
+        items:
+          type: object
+      pagination:
+        type: object
+        properties:
+          page:
+            type: integer
+            example: 1
+            description: Current page number
+          limit:
+            type: integer
+            example: 20
+            description: Items per page
+          total:
+            type: integer
+            example: 150
+            description: Total number of items across all pages
+          totalPages:
+            type: integer
+            example: 8
+            description: Total number of pages
+          hasNext:
+            type: boolean
+            example: true
+            description: Whether there is a next page
+          hasPrev:
+            type: boolean
+            example: false
+            description: Whether there is a previous page
+
+  # ─── Cursor Pagination ─────────────────────────────────────────
+  CursorPaginatedResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          type: object
+      pagination:
+        type: object
+        properties:
+          limit:
+            type: integer
+            example: 20
+          nextCursor:
+            type: string
+            nullable: true
+            example: "eyJpZCI6IjEyMyJ9"
+          hasMore:
+            type: boolean
+            example: true
+
+  # ─── Timestamped Entity ────────────────────────────────────────
+  Timestamps:
+    type: object
+    properties:
+      created_at:
+        type: string
+        format: date-time
+        example: "2024-01-15T10:30:00.000Z"
+      updated_at:
+        type: string
+        format: date-time
+        example: "2024-06-20T14:22:00.000Z"
+
+  # ─── Address ───────────────────────────────────────────────────
+  Address:
+    type: object
+    properties:
+      street:
+        type: string
+        example: "123 Nile Corniche"
+      city:
+        type: string
+        example: "Cairo"
+      governorate:
+        type: string
+        example: "Cairo Governorate"
+      postal_code:
+        type: string
+        example: "11211"
+      country:
+        type: string
+        example: "Egypt"
+
+  # ─── Media Upload ──────────────────────────────────────────────
+  MediaUpload:
+    type: object
+    properties:
+      url:
+        type: string
+        format: uri
+        example: "https://api.gemz.fit/uploads/image-1234567890.png"
+      filename:
+        type: string
+        example: "image-1234567890.png"
+      mimetype:
+        type: string
+        example: "image/png"
+      size:
+        type: integer
+        description: File size in bytes
+        example: 204800
+
+  # ─── Money ─────────────────────────────────────────────────────
+  Money:
+    type: object
+    properties:
+      amount:
+        type: number
+        format: decimal
+        example: 150.00
+      currency:
+        type: string
+        enum: [EGP, USD]
+        example: "EGP"

@@ -1,0 +1,355 @@
+schemas:
+  # ─── AI Workout Plan Request ───────────────────────────────────
+  AIPlanRequest:
+    type: object
+    required: [goal, fitnessLevel, availableTime]
+    properties:
+      goal:
+        type: string
+        enum: [lose_weight, build_muscle, maintain, improve_endurance, increase_flexibility]
+        example: "build_muscle"
+      fitnessLevel:
+        type: string
+        enum: [beginner, intermediate, advanced]
+        example: "intermediate"
+      availableTime:
+        type: integer
+        description: Available time per session in minutes
+        example: 60
+      daysPerWeek:
+        type: integer
+        minimum: 1
+        maximum: 7
+        example: 4
+      equipment:
+        type: array
+        items:
+          type: string
+        example: ["dumbbells", "barbell", "pull-up_bar"]
+      injuries:
+        type: array
+        items:
+          type: string
+        example: ["lower back"]
+        description: Areas to avoid or modify exercises for
+      preferences:
+        type: array
+        items:
+          type: string
+        example: ["compound movements", "supersets"]
+
+  # ─── AI Workout Plan ───────────────────────────────────────────
+  AIWorkoutPlan:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      title:
+        type: string
+        example: "4-Day Muscle Building Program"
+      description:
+        type: string
+      goal:
+        type: string
+      fitnessLevel:
+        type: string
+      durationWeeks:
+        type: integer
+        example: 8
+      daysPerWeek:
+        type: integer
+      sessions:
+        type: array
+        items:
+          type: object
+          properties:
+            day:
+              type: string
+              example: "Day 1 - Upper Body"
+            exercises:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  sets:
+                    type: integer
+                  reps:
+                    type: string
+                  rest:
+                    type: string
+                  notes:
+                    type: string
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── AI Form Analysis Request ──────────────────────────────────
+  FormAnalysisRequest:
+    type: object
+    required: [videoBase64, exercise]
+    properties:
+      videoBase64:
+        type: string
+        description: Base64-encoded video of exercise performance
+      exercise:
+        type: string
+        example: "squat"
+        description: Exercise being performed
+
+  # ─── Form Analysis Result ──────────────────────────────────────
+  FormAnalysisResult:
+    type: object
+    properties:
+      exercise:
+        type: string
+      score:
+        type: number
+        minimum: 0
+        maximum: 100
+        example: 85
+      feedback:
+        type: array
+        items:
+          type: string
+        example:
+          - "Good depth achieved"
+          - "Keep chest up throughout the movement"
+          - "Knees slightly valgus on rep 3 — push them out"
+      detectedIssues:
+        type: array
+        items:
+          type: object
+          properties:
+            issue:
+              type: string
+            severity:
+              type: string
+              enum: [low, medium, high]
+            timestamp:
+              type: string
+      overallRating:
+        type: string
+        enum: [excellent, good, fair, needs_improvement]
+
+  # ─── Food Scanner Request ──────────────────────────────────────
+  FoodScannerRequest:
+    type: object
+    required: [imageBase64]
+    properties:
+      imageBase64:
+        type: string
+        description: Base64-encoded food image
+      mealType:
+        type: string
+        enum: [breakfast, lunch, dinner, snack]
+        example: "lunch"
+
+  # ─── Food Scan Result ──────────────────────────────────────────
+  FoodScanResult:
+    type: object
+    properties:
+      identifiedFood:
+        type: string
+        example: "Grilled chicken breast with rice and vegetables"
+      calories:
+        type: integer
+        example: 550
+      macros:
+        type: object
+        properties:
+          protein:
+            type: number
+            example: 42.5
+          carbs:
+            type: number
+            example: 55.0
+          fat:
+            type: number
+            example: 15.2
+          fiber:
+            type: number
+            example: 8.3
+      micronutrients:
+        type: object
+        properties:
+          iron:
+            type: number
+          calcium:
+            type: number
+          vitaminC:
+            type: number
+      healthScore:
+        type: integer
+        minimum: 0
+        maximum: 100
+        example: 78
+      suggestions:
+        type: array
+        items:
+          type: string
+        example:
+          - "Consider adding leafy greens for more fiber"
+          - "Good protein source — excellent post-workout meal"
+
+  # ─── AI Chat Request ───────────────────────────────────────────
+  AIChatRequest:
+    type: object
+    required: [message]
+    properties:
+      message:
+        type: string
+        example: "What should I eat before a morning workout?"
+        maxLength: 2000
+      context:
+        type: string
+        enum: [nutrition, workout, recovery, general]
+        example: "nutrition"
+      history:
+        type: array
+        items:
+          type: object
+          properties:
+            role:
+              type: string
+              enum: [user, assistant]
+            content:
+              type: string
+
+  # ─── AI Chat Response ──────────────────────────────────────────
+  AIChatResponse:
+    type: object
+    properties:
+      response:
+        type: string
+        example: "For morning workouts, aim for easily digestible carbs 30-60 minutes before..."
+      context:
+        type: string
+      suggestions:
+        type: array
+        items:
+          type: string
+
+  # ─── Dynamic Plan Adjustment Request ───────────────────────────
+  DynamicPlanRequest:
+    type: object
+    required: [planId, feedback]
+    properties:
+      planId:
+        type: string
+        format: uuid
+      feedback:
+        type: string
+        enum: [too_easy, just_right, too_hard, injury, time_constraints]
+      details:
+        type: string
+        example: "Shoulder pain during overhead press"
+
+  # ─── Voice Workout Log Request ─────────────────────────────────
+  VoiceWorkoutLogRequest:
+    type: object
+    required: [audioBase64]
+    properties:
+      audioBase64:
+        type: string
+        description: Base64-encoded voice recording
+
+  # ─── Voice Workout Log Result ──────────────────────────────────
+  VoiceWorkoutLogResult:
+    type: object
+    properties:
+      transcribed:
+        type: string
+        example: "Three sets of bench press, ten reps each"
+      parsed:
+        type: object
+        properties:
+          exercise:
+            type: string
+          sets:
+            type: integer
+          reps:
+            type: integer
+          weight:
+            type: number
+            nullable: true
+      confidence:
+        type: number
+        example: 0.92
+
+  # ─── Cinematic Workout Render Request ──────────────────────────
+  CinematicRenderRequest:
+    type: object
+    required: [exercise, style]
+    properties:
+      exercise:
+        type: string
+        example: "deadlift"
+      style:
+        type: string
+        enum: [anime, realistic, comic, minimalist]
+        example: "anime"
+      duration:
+        type: integer
+        default: 5
+        description: Duration in seconds (4-12)
+
+  # ─── Body Scan Request ─────────────────────────────────────────
+  BodyScanRequest:
+    type: object
+    required: [images]
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        description: Base64-encoded body photos (front, side, back)
+      height:
+        type: number
+        description: Height in cm
+        example: 178
+      weight:
+        type: number
+        description: Weight in kg
+        example: 75
+
+  # ─── Body Scan Result ──────────────────────────────────────────
+  BodyScanResult:
+    type: object
+    properties:
+      bodyFat:
+        type: number
+        description: Body fat percentage
+        example: 15.5
+      muscleMass:
+        type: number
+        description: Estimated muscle mass in kg
+        example: 58.2
+      measurements:
+        type: object
+        properties:
+          chest:
+            type: number
+          waist:
+            type: number
+          hips:
+            type: number
+          arms:
+            type: number
+          thighs:
+            type: number
+      posture:
+        type: object
+        properties:
+          score:
+            type: integer
+          issues:
+            type: array
+            items:
+              type: string
+      recommendations:
+        type: array
+        items:
+          type: string

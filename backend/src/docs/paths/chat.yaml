@@ -1,0 +1,123 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # CHAT ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /chat/contacts:
+    get:
+      summary: Get chat contacts
+      description: Returns a list of user's chat contacts with last message preview.
+      tags: [Chat]
+      operationId: getChatContacts
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Chat contacts
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                          format: uuid
+                        fullName:
+                          type: string
+                        avatarUrl:
+                          type: string
+                          nullable: true
+                        lastMessage:
+                          type: string
+                        lastMessageAt:
+                          type: string
+                          format: date-time
+                        unreadCount:
+                          type: integer
+                          example: 3
+                        isOnline:
+                          type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /chat/history/{contactId}:
+    get:
+      summary: Get chat history
+      description: Returns message history with a specific contact.
+      tags: [Chat]
+      operationId: getChatHistory
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Contact user ID
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: before
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Get messages before this timestamp
+      responses:
+        '200':
+          description: Chat history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      contact:
+                        $ref: '#/components/schemas/PublicUser'
+                      messages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            senderId:
+                              type: string
+                              format: uuid
+                            content:
+                              type: string
+                            type:
+                              type: string
+                              enum: [text, image, voice, file]
+                            isRead:
+                              type: boolean
+                            createdAt:
+                              type: string
+                              format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

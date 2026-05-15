@@ -1,0 +1,122 @@
+schemas:
+  # ─── Recipe ────────────────────────────────────────────────────
+  Recipe:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      title:
+        type: string
+        example: "Grilled Chicken Quinoa Bowl"
+      description:
+        type: string
+        example: "A protein-packed post-workout meal with 42g protein"
+      image:
+        type: string
+        format: uri
+      prepTime:
+        type: integer
+        description: Preparation time in minutes
+        example: 15
+      cookTime:
+        type: integer
+        description: Cooking time in minutes
+        example: 25
+      servings:
+        type: integer
+        example: 2
+      difficulty:
+        type: string
+        enum: [easy, medium, hard]
+        example: "easy"
+      calories:
+        type: integer
+        example: 550
+      macros:
+        type: object
+        properties:
+          protein:
+            type: number
+          carbs:
+            type: number
+          fat:
+            type: number
+          fiber:
+            type: number
+      ingredients:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            quantity:
+              type: string
+            unit:
+              type: string
+      instructions:
+        type: array
+        items:
+          type: string
+      tags:
+        type: array
+        items:
+          type: string
+        example: ["high-protein", "post-workout", "meal-prep"]
+      isSaved:
+        type: boolean
+        example: false
+      rating:
+        type: number
+        example: 4.7
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── Grocery List ──────────────────────────────────────────────
+  GroceryList:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            quantity:
+              type: string
+            unit:
+              type: string
+            category:
+              type: string
+              enum: [produce, protein, dairy, grains, pantry, frozen, other]
+            isChecked:
+              type: boolean
+
+  # ─── Live Cook-Along ───────────────────────────────────────────
+  LiveCookAlong:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      recipeId:
+        type: string
+        format: uuid
+      recipeTitle:
+        type: string
+      host:
+        $ref: '#/components/schemas/PublicUser'
+      status:
+        type: string
+        enum: [scheduled, live, ended]
+      scheduledAt:
+        type: string
+        format: date-time
+      participants:
+        type: integer
+      streamUrl:
+        type: string
+        format: uri

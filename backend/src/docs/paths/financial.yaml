@@ -1,0 +1,107 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # FINANCIAL ENDPOINTS (Legacy - use Wallet endpoints instead)
+  # ═══════════════════════════════════════════════════════════════
+
+  /finance/wallet:
+    get:
+      summary: Get wallet balance (legacy)
+      description: |
+        **Deprecated:** Use `GET /wallet` instead.
+        
+        Returns the user's wallet balance.
+      tags: [Financial]
+      operationId: getWalletBalance
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Wallet balance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      balance:
+                        type: number
+                        example: 1500.00
+                      currency:
+                        type: string
+                        example: "EGP"
+                      pending:
+                        type: number
+                        example: 250.00
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /finance/payout:
+    post:
+      summary: Request payout (legacy)
+      description: |
+        **Deprecated:** Use `POST /wallet/withdraw` instead.
+        
+        Request a payout from the user's wallet.
+      tags: [Financial]
+      operationId: requestPayout
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, method]
+              properties:
+                amount:
+                  type: number
+                  minimum: 50
+                  example: 1000
+                method:
+                  type: string
+                  enum: [instapay, vodafone_cash, bank_transfer]
+                  example: "instapay"
+                accountDetails:
+                  type: object
+                  properties:
+                    accountNumber:
+                      type: string
+                    accountName:
+                      type: string
+                    bankName:
+                      type: string
+      responses:
+        '200':
+          description: Payout request submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      payoutId:
+                        type: string
+                      status:
+                        type: string
+                        enum: [pending, processing, completed, failed]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

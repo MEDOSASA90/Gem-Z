@@ -1,0 +1,444 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # AI ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /ai/generate:
+    post:
+      summary: Generate workout plan
+      description: |
+        Generates a personalized AI workout plan based on user goals, fitness level, and preferences.
+        
+        **Supported goals:**
+        - lose_weight
+        - build_muscle
+        - maintain
+        - improve_endurance
+        - increase_flexibility
+        
+        Returns a structured plan with exercises, sets, reps, and rest periods.
+      tags: [AI]
+      operationId: generatePlan
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIPlanRequest'
+            example:
+              goal: "build_muscle"
+              fitnessLevel: "intermediate"
+              availableTime: 60
+              daysPerWeek: 4
+              equipment: ["dumbbells", "barbell", "pull-up_bar"]
+              injuries: ["lower back"]
+              preferences: ["compound movements", "supersets"]
+      responses:
+        '200':
+          description: Workout plan generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/AIWorkoutPlan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          description: AI rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "AI generation quota exceeded. Try again later."
+                code: "AI_RATE_LIMIT"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/plans:
+    get:
+      summary: Get saved plans
+      description: Returns all AI-generated workout plans saved by the authenticated user.
+      tags: [AI]
+      operationId: getSavedPlans
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Saved plans
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AIWorkoutPlan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/form-analysis:
+    post:
+      summary: Analyze exercise form
+      description: |
+        Analyzes exercise form from a video upload using computer vision.
+        
+        **Supported exercises:**
+        - squat, deadlift, bench_press, overhead_press
+        - pull_up, push_up, lunge, plank
+        
+        Returns a form score (0-100), detected issues, and improvement suggestions.
+      tags: [AI]
+      operationId: analyzeForm
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormAnalysisRequest'
+            example:
+              videoBase64: "/9j/4AAQSkZJRgABAQEASABIAAD..."
+              exercise: "squat"
+      responses:
+        '200':
+          description: Form analysis result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/FormAnalysisResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Video file too large (max 50MB)
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/food-scanner:
+    post:
+      summary: Scan food
+      description: |
+        Analyzes a food image and returns nutritional information including
+        calories, macros, micronutrients, and a health score.
+        
+        **Features:**
+        - Food identification
+        - Portion estimation
+        - Calorie and macro calculation
+        - Personalized health scoring
+      tags: [AI]
+      operationId: scanFood
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodScannerRequest'
+            example:
+              imageBase64: "/9j/4AAQSkZJRgABAQEASABIAAD..."
+              mealType: "lunch"
+      responses:
+        '200':
+          description: Food scan result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/FoodScanResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Image too large (max 10MB)
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/dynamic-plan:
+    post:
+      summary: Adjust plan dynamically
+      description: |
+        Adjusts an existing workout plan based on user feedback.
+        
+        **Feedback options:**
+        - too_easy: Increase intensity
+        - just_right: Minor progression
+        - too_hard: Decrease intensity
+        - injury: Modify exercises around injury
+        - time_constraints: Adjust for limited time
+      tags: [AI]
+      operationId: adjustPlanDynamically
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DynamicPlanRequest'
+            example:
+              planId: "550e8400-e29b-41d4-a716-446655440015"
+              feedback: "too_hard"
+              details: "Shoulder pain during overhead press"
+      responses:
+        '200':
+          description: Plan adjusted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/AIWorkoutPlan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/chat:
+    post:
+      summary: Chat with AI
+      description: |
+        Conversational AI assistant for fitness, nutrition, and wellness questions.
+        
+        **Contexts:**
+        - nutrition: Diet, meal planning, supplements
+        - workout: Exercise technique, programming
+        - recovery: Sleep, rest days, injury prevention
+        - general: Any fitness-related question
+      tags: [AI]
+      operationId: chatWithAI
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIChatRequest'
+            example:
+              message: "What should I eat before a morning workout?"
+              context: "nutrition"
+              history:
+                - role: "user"
+                  content: "I workout in the morning"
+                - role: "assistant"
+                  content: "Morning workouts are great!"
+      responses:
+        '200':
+          description: AI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/AIChatResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/voice-logger:
+    post:
+      summary: Log workout via voice
+      description: Transcribes and parses a voice recording into structured workout data.
+      tags: [AI]
+      operationId: logVoiceWorkout
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoiceWorkoutLogRequest'
+            example:
+              audioBase64: "/9j/4AAQSkZJRgABAQEASABIAAD..."
+      responses:
+        '200':
+          description: Voice parsed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/VoiceWorkoutLogResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Audio too large (max 10MB)
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/cinematics/render:
+    post:
+      summary: Render cinematic workout
+      description: |
+        Generates a cinematic AI video of a workout exercise in various visual styles.
+        
+        **Styles:**
+        - anime: Japanese animation style
+        - realistic: Photorealistic rendering
+        - comic: Comic book style
+        - minimalist: Clean minimal design
+        
+        **Duration**: 4-12 seconds
+      tags: [AI]
+      operationId: renderCinematicWorkout
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CinematicRenderRequest'
+            example:
+              exercise: "deadlift"
+              style: "anime"
+              duration: 5
+      responses:
+        '202':
+          description: Render job queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      jobId:
+                        type: string
+                      status:
+                        type: string
+                        example: "queued"
+                      estimatedTime:
+                        type: integer
+                        description: Estimated render time in seconds
+                      videoUrl:
+                        type: string
+                        format: uri
+                        nullable: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/body-scan:
+    post:
+      summary: Process body scan
+      description: |
+        Analyzes body photos to estimate body composition, measurements, and posture.
+        
+        **Required photos:**
+        - Front view
+        - Side view
+        - Back view
+        
+        **Returns:**
+        - Body fat percentage
+        - Estimated muscle mass
+        - Body measurements
+        - Posture analysis
+      tags: [AI]
+      operationId: processBodyScan
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyScanRequest'
+            example:
+              images: ["/9j/4AAQSkZJRg...", "/9j/4AAQSkZJRg...", "/9j/4AAQSkZJRg..."]
+              height: 178
+              weight: 75
+      responses:
+        '200':
+          description: Body scan result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/BodyScanResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Images too large
+        '500':
+          $ref: '#/components/responses/InternalServerError'

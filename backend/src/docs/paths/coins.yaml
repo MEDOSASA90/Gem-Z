@@ -1,0 +1,162 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # COINS ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /coins/earn:
+    post:
+      summary: Earn coins
+      description: |
+        Award coins for fitness activities and achievements.
+        
+        **Activities:**
+        - workout_complete: Complete a workout session
+        - streak_milestone: Reach a streak milestone (7, 14, 30 days)
+        - challenge_win: Win a challenge
+        - referral: Refer a friend who joins
+        - social_share: Share on social media
+        - checkin: Daily gym check-in
+      tags: [Coins]
+      operationId: earnCoins
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EarnCoinsRequest'
+            example:
+              activity: "workout_complete"
+              amount: 50
+              metadata:
+                workoutId: "550e8400-e29b-41d4-a716-446655440025"
+                duration: 60
+      responses:
+        '200':
+          description: Coins earned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/CoinsBalance'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /coins/redeem:
+    post:
+      summary: Redeem reward
+      description: Redeem coins for rewards such as discounts, products, or experiences.
+      tags: [Coins]
+      operationId: redeemReward
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedeemRewardRequest'
+            example:
+              rewardId: "550e8400-e29b-41d4-a716-446655440030"
+      responses:
+        '200':
+          description: Reward redeemed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      reward:
+                        type: object
+                      remainingCoins:
+                        type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          description: Insufficient coins
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Insufficient coins for this reward"
+                code: "INSUFFICIENT_COINS"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /coins/stake:
+    post:
+      summary: Stake coins for goal
+      description: |
+        Lock coins as a commitment to achieve a fitness goal.
+        
+        **How it works:**
+        1. Stake coins on a specific goal
+        2. Complete the goal within the timeframe
+        3. Receive staked coins back + bonus reward
+        4. Fail to complete = lose staked coins
+        
+        **Minimum stake**: 100 coins
+      tags: [Coins]
+      operationId: stakeCoinsForGoal
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StakeCoinsRequest'
+            example:
+              amount: 500
+              goal: "Complete 20 workouts in 30 days"
+              duration: 30
+              rewardMultiplier: 1.5
+      responses:
+        '201':
+          description: Coins staked
+          headers:
+            Idempotency-Replayed:
+              schema: { type: boolean }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/StakeResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          description: Insufficient coins
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

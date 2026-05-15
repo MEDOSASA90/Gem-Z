@@ -1,0 +1,203 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # SQUADS ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /squads:
+    get:
+      summary: List squads
+      description: Returns a list of fitness squads with optional filtering.
+      tags: [Squads]
+      operationId: listSquads
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by squad name
+        - name: isPublic
+          in: query
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [newest, members, points, rank]
+            default: rank
+      responses:
+        '200':
+          description: List of squads
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Squad'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create squad
+      description: Create a new fitness squad/team.
+      tags: [Squads]
+      operationId: createSquad
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSquadRequest'
+            example:
+              name: "Iron Lifters"
+              description: "A squad for serious strength training enthusiasts"
+              isPublic: true
+      responses:
+        '201':
+          description: Squad created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Squad'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Squad name already taken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /squads/{id}/join:
+    post:
+      summary: Join squad
+      description: Join an existing fitness squad.
+      tags: [Squads]
+      operationId: joinSquad
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Joined squad
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Squad'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Already a member
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /squads/{id}/leave:
+    post:
+      summary: Leave squad
+      description: Leave a squad that the user is a member of.
+      tags: [Squads]
+      operationId: leaveSquad
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Left squad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /squads/{id}:
+    get:
+      summary: Get squad details
+      description: Returns detailed information about a squad including members and leaderboard.
+      tags: [Squads]
+      operationId: getSquadDetails
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Squad details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Squad'
+                      - type: object
+                        properties:
+                          members:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/SquadMember'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

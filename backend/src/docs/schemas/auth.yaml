@@ -1,0 +1,311 @@
+schemas:
+  # ─── Register Request ──────────────────────────────────────────
+  RegisterRequest:
+    type: object
+    required: [email, password, fullName, role]
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+        description: User's email address (must be unique)
+      password:
+        type: string
+        format: password
+        minLength: 8
+        example: "StrongPass123!"
+        description: Password (minimum 8 characters)
+      fullName:
+        type: string
+        minLength: 2
+        example: "Ahmed Mohamed"
+        description: Full name of the user
+      role:
+        type: string
+        enum: [trainee, trainer, gym_admin, store_admin]
+        example: "trainee"
+        description: User role determining permissions and features
+      phone:
+        type: string
+        example: "+201012345678"
+        description: Phone number (optional)
+      countryCode:
+        type: string
+        example: "+20"
+        description: Country dialing code
+      gender:
+        type: string
+        enum: [male, female]
+        example: "male"
+        description: User gender
+      dob:
+        type: string
+        format: date
+        example: "1995-03-15"
+        description: Date of birth
+      referralCode:
+        type: string
+        example: "GEMZ2024"
+        description: Referral code from another user
+      fitnessLevel:
+        type: string
+        enum: [beginner, intermediate, advanced]
+        example: "intermediate"
+        description: Current fitness level
+      avatarBase64:
+        type: string
+        description: Base64-encoded avatar image
+      idFrontBase64:
+        type: string
+        description: Base64-encoded front of national ID (for KYC)
+      idBackBase64:
+        type: string
+        description: Base64-encoded back of national ID (for KYC)
+      gymData:
+        type: object
+        description: Required when role is gym_admin
+        properties:
+          name:
+            type: string
+            example: "Iron Gym Cairo"
+          locationUrl:
+            type: string
+            format: uri
+            example: "https://maps.google.com/?q=30.0444,31.2357"
+          femaleHours:
+            type: string
+            example: "Sun-Thu 6:00-12:00"
+          amenities:
+            type: array
+            items:
+              type: string
+            example: ["pool", "sauna", "parking"]
+      storeData:
+        type: object
+        description: Required when role is store_admin
+        properties:
+          name:
+            type: string
+            example: "FitFuel Supplements"
+          category:
+            type: string
+            example: "supplements"
+          website:
+            type: string
+            format: uri
+      trainerData:
+        type: object
+        description: Required when role is trainer
+        properties:
+          specialization:
+            type: string
+            example: "Strength & Conditioning"
+          experience:
+            type: integer
+            description: Years of experience
+            example: 5
+          certs:
+            type: array
+            items:
+              type: string
+            example: ["ACSM-CPT", "NASM-PES"]
+          bio:
+            type: string
+            example: "Certified personal trainer with 5+ years of experience..."
+          social:
+            type: string
+            format: uri
+          rate:
+            type: number
+            description: Hourly rate in EGP
+            example: 300
+
+  # ─── Login Request ─────────────────────────────────────────────
+  LoginRequest:
+    type: object
+    required: [email, password]
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+        description: Registered email address
+      password:
+        type: string
+        format: password
+        example: "StrongPass123!"
+        description: Account password
+
+  # ─── Token Response ────────────────────────────────────────────
+  TokenPair:
+    type: object
+    properties:
+      accessToken:
+        type: string
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        description: Short-lived JWT access token (15 minutes)
+      refreshToken:
+        type: string
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        description: Long-lived refresh token (7 days), stored in HTTP-only cookie
+
+  # ─── Auth Response ─────────────────────────────────────────────
+  AuthResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+      data:
+        type: object
+        properties:
+          accessToken:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          user:
+            $ref: '#/components/schemas/User'
+
+  # ─── Refresh Token Request ─────────────────────────────────────
+  RefreshTokenRequest:
+    type: object
+    properties:
+      refreshToken:
+        type: string
+        description: Refresh token (also accepted from HTTP-only cookie)
+
+  # ─── Forgot Password Request ───────────────────────────────────
+  ForgotPasswordRequest:
+    type: object
+    required: [email]
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+        description: Email address to send reset link to
+
+  # ─── Reset Password Request ────────────────────────────────────
+  ResetPasswordRequest:
+    type: object
+    required: [token, newPassword]
+    properties:
+      token:
+        type: string
+        example: "abc123def456"
+        description: Reset token from email
+      newPassword:
+        type: string
+        format: password
+        minLength: 8
+        example: "NewStrongPass456!"
+        description: New password
+
+  # ─── Verify Email Request ──────────────────────────────────────
+  VerifyEmailRequest:
+    type: object
+    properties:
+      token:
+        type: string
+        example: "verify_abc123"
+        description: Verification token from email link
+
+  # ─── Resend Verification Request ───────────────────────────────
+  ResendVerificationRequest:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+
+  # ─── Logout Request ────────────────────────────────────────────
+  LogoutRequest:
+    type: object
+    properties:
+      refreshToken:
+        type: string
+        description: Optional refresh token to blacklist
+
+  # ─── User ──────────────────────────────────────────────────────
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+      full_name:
+        type: string
+        example: "Ahmed Mohamed"
+      role:
+        type: string
+        enum: [trainee, trainer, gym_admin, store_admin, super_admin]
+        example: "trainee"
+      phone:
+        type: string
+        nullable: true
+        example: "+201012345678"
+      avatar_url:
+        type: string
+        format: uri
+        nullable: true
+        example: "https://api.gemz.fit/uploads/avatar-123.png"
+      gender:
+        type: string
+        nullable: true
+        enum: [male, female]
+      country_code:
+        type: string
+        example: "+20"
+      fitness_level:
+        type: string
+        nullable: true
+        enum: [beginner, intermediate, advanced]
+      referral_code:
+        type: string
+        example: "AHMED2024"
+      status:
+        type: string
+        enum: [active, suspended, pending_verification, banned]
+        example: "active"
+      kyc_status:
+        type: string
+        nullable: true
+        enum: [unverified, pending, verified, rejected]
+        example: "verified"
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+
+  # ─── Public User (limited fields) ──────────────────────────────
+  PublicUser:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      full_name:
+        type: string
+      avatar_url:
+        type: string
+        nullable: true
+      role:
+        type: string
+
+  # ─── Role Definition ───────────────────────────────────────────
+  Role:
+    type: string
+    enum: [trainee, trainer, gym_admin, store_admin, super_admin]
+    description: |
+      - **trainee**: Regular gym user who books sessions and buys products
+      - **trainer**: Fitness professional who trains clients
+      - **gym_admin**: Gym owner/manager who manages their gym
+      - **store_admin**: Store owner who sells fitness products
+      - **super_admin**: Platform administrator with full access

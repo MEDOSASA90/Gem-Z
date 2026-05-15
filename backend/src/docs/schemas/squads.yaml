@@ -1,0 +1,72 @@
+schemas:
+  # ─── Squad ─────────────────────────────────────────────────────
+  Squad:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: "Iron Lifters"
+      description:
+        type: string
+        example: "A squad for serious strength training enthusiasts"
+      creatorId:
+        type: string
+        format: uuid
+      isPublic:
+        type: boolean
+        example: true
+      membersCount:
+        type: integer
+        example: 42
+      points:
+        type: integer
+        example: 15400
+      rank:
+        type: integer
+        example: 1
+      badge:
+        type: string
+        example: "gold"
+      isJoined:
+        type: boolean
+        example: false
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── Create Squad Request ──────────────────────────────────────
+  CreateSquadRequest:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        minLength: 3
+        maxLength: 50
+        example: "Iron Lifters"
+      description:
+        type: string
+        maxLength: 500
+      isPublic:
+        type: boolean
+        default: true
+
+  # ─── Squad Member ──────────────────────────────────────────────
+  SquadMember:
+    type: object
+    properties:
+      user:
+        $ref: '#/components/schemas/PublicUser'
+      role:
+        type: string
+        enum: [captain, co_captain, member]
+      joinedAt:
+        type: string
+        format: date-time
+      contribution:
+        type: integer
+        example: 2500
+        description: Points contributed to squad

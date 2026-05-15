@@ -1,0 +1,158 @@
+schemas:
+  # ─── Trainer Stats ─────────────────────────────────────────────
+  TrainerStats:
+    type: object
+    properties:
+      trainerId:
+        type: string
+        format: uuid
+      totalClients:
+        type: integer
+        example: 25
+      activeClients:
+        type: integer
+        example: 18
+      totalSessions:
+        type: integer
+        example: 342
+      sessionsThisMonth:
+        type: integer
+        example: 28
+      completionRate:
+        type: number
+        example: 92.5
+      avgRating:
+        type: number
+        example: 4.8
+      totalRevenue:
+        type: number
+        example: 45000.00
+      revenueThisMonth:
+        type: number
+        example: 8400.00
+      topClients:
+        type: array
+        items:
+          type: object
+          properties:
+            userId:
+              type: string
+            name:
+              type: string
+            sessionsCompleted:
+              type: integer
+            rating:
+              type: number
+
+  # ─── Trainer Revenue ───────────────────────────────────────────
+  TrainerRevenue:
+    type: object
+    properties:
+      totalRevenue:
+        type: number
+        example: 45000.00
+      thisMonth:
+        type: number
+        example: 8400.00
+      lastMonth:
+        type: number
+        example: 7200.00
+      revenueByMonth:
+        type: array
+        items:
+          type: object
+          properties:
+            month:
+              type: string
+              example: "2024-01"
+            amount:
+              type: number
+      revenueByClient:
+        type: array
+        items:
+          type: object
+          properties:
+            clientId:
+              type: string
+            clientName:
+              type: string
+            totalPaid:
+              type: number
+
+  # ─── Trainer Client ────────────────────────────────────────────
+  TrainerClient:
+    type: object
+    properties:
+      userId:
+        type: string
+        format: uuid
+      name:
+        type: string
+      avatar_url:
+        type: string
+        nullable: true
+      fitnessLevel:
+        type: string
+      goal:
+        type: string
+      sessionsCompleted:
+        type: integer
+      sessionsRemaining:
+        type: integer
+      lastSession:
+        type: string
+        format: date-time
+        nullable: true
+      nextSession:
+        type: string
+        format: date-time
+        nullable: true
+      status:
+        type: string
+        enum: [active, paused, completed, churned]
+
+  # ─── Assign Plan Request ───────────────────────────────────────
+  AssignPlanRequest:
+    type: object
+    required: [clientId, planId]
+    properties:
+      clientId:
+        type: string
+        format: uuid
+      planId:
+        type: string
+        format: uuid
+      startDate:
+        type: string
+        format: date
+      notes:
+        type: string
+
+  # ─── Churn Prediction ──────────────────────────────────────────
+  ChurnPrediction:
+    type: object
+    properties:
+      clientId:
+        type: string
+      churnRisk:
+        type: string
+        enum: [low, medium, high, critical]
+        example: medium
+      churnProbability:
+        type: number
+        example: 0.65
+      factors:
+        type: array
+        items:
+          type: string
+        example:
+          - "Missed last 3 sessions"
+          - "No login in 14 days"
+          - "Subscription expires in 5 days"
+      recommendations:
+        type: array
+        items:
+          type: string
+        example:
+          - "Send personalized re-engagement message"
+          - "Offer a free assessment session"

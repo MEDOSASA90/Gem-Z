@@ -1,0 +1,987 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # WALLET ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /wallet:
+    get:
+      summary: Get wallet summary
+      description: |
+        Returns the authenticated user's wallet with:
+        - Current balances (available, pending, frozen)
+        - Daily transaction limits and usage
+        - Recent transactions
+        
+        **Note**: If the user doesn't have a wallet, one is automatically created.
+      tags: [Wallet]
+      operationId: getWallet
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Wallet summary retrieved successfully
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/WalletSummary'
+              example:
+                success: true
+                data:
+                  wallet:
+                    id: "550e8400-e29b-41d4-a716-446655440001"
+                    available_bal: 1500.00
+                    pending_bal: 250.00
+                    frozen_bal: 0.00
+                    lifetime_earned: 5000.00
+                    lifetime_spent: 3500.00
+                    currency: "EGP"
+                    is_frozen: false
+                    version: 12
+                  limits:
+                    daily_topup_limit: 50000.00
+                    daily_topup_used: 1500.00
+                    daily_topup_remaining: 48500.00
+                    daily_withdraw_limit: 25000.00
+                    daily_withdraw_used: 0.00
+                    daily_withdraw_remaining: 25000.00
+                  recent_transactions:
+                    - id: "550e8400-e29b-41d4-a716-446655440002"
+                      reference_no: "TXN-20240115-ABC123"
+                      amount: 500.00
+                      type: "topup"
+                      status: "completed"
+                      description: "Wallet top-up via Fawry"
+                      entry_type: "credit"
+                      running_balance: 1500.00
+                      created_at: "2024-01-15T10:30:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/history:
+    get:
+      summary: Get transaction history
+      description: |
+        Returns paginated ledger history with optional filters:
+        - **entryType**: Filter by debit/credit
+        - **fromDate/toDate**: Date range filter
+        - **limit/offset**: Pagination control
+      tags: [Wallet]
+      operationId: getTransactionHistory
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: entryType
+          in: query
+          schema:
+            type: string
+            enum: [debit, credit]
+          description: Filter by entry type
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start date (YYYY-MM-DD)
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End date (YYYY-MM-DD)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: Items per page
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Offset for pagination
+      responses:
+        '200':
+          description: Transaction history retrieved
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  pagination:
+                    type: object
+                    properties:
+                      limit:
+                        type: integer
+                      offset:
+                        type: integer
+                      total:
+                        type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/topup:
+    post:
+      summary: Top up wallet
+      description: |
+        Initiates a wallet top-up via the selected payment gateway.
+        
+        **Flow:**
+        1. Client sends top-up request
+        2. Server returns a payment intent with checkout URL
+        3. Client completes payment on gateway page
+        4. Gateway sends webhook → wallet is credited automatically
+        
+        **Idempotency**: Supports `Idempotency-Key` header to prevent duplicate charges.
+        
+        **Daily limit**: Maximum 50,000 EGP per day.
+      tags: [Wallet]
+      operationId: topUp
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopUpRequest'
+            example:
+              amount: 500
+              gateway: "fawry"
+      responses:
+        '200':
+          description: Payment intent created
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+            Idempotency-Replayed:
+              schema: { type: boolean }
+              description: True if this is a replay of a previous request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/TopUpResponse'
+              example:
+                success: true
+                data:
+                  paymentIntent:
+                    gateway: "fawry"
+                    amount: 500
+                    currency: "EGP"
+                    merchantRef: "TOPUP-550e8400"
+                    paymentUrl: "https://checkout.fawry.com/pay/abc123"
+                    status: "pending"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/withdraw:
+    post:
+      summary: Request withdrawal
+      description: |
+        Submits a withdrawal request that requires admin approval.
+        
+        **Minimum amount**: 50 EGP
+        **Daily limit**: 25,000 EGP
+        **Processing time**: 1-3 business days
+        
+        **Methods:**
+        - **instapay**: Instant transfer to bank account
+        - **vodafone_cash**: Mobile money transfer
+        - **bank_transfer**: Traditional bank transfer (1-3 days)
+      tags: [Wallet]
+      operationId: requestWithdrawal
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawRequest'
+            example:
+              amount: 1000
+              method: "instapay"
+              accountDetails:
+                accountNumber: "1234567890"
+                accountName: "Ahmed Mohamed"
+                bankName: "National Bank of Egypt"
+      responses:
+        '201':
+          description: Withdrawal request submitted
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Withdrawal'
+              example:
+                success: true
+                data:
+                  id: "550e8400-e29b-41d4-a716-446655440005"
+                  amount: 1000.00
+                  method: "instapay"
+                  status: "pending"
+                  requested_at: "2024-01-15T10:30:00.000Z"
+                  processed_at: null
+                  rejection_reason: null
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/withdrawals:
+    get:
+      summary: List withdrawals
+      description: Returns all withdrawal requests for the authenticated user.
+      tags: [Wallet]
+      operationId: listWithdrawals
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of withdrawals
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Withdrawal'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/withdrawals/{id}/cancel:
+    put:
+      summary: Cancel pending withdrawal
+      description: Cancels a withdrawal request that is still in **pending** status.
+      tags: [Wallet]
+      operationId: cancelWithdrawal
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Withdrawal ID
+      responses:
+        '200':
+          description: Withdrawal cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Withdrawal cancelled successfully"
+        '400':
+          description: Cannot cancel non-pending withdrawal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Only pending withdrawals can be cancelled"
+                code: "INVALID_STATUS"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/pay/p2p:
+    post:
+      summary: P2P transfer
+      description: |
+        Transfers funds from the authenticated user's wallet to another user.
+        
+        **Requires**: Wallet PIN for authorization
+        **Minimum**: 1 EGP
+        **Daily limit**: Subject to wallet limits
+        
+        **Idempotency**: Required — must include `Idempotency-Key` header.
+      tags: [Wallet]
+      operationId: p2pTransfer
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/P2PTransferRequest'
+            example:
+              recipientId: "550e8400-e29b-41d4-a716-446655440003"
+              amount: 200
+              pin: "1234"
+              note: "Gym membership split"
+      responses:
+        '200':
+          description: Transfer completed
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            Idempotency-Replayed:
+              schema: { type: boolean }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      transaction:
+                        $ref: '#/components/schemas/Transaction'
+                      newBalance:
+                        type: number
+              example:
+                success: true
+                data:
+                  transaction:
+                    id: "550e8400-e29b-41d4-a716-446655440006"
+                    reference_no: "P2P-20240115-XYZ789"
+                    amount: 200.00
+                    type: "p2p_transfer"
+                    status: "completed"
+                    description: "P2P transfer to John Doe"
+                    entry_type: "debit"
+                    running_balance: 1300.00
+                  newBalance: 1300.00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/pay/subscription:
+    post:
+      summary: Pay for subscription
+      description: Pay for a gym or trainer subscription using wallet balance.
+      tags: [Wallet]
+      operationId: paySubscription
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PaymentRequest'
+            example:
+              type: "subscription"
+              amount: 500
+              entityId: "550e8400-e29b-41d4-a716-446655440004"
+              pin: "1234"
+              metadata:
+                planType: "monthly"
+      responses:
+        '200':
+          description: Payment successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      transaction:
+                        $ref: '#/components/schemas/Transaction'
+                      receipt:
+                        type: object
+                        properties:
+                          receiptId:
+                            type: string
+                          amount:
+                            type: number
+                          entityName:
+                            type: string
+                          validUntil:
+                            type: string
+                            format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/pay/order:
+    post:
+      summary: Pay for store order
+      description: Pay for a store order using wallet balance.
+      tags: [Wallet]
+      operationId: payOrder
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PaymentRequest'
+            example:
+              type: "order"
+              amount: 450
+              entityId: "550e8400-e29b-41d4-a716-446655440007"
+              pin: "1234"
+      responses:
+        '200':
+          description: Order payment successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      transaction:
+                        $ref: '#/components/schemas/Transaction'
+                      order:
+                        $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/redeem-coins:
+    post:
+      summary: Redeem coins to wallet
+      description: Converts fitness coins to EGP and credits the wallet.
+      tags: [Wallet]
+      operationId: redeemCoins
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoinRedemptionRequest'
+            example:
+              coins: 1000
+      responses:
+        '200':
+          description: Coins redeemed successfully
+          headers:
+            Idempotency-Replayed:
+              schema: { type: boolean }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/CoinRedemptionResponse'
+              example:
+                success: true
+                data:
+                  coinsRedeemed: 1000
+                  egpCredited: 100.00
+                  exchangeRate: 0.10
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ─── WEBHOOK ENDPOINTS (no auth — gateway signature verified internally) ──
+
+  /wallet/webhooks/fawry:
+    post:
+      summary: Fawry webhook
+      description: Payment gateway webhook for Fawry payment notifications. Signature verified internally.
+      tags: [Wallet]
+      operationId: fawryWebhook
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchantRef:
+                  type: string
+                paymentAmount:
+                  type: number
+                orderStatus:
+                  type: string
+                signature:
+                  type: string
+      responses:
+        '200':
+          description: Webhook processed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/webhooks/paymob:
+    post:
+      summary: Paymob webhook
+      description: Payment gateway webhook for Paymob payment notifications.
+      tags: [Wallet]
+      operationId: paymobWebhook
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/webhooks/instapay:
+    post:
+      summary: InstaPay webhook
+      description: Payment gateway webhook for InstaPay payment notifications.
+      tags: [Wallet]
+      operationId: instapayWebhook
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ─── ADMIN ENDPOINTS (require super_admin role) ────────────────
+
+  /wallet/admin/{walletId}/freeze:
+    post:
+      summary: Freeze wallet
+      description: |
+        **Admin only.** Freezes a user's wallet, preventing all transactions.
+        Requires **super_admin** role.
+      tags: [Admin, Wallet]
+      operationId: freezeWallet
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletFreezeRequest'
+      responses:
+        '200':
+          description: Wallet frozen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Wallet frozen successfully"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/admin/{walletId}/unfreeze:
+    post:
+      summary: Unfreeze wallet
+      description: |
+        **Admin only.** Unfreezes a previously frozen wallet.
+        Requires **super_admin** role.
+      tags: [Admin, Wallet]
+      operationId: unfreezeWallet
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Wallet unfrozen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/admin/{walletId}/adjust:
+    post:
+      summary: Adjust balance
+      description: |
+        **Admin only.** Manually adjusts a wallet balance (credit or debit).
+        Requires **super_admin** role and idempotency key.
+      tags: [Admin, Wallet]
+      operationId: adjustBalance
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BalanceAdjustmentRequest'
+            example:
+              amount: 500
+              reason: "Refund for disputed transaction"
+              reference: "ADJ-2024-001"
+      responses:
+        '200':
+          description: Balance adjusted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      transaction:
+                        $ref: '#/components/schemas/Transaction'
+                      newBalance:
+                        type: number
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/admin/withdrawals/{id}/approve:
+    put:
+      summary: Approve withdrawal
+      description: |
+        **Admin only.** Approves a pending withdrawal request.
+        Requires **super_admin** role.
+      tags: [Admin, Wallet]
+      operationId: approveWithdrawal
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Withdrawal approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Withdrawal not in pending status
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/admin/withdrawals/{id}/reject:
+    put:
+      summary: Reject withdrawal
+      description: |
+        **Admin only.** Rejects a pending withdrawal request with a reason.
+        Requires **super_admin** role.
+      tags: [Admin, Wallet]
+      operationId: rejectWithdrawal
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  example: "Insufficient documentation"
+      responses:
+        '200':
+          description: Withdrawal rejected
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/admin/reconciliation/daily:
+    get:
+      summary: Get daily reconciliation report
+      description: |
+        **Admin only.** Returns the daily reconciliation report with transaction summaries.
+        Requires **super_admin** role.
+      tags: [Admin, Wallet]
+      operationId: getDailyReconciliation
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Report date (defaults to today)
+      responses:
+        '200':
+          description: Reconciliation report
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/ReconciliationReport'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallet/admin/reconciliation/run:
+    post:
+      summary: Run reconciliation
+      description: |
+        **Admin only.** Triggers a manual reconciliation run.
+        Requires **super_admin** role.
+      tags: [Admin, Wallet]
+      operationId: runReconciliation
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  description: Date to reconcile (defaults to today)
+      responses:
+        '200':
+          description: Reconciliation completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/ReconciliationReport'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

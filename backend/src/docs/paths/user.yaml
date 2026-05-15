@@ -1,0 +1,150 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # USER ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /user/profile:
+    put:
+      summary: Update profile
+      description: Update the authenticated user's profile information.
+      tags: [User]
+      operationId: updateProfile
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+            example:
+              fullName: "Ahmed Mohamed Updated"
+              phone: "+201098765432"
+              gender: "male"
+              fitnessLevel: "advanced"
+      responses:
+        '200':
+          description: Profile updated successfully
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /user/change-password:
+    put:
+      summary: Change password
+      description: Change the authenticated user's password. Requires current password for verification.
+      tags: [User]
+      operationId: changePassword
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+            example:
+              currentPassword: "OldPass123!"
+              newPassword: "NewStrongPass456!"
+      responses:
+        '200':
+          description: Password changed successfully
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Password changed successfully"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /user/kyc:
+    post:
+      summary: Submit KYC
+      description: |
+        Submit Know Your Customer (KYC) documents for identity verification.
+        
+        **Required documents:**
+        - Front of national ID (or passport)
+        - Back of national ID
+        - Selfie photo for liveness check
+        
+        After submission, AI processes the documents for verification.
+        Status can be tracked via `kyc_status` field on the user profile.
+      tags: [User]
+      operationId: submitKyc
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KYCRequest'
+            example:
+              idFront: "/9j/4AAQSkZJRgABAQEASABIAAD..."
+              idBack: "/9j/4AAQSkZJRgABAQEASABIAAD..."
+              selfie: "/9j/4AAQSkZJRgABAQEASABIAAD..."
+              documentType: "national_id"
+              idNumber: "28501234567891"
+      responses:
+        '200':
+          description: KYC submitted successfully
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "pending"
+                      message:
+                        type: string
+                        example: "KYC documents submitted for review"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: KYC already submitted or verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

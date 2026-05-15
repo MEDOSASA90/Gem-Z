@@ -6,15 +6,44 @@ import http from 'http';
 import path from 'path';
 import routes from './routes';
 import { config } from './config';
-import { errorHandler } from './core/middlewares/error.middleware';
+
+// ─── NEW: Standardized Error Handling ────────────────────────────
+import {
+    AppError,
+    ValidationError,
+    AuthError,
+    NotFoundError,
+    ConflictError,
+    RateLimitError,
+    WalletError,
+    buildErrorResponse,
+    isAppError,
+    ErrorCode,
+} from './core/errors';
+
+// ─── NEW: API Response Wrapper ───────────────────────────────────
+import { success } from './core/utils/api-response';
+
+// ─── NEW: Graceful Shutdown ──────────────────────────────────────
+import { setupGracefulShutdown, isHealthy } from './core/utils/graceful-shutdown';
+
+// ─── NEW: Health Routes ──────────────────────────────────────────
+import { createHealthRouter } from './routes/health';
+
+// ─── Database & Redis ────────────────────────────────────────────
+import { db } from './core/database/db';
+import { redisClient, connectRedis } from './core/redis/client';
+
+// ─── Socket.IO ───────────────────────────────────────────────────
 import { SocketService } from './core/sockets/socket';
+
+// ─── Middleware ──────────────────────────────────────────────────
 import { generalLimiter } from './core/middlewares/rate-limit.middleware';
 import { verifyEmailConnection } from './services/email.service';
 
 // ─── Queue System Imports ────────────────────────────────────────
 import {
     setupQueues,
-    shutdownQueues,
     setupQueueDashboard,
     setupQueueHealthEndpoint,
 } from './core/queue';
@@ -27,21 +56,25 @@ import { requestId } from './core/middlewares/request-id.middleware';
 import { sanitizationMiddleware } from './core/middlewares/sanitization.middleware';
 import { timeout } from './core/middlewares/timeout.middleware';
 
-// ─── NEW: Logging & Redis Imports ────────────────────────────────
+// ─── Logging ─────────────────────────────────────────────────────
 import { logger } from './core/logging/logger';
 import { logError, logUncaught } from './core/logging/error-logger';
 import {
     requestLogger,
-    healthCheckHandler,
 } from './core/logging/middleware';
-import { connectRedis, disconnectRedis } from './core/redis/client';
+
+// ─── Validate Environment ────────────────────────────────────────
+import { validateEnv } from './config/validation';
+validateEnv();
+
+// ─── Swagger/OpenAPI Documentation ───────────────────────────────
+import { setupSwagger } from './docs/swagger';
 
 const log = logger.child({ module: 'server' });
 
-// ─── Validate Environment Variables ──────────────────────────────
-
-import { validateEnv } from './config/validation';
-validateEnv();
+// ════════════════════════════════════════════════════════════════
+//  EXPRESS APP SETUP
+// ════════════════════════════════════════════════════════════════
 
 const app = express();
 const server = http.createServer(app);
@@ -51,55 +84,34 @@ const PORT = config.port;
 export const socketService = new SocketService(server);
 
 // ════════════════════════════════════════════════════════════════
-//  PROCESS-LEVEL ERROR HANDLERS (must be before server start)
+//  PROCESS-LEVEL ERROR HANDLERS
 // ════════════════════════════════════════════════════════════════
 
 process.on('uncaughtException', (err: Error) => {
     logUncaught(err, 'uncaughtException');
-    // Give logger time to flush before triggering shutdown
-    setTimeout(() => gracefulShutdown('uncaughtException'), 500);
+    setTimeout(() => process.kill(process.pid, 'SIGTERM'), 500);
 });
 
 process.on('unhandledRejection', (reason: unknown) => {
     const err = reason instanceof Error ? reason : new Error(String(reason));
     logUncaught(err, 'unhandledRejection');
-    // Don't exit — let the app continue, but log it
 });
 
-process.on('rejectionHandled', (promise: Promise<any>) => {
+process.on('rejectionHandled', (_promise: Promise<any>) => {
     log.warn({ type: 'rejection_handled' }, 'Previously unhandled promise rejection was handled');
 });
 
-// Listen for termination signals
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-
 // ════════════════════════════════════════════════════════════════
-//  MIDDLEWARE STACK — Ordered by Security Best Practices
-// ════════════════════════════════════════════════════════════════
-//
-//  1. Request ID          → Trace every request for debugging
-//  2. Security Headers    → Helmet + CSP + HSTS hardening
-//  3. CORS                → Cross-origin resource sharing rules
-//  4. Rate Limiting       → DDoS / brute-force protection
-//  5. Body Parser         → Parse JSON + URL-encoded bodies
-//  6. Cookie Parser       → Parse and sign cookies
-//  7. Request Logging     → Log all incoming requests (NEW: Pino)
-//  8. Input Sanitization  → XSS, SQLi, NoSQLi prevention
-//  9. Timeout             → Prevent hanging requests
-// 10. Static Files        → Serve uploaded files
-// 11. API Routes          → Application routes
-// 12. Error Handler       → Global error handling (must be LAST)
-//
+//  MIDDLEWARE STACK
 // ════════════════════════════════════════════════════════════════
 
-// ─── 1. REQUEST ID ─────────────────────────────────────────────
+// 1. Request ID
 app.use(requestId());
 
-// ─── 2. SECURITY HEADERS ───────────────────────────────────────
+// 2. Security Headers
 app.use(securityHeaders());
 
-// ─── 3. CORS ───────────────────────────────────────────────────
+// 3. CORS
 app.use(cors({
     origin: config.clientUrl,
     credentials: true,
@@ -119,35 +131,42 @@ app.use(cors({
     ],
 }));
 
-// ─── 4. RATE LIMITING ──────────────────────────────────────────
+// 4. Rate Limiting
 app.use('/api/', generalLimiter);
 
-// ─── 5. BODY PARSER ────────────────────────────────────────────
+// 5. Body Parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// ─── 6. COOKIE PARSER ──────────────────────────────────────────
+// 6. Cookie Parser
 app.use(cookieParser());
 
-// ─── 7. REQUEST LOGGING (NEW) ──────────────────────────────────
-// Structured Pino logging for every HTTP request
+// 7. Request Logging
 app.use(requestLogger);
 
-// ─── 8. INPUT SANITIZATION ─────────────────────────────────────
+// 8. Input Sanitization
 app.use(sanitizationMiddleware());
 
-// ─── 9. REQUEST TIMEOUT ────────────────────────────────────────
+// 9. Request Timeout
 app.use(timeout());
 
 // ════════════════════════════════════════════════════════════════
 //  APPLICATION ROUTES
 // ════════════════════════════════════════════════════════════════
 
-// ─── 10. STATIC FILES ──────────────────────────────────────────
+// 10. Static Files
 app.use('/uploads', express.static(path.join(__dirname, '../../public/uploads')));
 
-// ─── 11. API ROUTES ────────────────────────────────────────────
+// 11. NEW: Health Check Routes (before API routes)
+app.use('/api/v1/health', createHealthRouter(db, redisClient));
+
+// ─── 12. API Routes ────────────────────────────────────────────
 app.use('/api/v1', routes);
+
+// ─── 13. Swagger API Docs ──────────────────────────────────────
+// Interactive API documentation at /api-docs
+// Raw OpenAPI spec at /api-docs.json
+setupSwagger(app);
 
 // ─── Queue Dashboard ───────────────────────────────────────────
 setupQueueDashboard(app);
@@ -155,72 +174,79 @@ setupQueueDashboard(app);
 // ─── Queue Health Endpoint ─────────────────────────────────────
 setupQueueHealthEndpoint(app);
 
-// ─── Root / Health Endpoint ────────────────────────────────────
-app.get('/', healthCheckHandler);
-app.get('/health', healthCheckHandler);
-app.get('/healthz', healthCheckHandler);
-
-// ─── 12. GLOBAL ERROR HANDLER ──────────────────────────────────
-// Must be the LAST middleware — catches all errors.
-app.use(errorHandler);
-
-// ─── 404 Handler ───────────────────────────────────────────────
-app.use((_req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Route not found',
-    });
+// ─── Legacy Health Endpoints (redirect to new ones) ────────────
+app.get('/', (_req, res) => {
+    res.redirect('/api/v1/health');
+});
+app.get('/health', (_req, res) => {
+    res.redirect('/api/v1/health');
+});
+app.get('/healthz', (_req, res) => {
+    res.redirect('/api/v1/health');
 });
 
 // ════════════════════════════════════════════════════════════════
-//  GRACEFUL SHUTDOWN
+//  NEW: GLOBAL ERROR HANDLER (replaces old error.middleware)
 // ════════════════════════════════════════════════════════════════
 
-let isShuttingDown = false;
+app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    const requestId = req.headers['x-request-id'] as string | undefined;
 
-async function gracefulShutdown(signal: string): Promise<void> {
-    if (isShuttingDown) {
-        log.info('Shutdown already in progress...');
-        return;
-    }
-    isShuttingDown = true;
-
-    log.info({ signal }, `Received ${signal}. Starting graceful shutdown...`);
-
-    // 1. Stop accepting new connections
-    server.close(() => {
-        log.info('HTTP server closed — no new connections accepted.');
+    // Log the error
+    logError(err, {
+        route: req.path,
+        method: req.method,
+        requestId,
+        origin: err.stack?.split('\n')[1]?.trim(),
     });
 
-    try {
-        // 2. Disconnect Redis (NEW)
-        await disconnectRedis();
-        log.info('Redis disconnected gracefully.');
-    } catch (err) {
-        logError(err as Error, { route: 'shutdown', origin: 'disconnectRedis' });
+    // Handle known operational errors (AppError hierarchy)
+    if (isAppError(err)) {
+        const response = buildErrorResponse(err, requestId);
+        return res.status(err.statusCode).json(response);
     }
 
-    try {
-        // 3. Shut down queue system (workers + queues + Redis)
-        await shutdownQueues();
-        log.info('Queue system shut down.');
-    } catch (err) {
-        logError(err as Error, { route: 'shutdown', origin: 'shutdownQueues' });
+    // Handle unknown/programming errors
+    const isDev = process.env.NODE_ENV === 'development';
+    const statusCode = (err as any).statusCode || 500;
+    const response = buildErrorResponse(
+        new AppError(
+            isDev ? err.message : 'Internal Server Error',
+            statusCode,
+            ErrorCode.SERVER_ERROR,
+            false
+        ),
+        requestId
+    );
+
+    // Include stack in development
+    if (isDev) {
+        response.stack = err.stack;
     }
 
-    // 4. Allow time for final logs to flush
-    setTimeout(() => {
-        log.info('Graceful shutdown complete. Exiting.');
-        process.exit(0);
-    }, 500);
-}
+    res.status(statusCode).json(response);
+});
+
+// ─── 404 Handler ───────────────────────────────────────────────
+app.use((_req, res) => {
+    const notFound = new NotFoundError('Route not found', ErrorCode.NOT_FOUND_RESOURCE);
+    res.status(404).json(buildErrorResponse(notFound));
+});
+
+// ════════════════════════════════════════════════════════════════
+//  NEW: GRACEFUL SHUTDOWN
+// ════════════════════════════════════════════════════════════════
+
+setupGracefulShutdown(server, [], {
+    timeoutMs: 30000,
+});
 
 // ════════════════════════════════════════════════════════════════
 //  SERVER START
 // ════════════════════════════════════════════════════════════════
 
 server.listen(PORT, async () => {
-    // Connect to Redis (non-blocking — app works without it)
+    // Connect to Redis
     await connectRedis();
 
     log.info(
@@ -239,8 +265,8 @@ server.listen(PORT, async () => {
     );
 
     log.info(
-        { features: ['security-headers', 'rate-limiting', 'input-sanitization', 'request-timeout', 'request-logging'] },
-        'Security features active'
+        { features: ['security-headers', 'rate-limiting', 'input-sanitization', 'request-timeout', 'request-logging', 'standardized-errors', 'graceful-shutdown'] },
+        'Security & architecture features active'
     );
 
     // Initialize BullMQ Queue System
@@ -254,7 +280,6 @@ server.listen(PORT, async () => {
         const error = err as Error;
         logError(error, { route: 'startup', origin: 'setupQueues' });
         log.warn('Queue system failed to start — background jobs will NOT be processed');
-        // Don't crash — queues are optional for basic API functionality
     }
 
     // Verify email connection on startup (non-blocking)

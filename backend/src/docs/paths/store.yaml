@@ -1,0 +1,427 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # STORE ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /store/products:
+    get:
+      summary: List products
+      description: Returns a paginated list of store products with optional filtering by category and store.
+      tags: [Store]
+      operationId: getProducts
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by product category
+        - name: storeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by store
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by product name
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+          description: Minimum price filter
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+          description: Maximum price filter
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [price_asc, price_desc, newest, popular, rating]
+            default: newest
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoreProduct'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Add product
+      description: Add a new product to the store (store admin only).
+      tags: [Store]
+      operationId: addProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProductRequest'
+            example:
+              name: "Premium Whey Protein"
+              description: "24g protein per serving, chocolate flavor"
+              price_egp: 450.00
+              stock_qty: 100
+              category: "protein"
+              images: []
+      responses:
+        '201':
+          description: Product added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/StoreProduct'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /store/products/{id}:
+    get:
+      summary: Get product by ID
+      description: Returns detailed information about a specific product.
+      tags: [Store]
+      operationId: getProductById
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/StoreProduct'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /store/checkout:
+    post:
+      summary: Checkout cart
+      description: |
+        Complete a store purchase. Supports wallet, Fawry, Paymob, and cash on delivery.
+        
+        **Payment methods:**
+        - **wallet**: Deducts from user's wallet balance
+        - **fawry**: Generates Fawry payment reference
+        - **paymob**: Redirects to Paymob checkout
+        - **cash_on_delivery**: Cash payment on delivery
+      tags: [Store]
+      operationId: checkoutCart
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutRequest'
+            example:
+              items:
+                - productId: "550e8400-e29b-41d4-a716-446655440007"
+                  quantity: 2
+                - productId: "550e8400-e29b-41d4-a716-446655440008"
+                  quantity: 1
+              paymentMethod: "wallet"
+              shippingAddress:
+                street: "123 Nile Corniche"
+                city: "Cairo"
+                governorate: "Cairo Governorate"
+                country: "Egypt"
+              couponCode: "FIT2024"
+      responses:
+        '200':
+          description: Order placed successfully
+          headers:
+            Idempotency-Replayed:
+              schema: { type: boolean }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          description: Insufficient wallet balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Insufficient wallet balance"
+                code: "INSUFFICIENT_FUNDS"
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /store/marketplace/items:
+    get:
+      summary: List marketplace items
+      description: Returns a list of items available on the peer-to-peer marketplace.
+      tags: [Store]
+      operationId: getMarketplaceItems
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: condition
+          in: query
+          schema:
+            type: string
+            enum: [new, like_new, good, fair]
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Marketplace items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MarketplaceItem'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /store/marketplace/item:
+    post:
+      summary: List marketplace item
+      description: List an item for sale on the peer-to-peer marketplace.
+      tags: [Store]
+      operationId: listMarketplaceItem
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListMarketplaceItemRequest'
+            example:
+              title: "Used Olympic Barbell 20kg"
+              description: "Olympic barbell in good condition, 20kg"
+              price: 2500.00
+              condition: "good"
+              images: []
+      responses:
+        '201':
+          description: Item listed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/MarketplaceItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /store/templates:
+    post:
+      summary: List workout template
+      description: Create and share a workout template with the community.
+      tags: [Store]
+      operationId: listWorkoutTemplate
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, difficulty, duration, exercises]
+              properties:
+                title:
+                  type: string
+                  example: "Full Body HIIT"
+                description:
+                  type: string
+                difficulty:
+                  type: string
+                  enum: [beginner, intermediate, advanced]
+                duration:
+                  type: integer
+                  description: Duration in minutes
+                exercises:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      sets:
+                        type: integer
+                      reps:
+                        type: integer
+                      restSeconds:
+                        type: integer
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/WorkoutTemplate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /store/nft/mint:
+    post:
+      summary: Mint fitness NFT
+      description: |
+        Mints a fitness achievement as an NFT on the blockchain.
+        
+        **NFT types:**
+        - **achievement**: Milestone badges (100 workouts, etc.)
+        - **collectible**: Limited edition items
+        - **membership**: Gym/trainer membership tokens
+      tags: [Store]
+      operationId: mintFitnessNFT
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NFTMintRequest'
+            example:
+              name: "100 Workouts Milestone"
+              description: "Awarded for completing 100 workouts"
+              type: "achievement"
+              image: "https://gemz.fit/nfts/100-workouts.png"
+              attributes:
+                - trait_type: "Workouts Completed"
+                  value: "100"
+                - trait_type: "Date Achieved"
+                  value: "2024-01-15"
+      responses:
+        '201':
+          description: NFT minted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      tokenId:
+                        type: string
+                      contractAddress:
+                        type: string
+                      transactionHash:
+                        type: string
+                      metadataUrl:
+                        type: string
+                        format: uri
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

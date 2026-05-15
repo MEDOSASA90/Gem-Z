@@ -1,0 +1,186 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # TRAINER ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /trainer/stats:
+    get:
+      summary: Get trainer statistics
+      description: Returns comprehensive statistics for a trainer's business.
+      tags: [Trainer]
+      operationId: getTrainerStats
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Trainer statistics
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/TrainerStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /trainer/revenue:
+    get:
+      summary: Get trainer revenue
+      description: Returns detailed revenue breakdown for a trainer.
+      tags: [Trainer]
+      operationId: getTrainerRevenue
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year, all]
+            default: month
+      responses:
+        '200':
+          description: Revenue data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/TrainerRevenue'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /trainer/clients:
+    get:
+      summary: Get trainer clients
+      description: Returns a list of clients assigned to the trainer.
+      tags: [Trainer]
+      operationId: getTrainerClients
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, paused, completed, churned]
+      responses:
+        '200':
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TrainerClient'
+                  pagination:
+                    $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /trainer/assign:
+    post:
+      summary: Assign plan to client
+      description: Assign a workout plan to a client.
+      tags: [Trainer]
+      operationId: assignPlanToClient
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignPlanRequest'
+            example:
+              clientId: "550e8400-e29b-41d4-a716-446655440020"
+              planId: "550e8400-e29b-41d4-a716-446655440015"
+              startDate: "2024-01-20"
+              notes: "Focus on upper body this month"
+      responses:
+        '200':
+          description: Plan assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /trainer/churn-prediction:
+    get:
+      summary: Get churn prediction
+      description: |
+        AI-powered client churn risk prediction.
+        
+        Returns risk scores, contributing factors, and recommended retention actions.
+      tags: [Trainer]
+      operationId: getChurnPrediction
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: clientId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Specific client ID (optional — returns all clients if omitted)
+      responses:
+        '200':
+          description: Churn predictions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChurnPrediction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

@@ -1,0 +1,96 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # SEARCH ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /search:
+    get:
+      summary: Global search
+      description: |
+        Search across users, gyms, and products with a single query.
+        
+        **Returns:**
+        - Users (trainers, trainees)
+        - Products (store items)
+        - Gyms
+        
+        **Minimum query length**: 2 characters
+      tags: [User, Gym, Store]
+      operationId: globalSearch
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 100
+          example: "protein"
+          description: Search query
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        '200':
+          description: Search results
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  results:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PublicUser'
+                      products:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            price:
+                              type: number
+                            store_name:
+                              type: string
+                      gyms:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Gym'
+              example:
+                success: true
+                results:
+                  users:
+                    - id: "550e8400-e29b-41d4-a716-446655440000"
+                      full_name: "Ahmed Mohamed"
+                      role: "trainer"
+                      avatar_url: null
+                      rating: null
+                  products:
+                    - id: "550e8400-e29b-41d4-a716-446655440007"
+                      name: "Premium Whey Protein"
+                      price: 450.00
+                      store_name: "FitFuel Supplements"
+                  gyms: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

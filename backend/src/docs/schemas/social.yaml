@@ -1,0 +1,129 @@
+schemas:
+  # ─── Social Post ───────────────────────────────────────────────
+  SocialPost:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      author:
+        $ref: '#/components/schemas/PublicUser'
+      content:
+        type: string
+        example: "Just hit a new PR on deadlifts! 180kg x 5 reps!"
+        maxLength: 2000
+      media:
+        type: array
+        items:
+          type: string
+          format: uri
+        description: Attached media URLs
+      type:
+        type: string
+        enum: [text, photo, video, workout_checkin, achievement]
+      workoutData:
+        type: object
+        nullable: true
+        properties:
+          exercise:
+            type: string
+          sets:
+            type: integer
+          reps:
+            type: integer
+          weight:
+            type: number
+      achievement:
+        type: object
+        nullable: true
+        properties:
+          title:
+            type: string
+          badge:
+            type: string
+      likesCount:
+        type: integer
+        example: 42
+      commentsCount:
+        type: integer
+        example: 8
+      isLiked:
+        type: boolean
+        example: false
+      created_at:
+        type: string
+        format: date-time
+
+  # ─── Create Post Request ───────────────────────────────────────
+  CreatePostRequest:
+    type: object
+    required: [content]
+    properties:
+      content:
+        type: string
+        maxLength: 2000
+        example: "Just hit a new PR on deadlifts! 180kg x 5 reps!"
+      type:
+        type: string
+        enum: [text, photo, video, workout_checkin, achievement]
+        default: text
+      media:
+        type: array
+        items:
+          type: string
+        description: Base64-encoded media files
+      workoutData:
+        type: object
+        properties:
+          exercise:
+            type: string
+          sets:
+            type: integer
+          reps:
+            type: integer
+          weight:
+            type: number
+
+  # ─── Workout Buddy Match Request ───────────────────────────────
+  BuddyMatchRequest:
+    type: object
+    properties:
+      fitnessLevel:
+        type: string
+        enum: [beginner, intermediate, advanced]
+      goals:
+        type: array
+        items:
+          type: string
+        example: ["strength", "bodybuilding"]
+      preferredTime:
+        type: string
+        example: "evening"
+      location:
+        type: string
+        example: "Cairo, Zamalek"
+      gender:
+        type: string
+        enum: [male, female, any]
+        default: any
+
+  # ─── Workout Buddy Profile ─────────────────────────────────────
+  BuddyProfile:
+    type: object
+    properties:
+      user:
+        $ref: '#/components/schemas/PublicUser'
+      fitnessLevel:
+        type: string
+      goals:
+        type: array
+        items:
+          type: string
+      preferredTime:
+        type: string
+      location:
+        type: string
+      matchScore:
+        type: integer
+        description: Compatibility score (0-100)
+        example: 87

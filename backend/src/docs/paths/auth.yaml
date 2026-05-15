@@ -1,0 +1,439 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # AUTH ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: |
+        Creates a new user account with role-specific profile data.
+        
+        **Role-specific requirements:**
+        - **trainee**: Basic info only
+        - **trainer**: Must provide `trainerData` (specialization, experience, bio)
+        - **gym_admin**: Must provide `gymData` (name, location)
+        - **store_admin**: Must provide `storeData` (name, category)
+        
+        After registration, a welcome email and verification email are sent.
+        A financial wallet is automatically created.
+      tags: [Auth]
+      operationId: registerUser
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              email: "ahmed@example.com"
+              password: "StrongPass123!"
+              fullName: "Ahmed Mohamed"
+              role: "trainee"
+              phone: "+201012345678"
+              countryCode: "+20"
+              gender: "male"
+              dob: "1995-03-15"
+              fitnessLevel: "intermediate"
+      responses:
+        '201':
+          description: User registered successfully
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+            Set-Cookie:
+              schema: { type: string }
+              description: HTTP-only refreshToken cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                success: true
+                data:
+                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    id: "550e8400-e29b-41d4-a716-446655440000"
+                    email: "ahmed@example.com"
+                    full_name: "Ahmed Mohamed"
+                    role: "trainee"
+                    phone: "+201012345678"
+                    avatar_url: null
+                    gender: "male"
+                    country_code: "+20"
+                    fitness_level: "intermediate"
+                    referral_code: "AHMED2024"
+                    status: "active"
+                    kyc_status: "unverified"
+                    created_at: "2024-01-15T10:30:00.000Z"
+                    updated_at: "2024-01-15T10:30:00.000Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/login:
+    post:
+      summary: Login
+      description: Authenticate with email and password. Returns an access token and sets an HTTP-only refresh token cookie.
+      tags: [Auth]
+      operationId: login
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: "ahmed@example.com"
+              password: "StrongPass123!"
+      responses:
+        '200':
+          description: Login successful
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+            Set-Cookie:
+              schema: { type: string }
+              description: "refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                success: true
+                data:
+                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    id: "550e8400-e29b-41d4-a716-446655440000"
+                    email: "ahmed@example.com"
+                    full_name: "Ahmed Mohamed"
+                    role: "trainee"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Invalid email or password"
+                code: "INVALID_CREDENTIALS"
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/logout:
+    post:
+      summary: Logout
+      description: Blacklists the refresh token and clears the HTTP-only cookie. Requires authentication.
+      tags: [Auth]
+      operationId: logout
+      security:
+        - BearerAuth: []
+        - RefreshTokenCookie: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+      responses:
+        '200':
+          description: Logout successful
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            Set-Cookie:
+              schema: { type: string }
+              description: Clears the refreshToken cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Logged out successfully"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/me:
+    get:
+      summary: Get current user
+      description: Returns the authenticated user's profile including wallet summary.
+      tags: [Auth]
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Current user profile
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      description: Generates a new access token using the refresh token from the HTTP-only cookie or request body. The old refresh token is blacklisted.
+      tags: [Auth]
+      operationId: refreshToken
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: New access token generated
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            Set-Cookie:
+              schema: { type: string }
+              description: New refreshToken cookie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                      user:
+                        $ref: '#/components/schemas/User'
+              example:
+                success: true
+                data:
+                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    id: "550e8400-e29b-41d4-a716-446655440000"
+                    email: "ahmed@example.com"
+                    full_name: "Ahmed Mohamed"
+                    role: "trainee"
+        '401':
+          description: Invalid or expired refresh token
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Invalid or expired refresh token"
+                code: "TOKEN_INVALID"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/forgot-password:
+    post:
+      summary: Request password reset
+      description: Sends a password reset link to the user's email address. The link contains a secure token valid for 1 hour.
+      tags: [Auth]
+      operationId: forgotPassword
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+            example:
+              email: "ahmed@example.com"
+      responses:
+        '200':
+          description: Password reset email sent (always returns success to prevent email enumeration)
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+            X-RateLimit-Limit:
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              schema: { type: integer }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "If an account exists with this email, a password reset link has been sent"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      description: Resets the user's password using a valid reset token from the forgot-password email.
+      tags: [Auth]
+      operationId: resetPassword
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+            example:
+              token: "abc123def456"
+              newPassword: "NewStrongPass456!"
+      responses:
+        '200':
+          description: Password reset successfully
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Password reset successfully. Please log in with your new password."
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid or expired token
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Invalid or expired reset token"
+                code: "TOKEN_INVALID"
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/verify-email:
+    get:
+      summary: Verify email
+      description: Verifies the user's email address using the token from the verification email link.
+      tags: [Auth]
+      operationId: verifyEmail
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "verify_abc123def456"
+          description: Verification token from email
+        - $ref: '#/components/parameters/RequestIdHeader'
+      responses:
+        '200':
+          description: Email verified successfully
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Email verified successfully"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid or expired token
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/resend-verification:
+    post:
+      summary: Resend verification email
+      description: Resends the email verification link to the authenticated user.
+      tags: [Auth]
+      operationId: resendVerification
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationRequest'
+      responses:
+        '200':
+          description: Verification email resent
+          headers:
+            X-Request-ID:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Verification email sent"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

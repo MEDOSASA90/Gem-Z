@@ -1,0 +1,104 @@
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # UPLOAD ENDPOINTS
+  # ═══════════════════════════════════════════════════════════════
+
+  /upload:
+    post:
+      summary: Upload image
+      description: |
+        Upload an image file. Returns a public URL for the uploaded file.
+        
+        **Supported formats:** JPEG, PNG, WebP, GIF
+        **Max size:** 10MB
+      tags: [Upload]
+      operationId: uploadImage
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Image file (JPEG, PNG, WebP, GIF)
+      responses:
+        '200':
+          description: Image uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  url:
+                    type: string
+                    format: uri
+                    example: "https://api.gemz.fit/uploads/image-1234567890.png"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: File too large
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /upload/document:
+    post:
+      summary: Upload document
+      description: |
+        Upload a document (PDF or image). Returns a public URL.
+        
+        **Supported formats:** PDF, JPEG, PNG
+        **Max size:** 10MB
+      tags: [Upload]
+      operationId: uploadDocument
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RequestIdHeader'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document]
+              properties:
+                document:
+                  type: string
+                  format: binary
+                  description: Document file (PDF, JPEG, PNG)
+      responses:
+        '200':
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  url:
+                    type: string
+                    format: uri
+                    example: "https://api.gemz.fit/uploads/document-1234567890.pdf"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: File too large
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

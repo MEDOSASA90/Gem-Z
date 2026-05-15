@@ -1,0 +1,108 @@
+schemas:
+  # ─── Coins Balance ─────────────────────────────────────────────
+  CoinsBalance:
+    type: object
+    properties:
+      totalCoins:
+        type: integer
+        example: 1250
+        description: Total coins available
+      stakedCoins:
+        type: integer
+        example: 300
+        description: Coins currently staked
+      earnedThisWeek:
+        type: integer
+        example: 150
+      earnedThisMonth:
+        type: integer
+        example: 500
+      exchangeRate:
+        type: number
+        example: 0.10
+        description: EGP value per coin
+      equivalentValue:
+        type: number
+        example: 125.00
+        description: Total EGP equivalent
+
+  # ─── Earn Coins Request ────────────────────────────────────────
+  EarnCoinsRequest:
+    type: object
+    required: [activity, amount]
+    properties:
+      activity:
+        type: string
+        enum: [workout_complete, streak_milestone, challenge_win, referral, social_share, checkin]
+        example: "workout_complete"
+      amount:
+        type: integer
+        minimum: 1
+        example: 50
+      metadata:
+        type: object
+        description: Additional context for the activity
+        properties:
+          workoutId:
+            type: string
+          duration:
+            type: integer
+
+  # ─── Stake Coins Request ───────────────────────────────────────
+  StakeCoinsRequest:
+    type: object
+    required: [amount, goal]
+    properties:
+      amount:
+        type: integer
+        minimum: 100
+        example: 500
+        description: Coins to stake (minimum 100)
+      goal:
+        type: string
+        example: "Complete 20 workouts in 30 days"
+      duration:
+        type: integer
+        description: Duration in days
+        example: 30
+      rewardMultiplier:
+        type: number
+        default: 1.5
+        description: Reward multiplier if goal is achieved
+
+  # ─── Stake Result ──────────────────────────────────────────────
+  StakeResult:
+    type: object
+    properties:
+      stakeId:
+        type: string
+        format: uuid
+      amount:
+        type: integer
+      goal:
+        type: string
+      status:
+        type: string
+        enum: [active, completed, failed, cancelled]
+      startedAt:
+        type: string
+        format: date-time
+      expiresAt:
+        type: string
+        format: date-time
+      rewardMultiplier:
+        type: number
+      potentialReward:
+        type: integer
+
+  # ─── Redeem Reward Request ─────────────────────────────────────
+  RedeemRewardRequest:
+    type: object
+    required: [rewardId]
+    properties:
+      rewardId:
+        type: string
+        format: uuid
+      coins:
+        type: integer
+        description: Coins to spend (if variable pricing)
