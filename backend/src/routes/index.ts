@@ -7,14 +7,20 @@ import { TraineeController } from '../modules/trainee/trainee.controller';
 import { CoinsController } from '../modules/coins/coins.controller';
 import { ChallengeController } from '../modules/challenges/challenge.controller';
 import { StoreController } from '../modules/store/store.controller';
-import { SocialController } from '../modules/social/social.controller';
 import { RecipeController } from '../modules/recipes/recipe.controller';
-import { PaymentWebhookController } from '../modules/payment/payment.controller';
 import { TurnstileController } from '../modules/gym/turnstile.controller';
 import { BiddingController } from '../modules/bidding/bidding.controller';
-import { SquadController } from '../modules/squads/squad.controller';
 import { verifyToken as authenticate } from '../core/middlewares/auth.middleware';
+import { requireRole } from '../core/middlewares/role.middleware';
 import { uploadLimiter } from '../core/middlewares/rate-limit.middleware';
+
+// ─── NEW: Modular Route Imports ─────────────────────────────────
+
+import socialRoutes from '../modules/social/social.routes';
+import squadRoutes from '../modules/squads/squad.routes';
+import trainerRoutes from '../modules/trainer/trainer.routes';
+import paymentRoutes from '../modules/payment/payment.routes';
+
 import { db } from '../core/database/db';
 
 const authenticateRequest = authenticate;
@@ -154,23 +160,26 @@ router.get('/trainee/dashboard', authenticateRequest, TraineeController.getDashb
 
 // ─── Gym Routes ───────────────────────────────────────────────
 
-import {
-    getGymStats, buyDailyPass, scanDailyPass, scanGymBarcode, setOffPeakPricing, getTraineePasses,
-    unlockSmartLocker, getLiveCrowdTracker, getEquipmentTutorial
-} from '../modules/gym/gym.controller';
-
-router.get('/gym/stats',              authenticateRequest, getGymStats);
-router.post('/gym/passes/buy',        authenticateRequest, buyDailyPass);
-router.post('/gym/passes/scan',       authenticateRequest, scanDailyPass);
-router.post('/gym/scan',              authenticateRequest, scanGymBarcode);
-router.post('/gym/off-peak',          authenticateRequest, setOffPeakPricing);
-router.get('/trainee/passes',         authenticateRequest, getTraineePasses);
-router.post('/gym/lockers/unlock',    authenticateRequest, unlockSmartLocker);
-router.get('/gym/crowd',              authenticateRequest, getLiveCrowdTracker);
-router.get('/gym/equipment/:qrCode',  authenticateRequest, getEquipmentTutorial);
+import gymRoutes from '../modules/gym/gym.routes';
+router.use('/gym', authenticateRequest, gymRoutes);
 
 // IoT Turnstile Access (no auth — device authenticates via its own token)
 router.post('/gym/turnstile/verify', TurnstileController.verifyAccess);
+
+// ─── KYC Routes ───────────────────────────────────────────────
+
+import kycRoutes from '../modules/kyc/kyc.routes';
+router.use('/', kycRoutes);
+
+// ─── Live Streaming Routes ────────────────────────────────────
+
+import liveRoutes from '../modules/live/live.routes';
+router.use('/live', authenticateRequest, liveRoutes);
+
+// ─── Recurring Subscription Routes ────────────────────────────
+
+import subscriptionRoutes from '../modules/subscription/subscription.routes';
+router.use('/subscriptions', authenticateRequest, subscriptionRoutes);
 
 // ─── Coins Routes ─────────────────────────────────────────────
 
@@ -199,9 +208,7 @@ router.post('/store/nft/mint',              authenticateRequest, StoreController
 
 // ─── Social Routes ────────────────────────────────────────────
 
-router.get('/social/feed',          authenticateRequest, SocialController.getFeed);
-router.post('/social/posts',        authenticateRequest, SocialController.createPost);
-router.get('/social/buddy-match',   authenticateRequest, SocialController.findWorkoutBuddy);
+router.use('/social', socialRoutes);
 
 // ─── Recipe Routes ────────────────────────────────────────────
 
@@ -212,12 +219,7 @@ router.post('/recipes/live-stream',       authenticateRequest, RecipeController.
 
 // ─── Trainer Routes ───────────────────────────────────────────
 
-import { getTrainerStats, getTrainerRevenue, getTrainerClients, assignPlanToClient, getChurnPrediction } from '../modules/trainer/trainer.controller';
-router.get('/trainer/stats',              authenticateRequest, getTrainerStats);
-router.get('/trainer/revenue',            authenticateRequest, getTrainerRevenue);
-router.get('/trainer/clients',            authenticateRequest, getTrainerClients);
-router.post('/trainer/assign',            authenticateRequest, assignPlanToClient);
-router.get('/trainer/churn-prediction',   authenticateRequest, getChurnPrediction);
+router.use('/trainer', trainerRoutes);
 
 // ─── Trainer Bidding System ───────────────────────────────────
 
@@ -228,14 +230,11 @@ router.post('/bidding/bid/:bidId/accept',     authenticateRequest, BiddingContro
 
 // ─── Squads / Guilds ──────────────────────────────────────────
 
-router.post('/squads',          authenticateRequest, SquadController.createSquad);
-router.get('/squads',           authenticateRequest, SquadController.listSquads);
-router.post('/squads/:id/join', authenticateRequest, SquadController.joinSquad);
+router.use('/squads', squadRoutes);
 
-// ─── Payment Webhooks ─────────────────────────────────────────
-// ⚠️  DISABLED until official payment gateway registration is complete
-// router.post('/payment/webhook/fawry',  webhookLimiter, PaymentWebhookController.fawryWebhook);
-// router.post('/payment/webhook/paymob', webhookLimiter, PaymentWebhookController.paymobWebhook);
+// ─── Payment Routes (includes webhooks) ───────────────────────
+
+router.use('/payment', paymentRoutes);
 
 // ─── AI Generator Routes ──────────────────────────────────────
 
