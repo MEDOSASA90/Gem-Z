@@ -364,4 +364,83 @@ router.get('/push/templates',      authenticateRequest, PushController.listAllTe
 router.get('/push/status/:id',     authenticateRequest, PushController.getStatus as any);
 router.get('/push/vapid-key',      PushController.getVapidKey as any);
 
+// ─── AI Workout Generator Routes ────────────────────────────────
+
+import workoutRoutes from '../modules/workout/workout.routes';
+router.use('/workout', authenticateRequest, workoutRoutes);
+
+// ─── Food Delivery Routes ───────────────────────────────────────
+
+import foodRoutes from '../modules/food/food.routes';
+router.use('/food', authenticateRequest, foodRoutes);
+
+// ─── Corporate Wellness Routes ──────────────────────────────────
+
+import corporateRoutes from '../modules/corporate/corporate.routes';
+router.use('/corporate', authenticateRequest, corporateRoutes);
+
+// ─── Group Classes Booking Routes ───────────────────────────────
+
+import classesRoutes from '../modules/classes/classes.routes';
+router.use('/classes', authenticateRequest, classesRoutes);
+
+// ─── Home Workout Plans Routes ──────────────────────────────────
+
+import homeWorkoutRoutes from '../modules/home/home.routes';
+router.use('/home', authenticateRequest, homeWorkoutRoutes);
+
+// ─── Loyalty Program Routes ─────────────────────────────────────
+
+import loyaltyRoutes from '../modules/loyalty/loyalty.routes';
+router.use('/loyalty', authenticateRequest, loyaltyRoutes);
+
+// ─── Affiliate Program Routes ───────────────────────────────────
+
+import affiliateRoutes from '../modules/affiliate/affiliate.routes';
+router.use('/affiliate', authenticateRequest, affiliateRoutes);
+
+// ─── Progress Photos AI Routes ──────────────────────────────────
+
+import progressRoutes from '../modules/progress/progress.routes';
+router.use('/progress', authenticateRequest, progressRoutes);
+
+// ─── Gym Equipment Marketplace Routes ───────────────────────────
+
+import marketplaceRoutes from '../modules/marketplace/marketplace.routes';
+router.use('/marketplace', authenticateRequest, marketplaceRoutes);
+
+// ─── Kid Fitness Routes ─────────────────────────────────────────
+
+import kidsRoutes from '../modules/kids/kids.routes';
+router.use('/kids', authenticateRequest, kidsRoutes);
+
+// ════════════════════════════════════════════════════════════════
+// PHASE 8B — Features 6-10 Routes
+// ════════════════════════════════════════════════════════════════
+
+// ─── Feature 6: Body Scan 3D ────────────────────────────────────
+
+import bodyscanRoutes from '../modules/bodyscan/bodyscan.routes';
+router.use('/bodyscan', authenticateRequest, bodyscanRoutes);
+
+// ─── Feature 7: Music Integration (Spotify) ─────────────────────
+
+import musicRoutes from '../modules/music/music.routes';
+router.use('/music', musicRoutes);  // Auth handled per-route
+
+// ─── Feature 8: Gift Cards + Subscription Gifting ───────────────
+
+import giftRoutes from '../modules/gift/gift.routes';
+router.use('/gift', giftRoutes);  // Auth handled per-route
+
+// ─── Feature 9: Nutritionist Consultation ───────────────────────
+
+import nutritionistRoutes from '../modules/nutritionist/nutritionist.routes';
+router.use('/nutritionists', nutritionistRoutes);  // Auth handled per-route
+
+// ─── Feature 10: Emergency SOS ──────────────────────────────────
+
+import sosRoutes from '../modules/sos/sos.routes';
+router.use('/sos', sosRoutes);  // Auth handled per-route
+
 export default router;
