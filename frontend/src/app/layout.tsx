@@ -1,11 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit, Tajawal, Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider } from "../context/LanguageContext";
-import { ThemeProvider } from "../context/ThemeContext";
-import { SocketProvider } from "../context/SocketContext";
-import { ToastProvider } from "../components/ui/ToastProvider";
-import { QueryClientProvider } from "../components/QueryClientProvider";
+import { Providers } from "../providers";
 import FloatingSupportWidget from "../components/FloatingSupportWidget";
 import GlobalToggles from "../components/GlobalToggles";
 
@@ -60,21 +56,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
         className="font-body selection:bg-primary-fixed selection:text-on-primary-fixed bg-surface-container-lowest text-on-surface antialiased min-h-screen transition-colors duration-300"
       >
-        <QueryClientProvider>
-          <ThemeProvider>
-            <LanguageProvider>
-              <ToastProvider defaultDuration={5000} position="top-right" maxToasts={5}>
-                <SocketProvider>
-                  <GlobalToggles />
-                  <main className="max-w-[1440px] mx-auto min-h-screen flex flex-col relative w-full overflow-x-hidden">
-                    {children}
-                  </main>
-                  <FloatingSupportWidget />
-                </SocketProvider>
-              </ToastProvider>
-            </LanguageProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
+        <Providers>
+          <GlobalToggles />
+          <main className="max-w-[1440px] mx-auto min-h-screen flex flex-col relative w-full overflow-x-hidden">
+            {children}
+          </main>
+          <FloatingSupportWidget />
+        </Providers>
       </body>
     </html>
   );

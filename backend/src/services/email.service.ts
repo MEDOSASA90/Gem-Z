@@ -208,6 +208,72 @@ export async function sendPasswordResetEmail(params: {
     });
 }
 
+// ─── Invoice Email ────────────────────────────────────────────
+
+/**
+ * Send an invoice PDF via email.
+ *
+ * @param params - Email parameters including invoice details and PDF buffer
+ */
+export async function sendInvoiceEmail(params: {
+    to: string;
+    invoiceNumber: string;
+    total: number;
+    currency: string;
+    issueDate: Date;
+    pdfBuffer: Buffer;
+}): Promise<void> {
+    const formattedDate = params.issueDate.toLocaleDateString('en-GB', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    });
+
+    const content = `
+        <h2 style="margin:0 0 16px;color:#fff;font-size:24px;font-weight:700;">
+            Your Invoice is Ready 📄
+        </h2>
+        <p style="margin:0 0 24px;color:#aaa;font-size:16px;line-height:1.7;">
+            Your invoice <strong style="color:#ff7b00;">#${params.invoiceNumber}</strong> 
+            has been generated and is attached to this email.
+        </p>
+        <table cellpadding="0" cellspacing="0" style="background:#1a1a1a;border:1px solid #333;border-radius:12px;margin:0 0 24px;width:100%;">
+            <tr>
+                <td style="padding:20px 24px;">
+                    <p style="margin:0 0 8px;color:#888;font-size:13px;">Invoice Number</p>
+                    <p style="margin:0 0 16px;color:#fff;font-size:16px;font-weight:600;">${params.invoiceNumber}</p>
+                    <p style="margin:0 0 8px;color:#888;font-size:13px;">Issue Date</p>
+                    <p style="margin:0 0 16px;color:#fff;font-size:16px;font-weight:600;">${formattedDate}</p>
+                    <p style="margin:0 0 8px;color:#888;font-size:13px;">Total Amount</p>
+                    <p style="margin:0;color:#ff7b00;font-size:20px;font-weight:700;">${params.total.toFixed(2)} ${params.currency}</p>
+                </td>
+            </tr>
+        </table>
+        <p style="margin:0 0 24px;color:#aaa;font-size:14px;line-height:1.7;">
+            You can also view and download your invoice anytime from your 
+            <a href="${CLIENT_URL}/invoices" style="color:#ff7b00;text-decoration:none;">invoice dashboard</a>.
+        </p>
+        <p style="margin:0;color:#555;font-size:12px;">
+            If you have any questions, please contact our support team.
+        </p>`;
+
+    await transporter.sendMail({
+        from: FROM,
+        to: params.to,
+        subject: `Invoice ${params.invoiceNumber} — Gem Z 📄`,
+        html: buildEmailHtml('Your Invoice from Gem Z', content),
+        attachments: [
+            {
+                filename: `${params.invoiceNumber}.pdf`,
+                content: params.pdfBuffer,
+                contentType: 'application/pdf',
+            },
+        ],
+    });
+}
+
+// ─── Connection Verification ──────────────────────────────────
+
 /**
  * Verify that the SMTP connection is working.
  * Call this on server startup.

@@ -52,6 +52,7 @@ import {
 import {
     securityHeaders,
 } from './core/middlewares/security-headers.middleware';
+import { i18nMiddleware } from './core/i18n';
 import { requestId } from './core/middlewares/request-id.middleware';
 import { sanitizationMiddleware } from './core/middlewares/sanitization.middleware';
 import { timeout } from './core/middlewares/timeout.middleware';
@@ -150,20 +151,23 @@ app.use(sanitizationMiddleware());
 // 9. Request Timeout
 app.use(timeout());
 
+// 10. i18n (Language Detection)
+app.use(i18nMiddleware);
+
 // ════════════════════════════════════════════════════════════════
 //  APPLICATION ROUTES
 // ════════════════════════════════════════════════════════════════
 
-// 10. Static Files
+// 11. Static Files
 app.use('/uploads', express.static(path.join(__dirname, '../../public/uploads')));
 
-// 11. NEW: Health Check Routes (before API routes)
+// 12. NEW: Health Check Routes (before API routes)
 app.use('/api/v1/health', createHealthRouter(db, redisClient));
 
-// ─── 12. API Routes ────────────────────────────────────────────
+// ─── 13. API Routes ────────────────────────────────────────────
 app.use('/api/v1', routes);
 
-// ─── 13. Swagger API Docs ──────────────────────────────────────
+// ─── 14. Swagger API Docs ──────────────────────────────────────
 // Interactive API documentation at /api-docs
 // Raw OpenAPI spec at /api-docs.json
 setupSwagger(app);
@@ -265,7 +269,7 @@ server.listen(PORT, async () => {
     );
 
     log.info(
-        { features: ['security-headers', 'rate-limiting', 'input-sanitization', 'request-timeout', 'request-logging', 'standardized-errors', 'graceful-shutdown'] },
+        { features: ['security-headers', 'rate-limiting', 'input-sanitization', 'request-timeout', 'request-logging', 'standardized-errors', 'graceful-shutdown', 'i18n', 'pdf-invoices', 'multi-currency', 'push-notifications', 'tax-engine', 'recurring-subscriptions'] },
         'Security & architecture features active'
     );
 
@@ -284,6 +288,4 @@ server.listen(PORT, async () => {
 
     // Verify email connection on startup (non-blocking)
     verifyEmailConnection().catch(() => {
-        log.warn('SMTP not configured — email features will be disabled');
-    });
-});
+        log.warn('SMTP not con

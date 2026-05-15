@@ -12,7 +12,7 @@ import type { ToastType, ToastItem } from './Toast';
 
 // ─── Types ───────────────────────────────────────────────────
 
-interface ToastContextValue {
+export interface ToastContextValue {
   /** Show a generic toast */
   toast: (message: string, type?: ToastType, options?: ToastOptions) => void;
   /** Show a success toast */
@@ -31,13 +31,13 @@ interface ToastContextValue {
   toasts: ToastItem[];
 }
 
-interface ToastOptions {
+export interface ToastOptions {
   duration?: number;
   title?: string;
   id?: string;
 }
 
-interface ToastProviderProps {
+export interface ToastProviderProps {
   children: React.ReactNode;
   /** Default auto-dismiss duration in ms */
   defaultDuration?: number;

@@ -253,4 +253,20 @@ import { IntegrationController } from '../modules/trainee/integration.controller
 router.post('/integrations/wearables/sync',          authenticateRequest, IntegrationController.syncWearableData);
 router.post('/integrations/notifications/trigger',   authenticateRequest, IntegrationController.triggerPushNotification);
 
+// ─── Invoice Routes ────────────────────────────────────────────
+
+import invoiceRoutes from '../modules/invoice/invoice.routes';
+router.use('/invoices', authenticateRequest, invoiceRoutes);
+
+// ─── Push Notification Routes ──────────────────────────────────
+
+import { PushController } from '../core/push/push.controller';
+router.post('/push/subscribe',     authenticateRequest, PushController.subscribe as any);
+router.post('/push/unsubscribe',   authenticateRequest, PushController.unsubscribe as any);
+router.post('/push/send',          authenticateRequest, requireRole(['super_admin']) as any, PushController.send as any);
+router.post('/push/broadcast',     authenticateRequest, requireRole(['super_admin']) as any, PushController.broadcastNotification as any);
+router.get('/push/templates',      authenticateRequest, PushController.listAllTemplates as any);
+router.get('/push/status/:id',     authenticateRequest, PushController.getStatus as any);
+router.get('/push/vapid-key',      PushController.getVapidKey as any);
+
 export default router;
