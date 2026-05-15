@@ -263,6 +263,96 @@ router.post('/integrations/notifications/trigger',   authenticateRequest, Integr
 import invoiceRoutes from '../modules/invoice/invoice.routes';
 router.use('/invoices', authenticateRequest, invoiceRoutes);
 
+// ─── Meal Planning Routes ─────────────────────────────────────
+
+import mealRoutes from '../modules/meal/meal.routes';
+router.use('/meals', authenticateRequest, mealRoutes);
+
+// ─── Sleep Tracking Routes ────────────────────────────────────
+
+import sleepRoutes from '../modules/sleep/sleep.routes';
+router.use('/sleep', authenticateRequest, sleepRoutes);
+
+// ─── Water Tracker Routes ─────────────────────────────────────
+
+import waterRoutes from '../modules/water/water.routes';
+router.use('/water', authenticateRequest, waterRoutes);
+
+// ─── MediaPipe Routes ─────────────────────────────────────────
+
+import mediapipeRoutes from '../modules/mediapipe/mediapipe.routes';
+router.use('/mediapipe', authenticateRequest, mediapipeRoutes);
+
+// ─── Nutrition Scanner Routes ─────────────────────────────────
+
+import nutritionRoutes from '../modules/nutrition/nutrition.routes';
+router.use('/nutrition', authenticateRequest, nutritionRoutes);
+
+// ─── Wearables Routes ─────────────────────────────────────────
+
+import wearablesRoutes from '../modules/wearables/wearables.routes';
+router.use('/wearables', authenticateRequest, wearablesRoutes);
+
+// ─── AI Chatbot Routes ────────────────────────────────────────
+
+import chatbotRoutes from '../modules/chatbot/chatbot.routes';
+router.use('/chatbot', authenticateRequest, chatbotRoutes);
+
+// ─── Tournament Routes ────────────────────────────────────────
+
+import tournamentRoutes from '../modules/tournament/tournament.routes';
+router.use('/tournaments', authenticateRequest, tournamentRoutes);
+
+// ─── Referral Routes ──────────────────────────────────────────
+
+import referralRoutes from '../modules/referral/referral.routes';
+router.use('/referrals', authenticateRequest, referralRoutes);
+
+// ─── Analytics Routes ─────────────────────────────────────────
+
+import analyticsRoutes from '../modules/analytics/analytics.routes';
+router.use('/analytics', authenticateRequest, requireRole(['super_admin']) as any, analyticsRoutes);
+
+// ─── Multi-Gym Pass Routes ────────────────────────────────────
+
+import gympassRoutes from '../modules/gympass/gympass.routes';
+router.use('/gympass', authenticateRequest, gympassRoutes);
+
+// ─── PT Booking Routes ────────────────────────────────────────
+
+import bookingRoutes from '../modules/booking/booking.routes';
+router.use('/booking', authenticateRequest, bookingRoutes);
+
+// ─── Social Sharing Routes ────────────────────────────────────
+
+import shareRoutes from '../modules/share/share.routes';
+router.use('/share', authenticateRequest, shareRoutes);
+
+// ─── Video Tutorials Routes ───────────────────────────────────
+
+import videoRoutes from '../modules/video/video.routes';
+router.use('/videos', authenticateRequest, videoRoutes);
+
+// ─── Voice Commands Routes ────────────────────────────────────
+
+import voiceRoutes from '../modules/voice/voice.routes';
+router.use('/voice', authenticateRequest, voiceRoutes);
+
+// ─── AR Workouts Routes ───────────────────────────────────────
+
+import arRoutes from '../modules/ar/ar.routes';
+router.use('/ar', authenticateRequest, arRoutes);
+
+// ─── Community Challenge Routes ─────────────────────────────────
+
+import communityRoutes from '../modules/community/community.routes';
+router.use('/community', authenticateRequest, communityRoutes);
+
+// ─── Badges System Routes ─────────────────────────────────────
+
+import badgeRoutes from '../modules/badge/badge.routes';
+router.use('/badges', authenticateRequest, badgeRoutes);
+
 // ─── Push Notification Routes ──────────────────────────────────
 
 import { PushController } from '../core/push/push.controller';
