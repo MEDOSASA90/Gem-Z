@@ -1,3 +1,11 @@
 import { Module } from '@nestjs/common';
-@Module({ imports: [], controllers: [], providers: [], exports: [] })
+import { AiCoachService } from './coach.service';
+import { AiCoachController } from './coach.controller';
+
+@Module({
+  imports: [],
+  controllers: [AiCoachController],
+  providers: [AiCoachService],
+  exports: [AiCoachService],
+})
 export class AiCoachModule {}

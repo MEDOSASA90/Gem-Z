@@ -16,6 +16,8 @@ import { AiRecommendationModule } from './recommendation/recommendation.module';
 import { AiRetentionModule } from './retention/retention.module';
 import { AiSupportModule } from './support/support.module';
 import { AiCostRouterModule } from './cost-router/cost-router.module';
+import { AiBodyTransformationModule } from './body-transformation/body-transformation.module';
+import { AiFraudNetworkModule } from './fraud/fraud-network.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { AiCostRouterModule } from './cost-router/cost-router.module';
     AiRetentionModule,
     AiSupportModule,
     AiCostRouterModule,
+    AiBodyTransformationModule,
+    AiFraudNetworkModule,
   ],
   exports: [
     AiCoachModule,
@@ -31,6 +35,8 @@ import { AiCostRouterModule } from './cost-router/cost-router.module';
     AiRetentionModule,
     AiSupportModule,
     AiCostRouterModule,
+    AiBodyTransformationModule,
+    AiFraudNetworkModule,
   ],
 })
 export class AiModule {}
