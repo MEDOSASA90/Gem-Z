@@ -114,6 +114,22 @@ export class CreatorProfile {
   @Column({ type: 'decimal', precision: 18, scale: 4, default: 0 })
   total_revenue: number;
 
+  /** معدل عمولة المنصة - افتراضياً 10% */
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 10.00,
+    transformer: {
+      to: (value: number | string): string => {
+        if (typeof value === 'string') return value;
+        return value?.toFixed(2) ?? '10.00';
+      },
+      from: (value: string): number => parseFloat(value),
+    },
+  })
+  commission_rate: number;
+
   /** التقييم (1-5) */
   @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
   rating: number;

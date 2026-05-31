@@ -74,6 +74,17 @@ export class FeedController {
     return { success: true, data: posts, page, limit };
   }
 
+  /** التغذية الموصى بها بالذكاء الاصطناعي بناءً على مؤشرات ClickHouse والتراجع المحلي */
+  @Get('recommended')
+  async getRecommendedFeed(
+    @Request() req: any,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+  ) {
+    const posts = await this.feedService.getRecommendedFeed(req.user.id, page, limit);
+    return { success: true, data: posts, page, limit };
+  }
+
   /** منشورات المتابعين */
   @Get('following')
   async getFollowingFeed(

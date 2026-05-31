@@ -128,6 +128,18 @@ export class FeedRepository {
     return posts;
   }
 
+  /** الحصول على كل المنشورات النشطة والعامة لحساب محرك التوصيات البديل */
+  async getActivePublicPostsForRecommendation(): Promise<Post[]> {
+    return this.postRepo.find({
+      where: {
+        status: PostStatus.ACTIVE,
+        visibility: PostVisibility.PUBLIC,
+        deleted_at: IsNull(),
+      },
+      relations: ['media'],
+    });
+  }
+
   /** منشورات المستخدمين المتابعين */
   async getFollowingFeed(userId: string, page = 1, limit = 20): Promise<Post[]> {
     const cacheKey = `feed:following:${userId}:${page}:${limit}`;

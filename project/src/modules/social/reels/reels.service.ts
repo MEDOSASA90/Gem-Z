@@ -19,6 +19,7 @@ import { ReelView } from './reel-view.entity';
 import { ReelEngagement, ReelEngagementType } from './reel-engagement.entity';
 import { EventBusService } from '../../../core/event-bus/event-bus.service';
 import { AuditService } from '../../../core/audit/audit.service';
+import { createElasticsearchClient } from '../../../config/elasticsearch.config';
 import {
   UploadReelDto,
   EngagementDto,
@@ -84,11 +85,53 @@ export class ReelsService {
     // ─── Audit Log ───
     await this.auditService.logSimple('REEL_UPLOADED', userId, 'REEL', saved.id);
 
+    // ─── الفهرسة غير المتزامنة في Elasticsearch لضمان عدم تأثر المعاملة الأساسية بأي انقطاع مؤقت ───
+    this.indexReelInElasticsearch(saved).catch((err) => {
+      this.logger.error(`Error spawned from background ES indexing for reel ${saved.id}: ${err.message}`);
+    });
+
     // ─── trigger transcoding (async) ───
     // TODO: إرسال مهمة إلى queue لتحويل الفيديو
     await this.triggerTranscoding(saved.id);
 
     return saved;
+  }
+
+  /** إنشاء ريل جديد (Alias متوافق مع المصفات) */
+  async createReel(userId: string, dto: UploadReelDto): Promise<Reel> {
+    return this.uploadReel(userId, dto);
+  }
+
+  /** الفهرسة الفعلية في Elasticsearch بمرونة عالية وحماية من أي استثناءات */
+  private async indexReelInElasticsearch(reel: Reel): Promise<void> {
+    try {
+      const client = createElasticsearchClient();
+      const hashtags = reel.metadata && (reel.metadata as any).hashtags ? (reel.metadata as any).hashtags : [];
+      const mentions = reel.metadata && (reel.metadata as any).mentions ? (reel.metadata as any).mentions : [];
+
+      await client.index({
+        index: 'reels_index',
+        id: reel.id,
+        document: {
+          id: reel.id,
+          user_id: reel.user_id,
+          title: reel.title || '',
+          description: reel.description || '',
+          video_url: reel.video_url,
+          duration: reel.duration ? Number(reel.duration) : 0,
+          hashtags,
+          mentions,
+          status: reel.status,
+          created_at: reel.created_at,
+        },
+      });
+
+      this.logger.log(`Successfully indexed reel metadata ${reel.id} in Elasticsearch`);
+    } catch (error: any) {
+      this.logger.error(
+        `Failed to index reel ${reel.id} in Elasticsearch asynchronously: ${error.message}`
+      );
+    }
   }
 
   /** بدء تحويل الفيديو - placeholder لـ video processing queue */

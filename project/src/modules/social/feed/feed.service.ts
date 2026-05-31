@@ -23,6 +23,7 @@ import {
   PostVisibility,
   PostType,
 } from './post.entity';
+import { createClickHouseClient } from '../../../config/clickhouse.config';
 import { PostMediaType } from './post-media.entity';
 import {
   CreatePostDto,
@@ -52,6 +53,92 @@ export class FeedService {
   async getPersonalizedFeed(userId: string, page = 1, limit = 20): Promise<Post[]> {
     this.logger.debug('Getting personalized feed for user %s', userId);
     return this.feedRepository.getPersonalizedFeed(userId, page, limit);
+  }
+
+  /** الحصول على التغذية الموصى بها بالذكاء الاصطناعي بنسب الأوزان الدستورية الخمسة */
+  async getRecommendedFeed(userId: string, page = 1, limit = 20): Promise<Post[]> {
+    this.logger.log(`Calculating AI recommendation feed for user ${userId} | Page: ${page}, Limit: ${limit}`);
+    
+    let scoresMap: Record<string, number> = {};
+    let hasClickhouseData = false;
+
+    // ─── 1. محاولة جلب الإشارات السلوكية من ClickHouse ───
+    try {
+      const chClient = createClickHouseClient();
+      const resultSet = await chClient.query({
+        query: `
+          SELECT content_id,
+                 sum(watch_time) as watch_time_val,
+                 countIf(event_type = 'like' OR event_type = 'comment' OR event_type = 'share') as engagement_val,
+                 sum(interest_match) as fitness_interests_val,
+                 sum(friend_action) as friends_activity_val
+          FROM gemz_analytics.content_signals
+          WHERE timestamp >= now() - INTERVAL 30 DAY
+          GROUP BY content_id
+        `,
+        format: 'JSONEachRow',
+      });
+      
+      const rows = await resultSet.json() as any[];
+      
+      if (rows && rows.length > 0) {
+        // حساب الـ Weighted Score ديناميكياً لكل منشور
+        for (const row of rows) {
+          const watchTime = parseFloat(row.watch_time_val || '0');
+          const engagement = parseFloat(row.engagement_val || '0');
+          const interests = parseFloat(row.fitness_interests_val || '0');
+          const friends = parseFloat(row.friends_activity_val || '0');
+
+          // دمج الأوزان: 60% + 20% + 10% + 10%
+          const score = (watchTime * 0.60) + (engagement * 0.20) + (interests * 0.10) + (friends * 0.10);
+          scoresMap[row.content_id] = score;
+        }
+        hasClickhouseData = true;
+        this.logger.log(`Successfully parsed recommendation scores for ${rows.length} content entries from ClickHouse`);
+      }
+    } catch (err: any) {
+      this.logger.warn(`ClickHouse query failed or timed out: ${err.message}. Triggering PostgreSQL local fallback strategy.`);
+    }
+
+    // ─── 2. استراتيجية التراجع المحلية (PostgreSQL Fallback Strategy) ───
+    // إذا لم تتوفر بيانات ClickHouse، نقوم بحساب الـ score محلياً من إحصائيات التفاعل المخزنة
+    let posts = await this.feedRepository.getActivePublicPostsForRecommendation();
+
+    const rankedPosts = posts.map(post => {
+      let score = 0;
+
+      if (hasClickhouseData) {
+        score = scoresMap[post.id] || 0;
+      } else {
+        // حساب محلي مبني على المقاييس الخمسة:
+        // 60% watch_time (ممثلة محلياً بعدد المشاهدات ومؤشر المشاهدة المكتملة إن وجد)
+        const localWatchTimeScore = post.views_count * 10; 
+        
+        // 20% engagement (ممثلة بالإعجابات، التعليقات، والمشاركات)
+        const localEngagementScore = (post.likes_count * 2) + (post.comments_count * 3) + (post.shares_count * 5);
+        
+        // 10% user_fitness_interests (مطابقة هاشتاجات المنشور مع اهتمامات المستخدم المفترضة)
+        const hasFitnessTags = post.content?.toLowerCase().match(/(workout|fitness|gym|nutrition|diet|training|healthy)/g);
+        const localInterestsScore = hasFitnessTags ? 100 : 10;
+
+        // 10% social_graph_friends_activity (تفاعل الأصدقاء - محاكاة baseline)
+        const localFriendsScore = Math.floor(Math.random() * 50);
+
+        // دمج الأوزان بدقة متناهية
+        score = (localWatchTimeScore * 0.60) + (localEngagementScore * 0.20) + (localInterestsScore * 0.10) + (localFriendsScore * 0.10);
+      }
+
+      return { post, score };
+    });
+
+    // الترتيب التنازلي بناءً على النتيجة المحسوبة
+    rankedPosts.sort((a, b) => b.score - a.score);
+
+    // تطبيق الـ pagination
+    const start = (page - 1) * limit;
+    const paginated = rankedPosts.slice(start, start + limit).map(item => item.post);
+
+    return paginated;
   }
 
   /** الحصول على منشورات المتابعين */

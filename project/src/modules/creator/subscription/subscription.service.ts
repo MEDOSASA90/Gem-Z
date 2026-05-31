@@ -374,6 +374,21 @@ export class SubscriptionService {
   }
 
   /**
+   * التحقق من وجود اشتراك نشط للمستخدم مع صانع محتوى محدد
+   */
+  async hasActiveSubscription(userId: string, creatorId: string): Promise<boolean> {
+    const now = new Date();
+    const count = await this.subscriptionRepo.count({
+      where: [
+        { subscriber_id: userId, creator_id: creatorId, status: SubscriptionStatus.ACTIVE, end_date: MoreThan(now) },
+        { subscriber_id: userId, creator_id: creatorId, status: SubscriptionStatus.TRIAL, end_date: MoreThan(now) },
+        { subscriber_id: userId, creator_id: creatorId, status: SubscriptionStatus.CANCELLED, end_date: MoreThan(now) },
+      ]
+    });
+    return count > 0;
+  }
+
+  /**
    * جلب الاشتراكات النشطة لمستخدم
    */
   async getActiveSubscriptions(
