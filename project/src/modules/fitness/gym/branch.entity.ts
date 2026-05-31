@@ -76,6 +76,22 @@ export class GymBranch {
   @Column({ type: 'jsonb', default: {} })
   settings: BranchSettings;
 
+  /** نسبة تقسيم الإيرادات بين الفرع والمقر الرئيسي - افتراضياً 20% للمقر الرئيسي */
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 20.00,
+    transformer: {
+      to: (value: number | string): string => {
+        if (typeof value === 'string') return value;
+        return value?.toFixed(2) ?? '20.00';
+      },
+      from: (value: string): number => parseFloat(value),
+    },
+  })
+  revenue_split_ratio: number;
+
   /** العلاقة مع الجيم الأب */
   @ManyToOne(() => Gym, (gym) => gym.branches, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'gym_id' })

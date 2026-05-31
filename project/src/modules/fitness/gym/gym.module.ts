@@ -18,9 +18,22 @@ import { MembershipPlan } from './membership-plan.entity';
 import { Membership } from './membership.entity';
 import { EventBusModule } from '../../../core/event-bus/event-bus.module';
 
+import { Wallet } from '../../economy/wallet/wallet.entity';
+import { Transaction } from '../../economy/wallet/transaction.entity';
+import { LedgerEntry } from '../../economy/wallet/ledger-entry.entity';
+import { FranchiseRevenueService } from './franchise-revenue.service';
+
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Gym, GymBranch, MembershipPlan, Membership]),
+    TypeOrmModule.forFeature([
+      Gym,
+      GymBranch,
+      MembershipPlan,
+      Membership,
+      Wallet,
+      Transaction,
+      LedgerEntry,
+    ]),
     EventBusModule,
   ],
   controllers: [GymController],
@@ -28,11 +41,18 @@ import { EventBusModule } from '../../../core/event-bus/event-bus.module';
     GymService,
     BranchService,
     MembershipService,
+    FranchiseRevenueService,
     GymRepository,
     GymBranchRepository,
     MembershipPlanRepository,
     MembershipRepository,
   ],
-  exports: [GymService, BranchService, MembershipService, MembershipRepository],
+  exports: [
+    GymService,
+    BranchService,
+    MembershipService,
+    FranchiseRevenueService,
+    MembershipRepository,
+  ],
 })
 export class GymModule {}

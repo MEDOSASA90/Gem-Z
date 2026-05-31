@@ -6,6 +6,7 @@ import { WalletController } from './wallet.controller';
 import { Wallet } from './wallet.entity';
 import { Transaction } from './transaction.entity';
 import { LedgerEntry } from './ledger-entry.entity';
+import { TaxComplianceService } from '../tax-compliance.service';
 import {
   WalletRepository,
   TransactionRepository,
@@ -28,10 +29,11 @@ import {
   controllers: [WalletController],
   providers: [
     WalletService,
+    TaxComplianceService,
     WalletRepository,
     TransactionRepository,
     LedgerRepository,
   ],
-  exports: [WalletService, WalletRepository, TransactionRepository, LedgerRepository],
+  exports: [WalletService, TaxComplianceService, WalletRepository, TransactionRepository, LedgerRepository],
 })
 export class WalletModule {}
