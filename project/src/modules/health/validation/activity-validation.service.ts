@@ -1,9 +1,9 @@
-import { Injectable, Logger, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 import { WalletService } from '../../economy/wallet/wallet.service';
-import { Currency } from '../../../common/enums';
+import * as crypto from 'crypto';
 
 export interface ActivitySessionDto {
   userId: string;
@@ -11,9 +11,15 @@ export interface ActivitySessionDto {
   source: 'APPLE_HEALTHKIT' | 'GOOGLE_HEALTH_CONNECT';
   cryptographicToken: string; // Cryptographic session token from hardware
   effectiveBurnedCalories: number;
-  averageHeartRate: number;
+  averageHeartRate?: number; // Optional if no watch is connected
   stepCount: number;
   accelerometerVariance: number; // Accelerometer data variance (0 = flat/resting)
+  
+  // Phone Sensor & Fallback GPS properties
+  hasSmartWatch?: boolean;
+  gpsVelocityKmh?: number;
+  durationMinutes?: number;
+  phoneAccelerometerVariance?: number;
 }
 
 @Injectable()
@@ -28,7 +34,7 @@ export class ActivityValidationService {
   ) {}
 
   /**
-   * Triple-matching algorithm with cryptographic validation and Redis lock concurrency engine
+   * Secure M2E validation with smart watch check and phone-only GPS-Cadence fallback checks
    */
   async validateAndRewardActivity(dto: ActivitySessionDto): Promise<{
     status: string;
@@ -36,7 +42,7 @@ export class ActivityValidationService {
     cashbackEarned: number;
     fraudIndex: number;
   }> {
-    this.logger.log(`Validating M2E activity for user [${dto.userId}] via [${dto.source}]`);
+    this.logger.log(`Validating M2E activity session for User [${dto.userId}] via [${dto.source}]`);
 
     // 1. Verify Cryptographic Session Token from Apple HealthKit or Google Health Connect
     const isTokenValid = this.verifyCryptographicToken(dto.cryptographicToken, dto.source);
@@ -44,13 +50,55 @@ export class ActivityValidationService {
       throw new HttpException('Invalid cryptographic session token from hardware vendor', HttpStatus.BAD_REQUEST);
     }
 
-    // 2. Triple-Matching Algorithm
-    // Fetch and verify: Effective Burned Calories + Average Heart Rate + Native Step Count/Device Accelerometer Data.
-    const isHeartRateFlat = dto.averageHeartRate <= 60; // resting heart rate
-    const isMotionless = dto.accelerometerVariance === 0;
+    const hasWatch = dto.hasSmartWatch !== false && dto.averageHeartRate !== undefined && dto.averageHeartRate > 0;
+    let isFraudulent = false;
+    let fraudReason = '';
 
-    if ((isHeartRateFlat || isMotionless) && dto.stepCount > 0) {
-      // Flag as SUSPICIOUS_ACTIVITY, increment Fraud Index, emit FraudDetected event
+    // 2. Hardware Validation & Matching Architecture
+    if (hasWatch) {
+      // Smart Watch is connected: Perform heart rate & motion matching
+      const avgHR = dto.averageHeartRate || 0;
+      const isHeartRateFlat = avgHR <= 60; // Resting heart rate during exercise
+      const isMotionless = dto.accelerometerVariance === 0;
+
+      if ((isHeartRateFlat || isMotionless) && dto.stepCount > 0) {
+        isFraudulent = true;
+        fraudReason = `Smartwatch bio-telemetry conflict: flat heart rate (${avgHR} bpm) or zero motion variance with steps increment.`;
+      }
+    } else {
+      // FALLBACK STRATEGY: No Smart Watch. Ingest direct Phone Sensor (Accelerometer + GPS Velocity Cadence)
+      this.logger.log(`No active smartwatch detected for User [${dto.userId}]. Engaging phone-sensor and GPS Cadence fallback.`);
+
+      const duration = dto.durationMinutes || 1;
+      const cadence = dto.stepCount / duration; // Steps per minute
+      const velocity = dto.gpsVelocityKmh || 0;
+      const phoneAccelVar = dto.phoneAccelerometerVariance !== undefined ? dto.phoneAccelerometerVariance : dto.accelerometerVariance;
+
+      const isVehicleSpeed = velocity > 25.0; // Faster than human running cadence velocity (25 km/h)
+      const isLowCadence = cadence < 40.0;
+      const isLowAccelVariance = phoneAccelVar < 0.1; // Flat phone movement/vibration only (e.g. phone sitting in cup holder)
+
+      // Telemetry Correlation Checks to prevent transit fraud (riding cars/trains/buses) or manual shaking
+      if (isVehicleSpeed && isLowCadence) {
+        isFraudulent = true;
+        fraudReason = `Transit Fraud Detected: High GPS Velocity (${Math.round(velocity)} km/h) but abnormally low walking cadence (${Math.round(cadence)} steps/min). User is likely riding in a vehicle.`;
+      } 
+      else if (isVehicleSpeed && isLowAccelVariance) {
+        isFraudulent = true;
+        fraudReason = `Transit Fraud Detected: High GPS Velocity (${Math.round(velocity)} km/h) but flat phone accelerometer variance (${phoneAccelVar.toFixed(4)}). Phone is stationary in a moving vehicle.`;
+      }
+      else if (dto.stepCount > 0 && isLowAccelVariance && velocity === 0) {
+        isFraudulent = true;
+        fraudReason = `Manual Phone Shaking / Emulator Fraud Detected: Step count incremented but phone accelerometer vertical variance is abnormally low (${phoneAccelVar.toFixed(4)}).`;
+      }
+      else if (cadence > 250.0) {
+        isFraudulent = true;
+        fraudReason = `Abnormal Cadence: Step frequency of ${Math.round(cadence)} steps/minute exceeds maximum human sprinting capability.`;
+      }
+    }
+
+    // 3. Handle Fraud Trigger
+    if (isFraudulent) {
       const fraudKey = `user:fraud:${dto.userId}`;
       const newFraudIndex = await this.redis.incr(fraudKey);
 
@@ -63,26 +111,27 @@ export class ActivityValidationService {
         timestamp: new Date().toISOString(),
         payload: {
           userId: dto.userId,
-          averageHeartRate: dto.averageHeartRate,
+          averageHeartRate: dto.averageHeartRate || 0,
           stepCount: dto.stepCount,
-          accelerometerVariance: dto.accelerometerVariance,
+          gpsVelocityKmh: dto.gpsVelocityKmh || 0,
+          phoneAccelerometerVariance: dto.phoneAccelerometerVariance || 0,
           fraudIndex: newFraudIndex,
-          reason: 'Flat heart rate or zero accelerometer variance with steps increment',
+          reason: fraudReason,
         },
       });
 
-      this.logger.warn(`Suspicious activity flagged for user ${dto.userId}. Fraud Index incremented to ${newFraudIndex}`);
+      this.logger.warn(`Suspicious activity flagged for User ${dto.userId}: ${fraudReason} | Fraud Index: ${newFraudIndex}`);
       throw new HttpException(
         {
           status: 'SUSPICIOUS_ACTIVITY',
-          message: 'Hardware validation failed: heart rate/motion profile inconsistent with movement.',
+          message: `Hardware validation failed: ${fraudReason}`,
           fraudIndex: newFraudIndex,
         },
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    // 3. Organically Aligned Metrics => Trigger Reward Calculation
+    // 4. Organically Aligned Metrics => Trigger Reward Calculation
     // 1 GEM Point for every 100 steps + 10 points for every 100 calories
     const stepsReward = Math.floor(dto.stepCount / 100);
     const caloriesReward = Math.floor(dto.effectiveBurnedCalories / 10);
@@ -100,7 +149,7 @@ export class ActivityValidationService {
       };
     }
 
-    // 4. Concurrency & Double-Spend Protection
+    // 5. Concurrency & Double-Spend Protection
     const lockKey = `lock:wallet:${dto.walletId}`;
     const acquired = await this.redis.set(lockKey, '1', 'PX', 5000, 'NX');
 
@@ -121,7 +170,7 @@ export class ActivityValidationService {
         `مكافأة نشاط رياضي - M2E Reward: +${pointsEarned} Points`,
       );
 
-      // Emit WalletCredited event (already emitted by WalletService.deposit, but we can emit a specialized M2E event)
+      // Emit specialized M2E reward event
       this.eventEmitter.emit('health.m2e_reward_credited', {
         event_id: crypto.randomUUID(),
         correlation_id: depositResult.id,
@@ -138,8 +187,7 @@ export class ActivityValidationService {
         },
       });
 
-      // 5. Event Sourcing Optimization
-      // Every 50th transaction, generate absolute database state snapshot to avoid replay bottlenecks
+      // 6. Event Sourcing Optimization
       const wallet = await this.walletService.getBalance(dto.walletId);
       const snapshotVersionKey = `wallet:snapshot:version:${dto.walletId}`;
       const newVersion = await this.redis.incr(snapshotVersionKey);
@@ -185,13 +233,10 @@ export class ActivityValidationService {
    */
   private verifyCryptographicToken(token: string, source: string): boolean {
     if (!token || token.trim().length < 10) return false;
-    // Verify structure matching hardware cryptographic signatures (e.g. JWT-like or Hex structure)
     try {
       if (source === 'APPLE_HEALTHKIT') {
-        // Example: Apple signature starts with 'hk_sig_'
         return token.startsWith('hk_sig_') || token.length > 20;
       } else if (source === 'GOOGLE_HEALTH_CONNECT') {
-        // Example: Google signature starts with 'ghc_sig_'
         return token.startsWith('ghc_sig_') || token.length > 20;
       }
       return true;
