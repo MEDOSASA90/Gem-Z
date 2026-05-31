@@ -1,20 +1,40 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Heading1, Heading2, BodyText, NeonButton, COLORS, GRADIENTS } from '../../core/theme/design-tokens';
+import { Heading1, Heading2, BodyText, NeonButton } from '../../core/theme/design-tokens';
 import { SkeletonCard, EmptyState } from '../../components/ui-guards';
+import { PlatformSealService } from '../../core/templates/platform-seal.service';
+import { ContractTemplate } from '../../core/templates/contract-template';
+import { LetterheadTemplate } from '../../core/templates/letterhead-template';
 import {
   Languages,
-  Sparkles,
-  ArrowRight,
-  TrendingUp,
   Layout,
-  RefreshCw,
+  FileText,
+  ShieldAlert,
+  User,
   Info,
+  Calendar,
+  Layers,
+  Award,
+  Database,
+  Sliders,
 } from 'lucide-react';
+
+type TabType = 'tokens' | 'seal' | 'contract' | 'letterhead';
 
 export default function KitchenSinkPage() {
   const [isRtl, setIsRtl] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>('tokens');
+  
+  // حقول التحكم الديناميكي للفحص والتحقق
+  const [tenantId, setTenantId] = useState('GEMZ-EG-CAIRO-902');
+  const [hqName, setHqName] = useState('شركة جيم زد العالمية المحدودة - الرياض');
+  const [branchName, setBranchName] = useState('فرع القاهرة الرياضي الإقليمي للفرنشايز');
+  const [taxId, setTaxId] = useState('300998822100003');
+  const [commenceDate, setCommenceDate] = useState('2026-05-31');
+  const [subjectText, setSubjectText] = useState('مخطط تتبع النشاط والموافقة على الفاتورة الضريبية عابرة الحدود');
+  const [hashText, setHashText] = useState('a3f9d8c7b6a5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9');
+
   const [emptyStateLoading, setEmptyStateLoading] = useState(false);
   const [emptyStateRetries, setEmptyStateRetries] = useState(0);
 
@@ -23,36 +43,40 @@ export default function KitchenSinkPage() {
     setTimeout(() => {
       setEmptyStateLoading(false);
       setEmptyStateRetries((prev) => prev + 1);
-    }, 1500);
+    }, 1200);
   };
+
+  // توليد الختم الفوري بصيغة SVG كأكواد خام للعرض
+  const rawSealSvg = PlatformSealService.generatePlatformSeal(tenantId, commenceDate);
+  const sealBase64 = PlatformSealService.generatePlatformSealBase64(tenantId, commenceDate);
 
   return (
     <div
       dir={isRtl ? 'rtl' : 'ltr'}
-      className="min-h-screen bg-[#0B0B0F] bg-[radial-gradient(circle_at_center,_rgba(18,18,26,0.65)_0%,_rgba(11,11,15,1)_100%)] text-white p-6 md:p-12 font-sans transition-all duration-500"
+      className="min-h-screen bg-[#0B0B0F] bg-[radial-gradient(circle_at_center,_rgba(18,18,26,0.65)_0%,_rgba(11,11,15,1)_100%)] text-white p-4 md:p-10 font-sans transition-all duration-500"
     >
       {/* رأس الصفحة */}
-      <header className="max-w-6xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-6 text-right">
+      <header className="max-w-6xl mx-auto mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-white/5 pb-6 text-right">
         <div className="space-y-2 text-right">
           <div className="inline-flex items-center gap-2 bg-volt-green/10 border border-volt-green/20 px-3 py-1 rounded-full text-xs font-bold text-volt-green">
             <Layout className="w-3.5 h-3.5" />
-            <span>DESIGN SYSTEM SYSTEM-WIDE CHECKBOARD</span>
+            <span>GEM Z VERIFICATION BOARD & TEMPLATE ENGINE</span>
           </div>
           <Heading1 className="text-glow-cyan text-transparent bg-gradient-to-r from-neon-cyan to-volt-green bg-clip-text">
-            {isRtl ? 'لوحة فحص رموز الهوية البصرية' : 'Branding Tokens Kitchen Sink'}
+            {isRtl ? 'لوحة فحص رموز الهوية البصرية ومحرك المستندات' : 'Branding Identity & Automated Document Engine'}
           </Heading1>
           <BodyText>
             {isRtl
-              ? 'مساحة الفحص المرئي والامتثال للهوية البصرية لمشروع GEM Z تحت قواعد التحول المرن والقراءة العربي RTL.'
-              : 'Visual testing board verifying typography, padding, color tokens, and interactive components under LTR & RTL flows.'}
+              ? 'مساحة الفحص المرئي الشاملة والامتثال للهوية البصرية لمشروع GEM Z لتصميم أختام التحقق الرقمية والعقود ومستندات الفروع.'
+              : 'Enterprise playground for checking color tokens, responsive dynamic SVG seals, B2B contract agreements, and letters under LTR & RTL flows.'}
           </BodyText>
         </div>
 
-        {/* منتقي التوجيه واللغة */}
-        <div className="flex gap-3">
+        {/* أزرار لغة التوجيه والتحكم */}
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setIsRtl(!isRtl)}
-            className="neon-btn px-4 py-2 bg-neon-cyan text-black font-bold text-xs rounded-xl flex items-center gap-2 hover:bg-white transition-colors cursor-pointer"
+            className="px-4 py-2 bg-neon-cyan text-black font-extrabold text-xs rounded-xl flex items-center gap-2 hover:bg-white transition-colors cursor-pointer"
           >
             <Languages className="w-4 h-4" />
             <span>{isRtl ? 'English Layout (LTR)' : 'تخطيط عربي (RTL)'}</span>
@@ -67,137 +91,255 @@ export default function KitchenSinkPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* لوحة تحكم الفحص الجانبية والخطوط */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* العمود الأول: لوحات الألوان والتدرجات والخطوط (أقسام التصميم) */}
-        <div className="lg:col-span-7 space-y-8">
+        {/* عمود التحكم والمعايير (المدخلات الحية) */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="glass-panel p-6 rounded-2xl space-y-4">
+            <div className="flex items-center gap-2 border-b border-white/5 pb-2 text-neon-cyan">
+              <Sliders className="w-4 h-4" />
+              <Heading2 className="text-sm font-bold text-white">
+                {isRtl ? 'لوحة التحكم الفورية' : 'Live Document Controller'}
+              </Heading2>
+            </div>
+
+            <div className="space-y-3 text-right">
+              {/* مدخل معرف المستأجر */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-gray-400 font-bold">Tenant ID</label>
+                <input
+                  type="text"
+                  value={tenantId}
+                  onChange={(e) => setTenantId(e.target.value)}
+                  className="w-full bg-card-dark border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-neon-cyan"
+                />
+              </div>
+
+              {/* مدخل المقر الرئيسي */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-gray-400 font-bold">Licensor HQ Name</label>
+                <input
+                  type="text"
+                  value={hqName}
+                  onChange={(e) => setHqName(e.target.value)}
+                  className="w-full bg-card-dark border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-neon-cyan"
+                />
+              </div>
+
+              {/* مدخل اسم الفرع */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-gray-400 font-bold">Licensee Branch Name</label>
+                <input
+                  type="text"
+                  value={branchName}
+                  onChange={(e) => setBranchName(e.target.value)}
+                  className="w-full bg-card-dark border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-neon-cyan"
+                />
+              </div>
+
+              {/* مدخل الرقم الضريبي */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-gray-400 font-bold">Branch Tax ID</label>
+                <input
+                  type="text"
+                  value={taxId}
+                  onChange={(e) => setTaxId(e.target.value)}
+                  className="w-full bg-card-dark border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-neon-cyan"
+                />
+              </div>
+
+              {/* مدخل تاريخ التشغيل */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-gray-400 font-bold">Commence Date</label>
+                <input
+                  type="date"
+                  value={commenceDate}
+                  onChange={(e) => setCommenceDate(e.target.value)}
+                  className="w-full bg-card-dark border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-neon-cyan"
+                />
+              </div>
+
+              {/* مدخل موضوع الخطاب */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-gray-400 font-bold">Subject Text</label>
+                <input
+                  type="text"
+                  value={subjectText}
+                  onChange={(e) => setSubjectText(e.target.value)}
+                  className="w-full bg-card-dark border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-neon-cyan"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* عمود عرض النماذج والأختام المتجاوبة */}
+        <div className="lg:col-span-8 space-y-6">
           
-          {/* 1. لوحة فحص الألوان الأساسية */}
-          <section className="glass-panel p-6 rounded-2xl space-y-4">
-            <Heading2 className="border-b border-white/5 pb-2">{isRtl ? 'رموز الألوان الأساسية (Design Tokens)' : 'Primary Color Tokens'}</Heading2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              
-              {/* لون Cyber Dark */}
-              <div className="space-y-1.5">
-                <div className="w-full h-12 rounded-xl bg-[#0B0B0F] border border-white/10" />
-                <p className="text-xs font-bold text-white">Cyber Dark</p>
-                <code className="text-[10px] text-gray-500 font-mono">#0B0B0F</code>
-              </div>
+          {/* شريط التنقل بين التبويبات الفنية */}
+          <div className="glass-panel p-2 rounded-2xl flex flex-wrap gap-2">
+            
+            <button
+              onClick={() => setActiveTab('tokens')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'tokens' ? 'bg-neon-cyan text-black' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {isRtl ? 'رموز التصميم' : 'Design Tokens'}
+            </button>
 
-              {/* لون Card Dark */}
-              <div className="space-y-1.5">
-                <div className="w-full h-12 rounded-xl bg-[#12121A] border border-white/10" />
-                <p className="text-xs font-bold text-white">Card Dark</p>
-                <code className="text-[10px] text-gray-500 font-mono">#12121A</code>
-              </div>
+            <button
+              onClick={() => setActiveTab('seal')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'seal' ? 'bg-neon-cyan text-black' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {isRtl ? 'الختم الرقمي (SVG)' : 'Platform Seal'}
+            </button>
 
-              {/* لون Neon Cyan */}
-              <div className="space-y-1.5">
-                <div className="w-full h-12 rounded-xl bg-[#00F0FF] shadow-glow-cyan" />
-                <p className="text-xs font-bold text-white">Neon Cyan</p>
-                <code className="text-[10px] text-gray-500 font-mono">#00F0FF</code>
-              </div>
+            <button
+              onClick={() => setActiveTab('contract')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'contract' ? 'bg-neon-cyan text-black' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {isRtl ? 'عقد الفرنشايز (B2B)' : 'B2B Contract'}
+            </button>
 
-              {/* لون Volt Green */}
-              <div className="space-y-1.5">
-                <div className="w-full h-12 rounded-xl bg-[#39FF14] shadow-glow-green" />
-                <p className="text-xs font-bold text-white">Volt Green</p>
-                <code className="text-[10px] text-gray-500 font-mono">#39FF14</code>
-              </div>
+            <button
+              onClick={() => setActiveTab('letterhead')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'letterhead' ? 'bg-neon-cyan text-black' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {isRtl ? 'خطاب الترويسة' : 'Formal Letterhead'}
+            </button>
+          </div>
 
-              {/* لون Premium Gold */}
-              <div className="space-y-1.5">
-                <div className="w-full h-12 rounded-xl bg-[#FFD700] shadow-[0_0_10px_rgba(255,215,0,0.3)]" />
-                <p className="text-xs font-bold text-white">Premium Gold</p>
-                <code className="text-[10px] text-gray-500 font-mono">#FFD700</code>
-              </div>
-            </div>
-          </section>
+          {/* محتويات عرض التبويبات النشطة */}
+          <div className="transition-all duration-300">
+            
+            {/* التبويب الأول: رموز التصميم الأساسية */}
+            {activeTab === 'tokens' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* رموز الألوان والأزرار */}
+                <div className="space-y-6">
+                  <div className="glass-panel p-6 rounded-2xl space-y-4">
+                    <Heading2 className="border-b border-white/5 pb-2">{isRtl ? 'ثوابت النيون والألوان' : 'Branding Tokens'}</Heading2>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2 rounded bg-[#0B0B0F] border border-white/10 text-center">Cyber Dark</div>
+                      <div className="p-2 rounded bg-[#12121A] border border-white/10 text-center">Card Dark</div>
+                      <div className="p-2 rounded bg-neon-cyan text-black font-bold text-center">Neon Cyan</div>
+                      <div className="p-2 rounded bg-volt-green text-black font-bold text-center">Volt Green</div>
+                    </div>
+                  </div>
 
-          {/* 2. تدرجات الألوان الفاقعة */}
-          <section className="glass-panel p-6 rounded-2xl space-y-4">
-            <Heading2 className="border-b border-white/5 pb-2">{isRtl ? 'التدرجات اللونية (Linear & Radial Gradients)' : 'Branding Gradients'}</Heading2>
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <p className="text-xs text-gray-400">Cyber Accent Gradient (`gradient-cyber`)</p>
-                <div className="w-full h-10 rounded-xl bg-gradient-to-r from-neon-cyan to-volt-green shadow-glow-cyan" />
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs text-gray-400">Premium VIP Gradient (`gradient-premium`)</p>
-                <div className="w-full h-10 rounded-xl bg-gradient-to-r from-premium-gold to-yellow-500 shadow-[0_0_15px_rgba(255,215,0,0.15)]" />
-              </div>
-            </div>
-          </section>
+                  <div className="glass-panel p-6 rounded-2xl space-y-4">
+                    <Heading2 className="border-b border-white/5 pb-2">{isRtl ? 'المظهر التفاعلي للأزرار' : 'Buttons check'}</Heading2>
+                    <div className="flex flex-col gap-2">
+                      <NeonButton variant="cyan">CYBER GLOW BUTTON</NeonButton>
+                      <NeonButton variant="green">VOLT GLOW BUTTON</NeonButton>
+                      <NeonButton variant="premium">VIP PREMIUM ACCESS</NeonButton>
+                    </div>
+                  </div>
+                </div>
 
-          {/* 3. أحجام الخطوط والتدرج الجغرافي */}
-          <section className="glass-panel p-6 rounded-2xl space-y-4">
-            <Heading2 className="border-b border-white/5 pb-2">{isRtl ? 'مكونات النصوص والطباعة (Typography Scale)' : 'Typography Scales'}</Heading2>
-            <div className="space-y-4 text-right">
-              <div className="space-y-1">
-                <span className="text-[9px] font-bold text-neon-cyan">Heading1 (32px / 48px)</span>
-                <Heading1>العنوان الرئيسي المتجاوب GEM Z</Heading1>
+                {/* هياكل Skeletons و EmptyState */}
+                <div className="space-y-6">
+                  <SkeletonCard />
+                  
+                  <EmptyState
+                    title={isRtl ? 'جاري التحقق من أصول الدفتر' : 'Zero Assets Logged'}
+                    description={
+                      isRtl 
+                        ? `محاولات مزامنة محرك الحسابات الجارية: ${emptyStateRetries}`
+                        : `Simulated secure ledger empty boundary. Attempts: ${emptyStateRetries}`
+                    }
+                    onRetry={handleEmptyStateRetry}
+                    loading={emptyStateLoading}
+                  />
+                </div>
               </div>
-              <div className="space-y-1">
-                <span className="text-[9px] font-bold text-volt-green">Heading2 (20px / 24px)</span>
-                <Heading2>العناوين الفرعية والأقسام المتناسقة</Heading2>
+            )}
+
+            {/* التبويب الثاني: معاينة وشفرة الختم الرقمي */}
+            {activeTab === 'seal' && (
+              <div className="glass-panel p-6 rounded-3xl space-y-6 flex flex-col md:flex-row items-center gap-6">
+                
+                {/* استعراض الختم بحجم كبير */}
+                <div className="w-56 h-56 bg-cyber-dark rounded-3xl border border-white/10 p-4 shadow-2xl flex items-center justify-center">
+                  <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: rawSealSvg }} />
+                </div>
+
+                <div className="space-y-4 flex-1 text-right">
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neon-cyan font-bold tracking-wider block">DYNAMIC PROGRAMMATIC SVG SEAL</span>
+                    <Heading2 className="text-white">{isRtl ? 'ختم التحقق المولد برمجياً' : 'Programmatic Vector Seal'}</Heading2>
+                  </div>
+                  <BodyText className="text-xs">
+                    {isRtl 
+                      ? 'يتم صياغة الختم ناقلياً بالكامل من خلال دمج الأكواد، ويتفاعل تلقائياً مع مدخلات المقر وتواريخ النفاذ المحددة في لوحة التحكم.'
+                      : 'The vector seal uses circular XML textPath nodes to wrap dynamic metadata (such as Tenant ID and dates) inside the glowing borders.'}
+                  </BodyText>
+                  
+                  {/* كود Base64 المولد */}
+                  <div className="space-y-1">
+                    <span className="text-[9px] text-gray-500 block font-mono">BASE64 DATA-URI OUTPUT (PREVIEW)</span>
+                    <textarea
+                      readOnly
+                      value={sealBase64}
+                      className="w-full h-16 bg-black/60 border border-white/5 rounded-xl p-2 font-mono text-[8px] text-gray-500 break-all resize-none outline-none"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-1">
-                <span className="text-[9px] font-bold text-premium-gold">BodyText (14px / 16px)</span>
-                <BodyText>
-                  هذا النص يمثل فقرة المتن العادية المستخدمة في التقارير الطبية وإحصائيات تتبع الموظفين، مصمم ليتناسب تماماً مع قواعد الخط المعتمدة ودعم التوزيع.
-                </BodyText>
+            )}
+
+            {/* التبويب الثالث: معاينة العقد المتغير بالختم المائل */}
+            {activeTab === 'contract' && (
+              <div className="animate-fade-in">
+                <ContractTemplate
+                  tenantId={tenantId}
+                  masterHqName={hqName}
+                  branchName={branchName}
+                  regionalTaxId={taxId}
+                  effectiveDate={commenceDate}
+                  isRtl={isRtl}
+                />
               </div>
-            </div>
-          </section>
+            )}
+
+            {/* التبويب الرابع: معاينة ترويسة الخطاب الرسمي والهاش */}
+            {activeTab === 'letterhead' && (
+              <div className="animate-fade-in">
+                <LetterheadTemplate
+                  recipientName={isRtl ? 'لجنة الفروع الإقليمية والامتثال الضريبي' : 'Regional Compliance Committee'}
+                  referenceNumber={`GEMZ-REF-${tenantId.substring(0, 8)}`}
+                  date={commenceDate}
+                  subject={subjectText}
+                  sha256Footprint={hashText}
+                  messageContent={isRtl 
+                    ? `بناءً على طلبكم المسجل للمستأجر [${tenantId}]، نفيدكم بموجب هذا الخطاب بأنه تم جدولة تحصيل إيرادات الفرنشايز لفرع [${branchName}] وإجراء تصفية الحسابات تحت القفل الموزع رقمياً بنجاح.
+
+تجدون في الأسفل هاش التوقيع التشفيري المعتمد للامتثال لمتطلبات الفوترة عابرة الحدود.`
+                    : `In reference to the B2B operations under tenant [${tenantId}], we hereby authenticate the ledger distributions for [${branchName}]. All multi-branch split metrics are certified.
+
+Below is the verified transaction footprint locked in Postgres monthly range partitions.`
+                  }
+                  isRtl={isRtl}
+                />
+              </div>
+            )}
+
+          </div>
 
         </div>
 
-        {/* العمود الثاني: الأزرار التفاعلية والهياكل الشبكية وحالة الأخطاء الفارغة */}
-        <div className="lg:col-span-5 space-y-8">
-          
-          {/* 4. فحص الأزرار والـ Hover التفاعلية */}
-          <section className="glass-panel p-6 rounded-2xl space-y-4">
-            <Heading2 className="border-b border-white/5 pb-2">{isRtl ? 'الأزرار التفاعلية والوهج (Neon Glow Buttons)' : 'Interactive Buttons'}</Heading2>
-            <div className="flex flex-col gap-3">
-              <NeonButton variant="cyan">{isRtl ? 'زر أزرق سيبراني متوهج' : 'Neon Cyan Glow'}</NeonButton>
-              <NeonButton variant="green">{isRtl ? 'زر أخضر متوهج فاقع' : 'Neon Volt Green'}</NeonButton>
-              <NeonButton variant="premium">{isRtl ? 'زر ذهبي ملكي مميز' : 'VIP Gold Access'}</NeonButton>
-              <NeonButton variant="glass">{isRtl ? 'زر زجاجي مضبب' : 'Glassmorphic Style'}</NeonButton>
-            </div>
-          </section>
+      </div>
 
-          {/* 5. الهيكل الشبكي المؤقت (Skeleton Loader Check) */}
-          <section className="space-y-2">
-            <span className="text-xs text-gray-500 font-bold block px-2">
-              {isRtl ? 'محاكاة الهيكل الشبكي المتوهج للتحميل' : 'Shimmering Wallet Skeleton'}
-            </span>
-            <SkeletonCard />
-          </section>
-
-          {/* 6. واجهة الأخطاء المرجعية (Empty State & Retry Trigger Check) */}
-          <section className="space-y-2">
-            <span className="text-xs text-gray-500 font-bold block px-2">
-              {isRtl ? 'حالة البيانات الفارغة وإعادة الاتصال' : 'Interactive Empty State Verification'}
-            </span>
-            <EmptyState
-              title={isRtl ? 'لم يتم العثور على أصول مالية' : 'Zero Ledger Transactions'}
-              description={
-                isRtl
-                  ? `لم تسفر عملية الفحص الذري لمحفظتك عن وجود معاملات حالية. عدد محاولات التحديث حتى الآن: ${emptyStateRetries}`
-                  : `No credit records fetched for this multi-tenant corporate seat. Refresh attempts: ${emptyStateRetries}`
-              }
-              onRetry={handleEmptyStateRetry}
-              loading={emptyStateLoading}
-            />
-          </section>
-
-        </div>
-
-      </main>
-
-      {/* التذييل */}
-      <footer className="max-w-6xl mx-auto mt-12 pt-6 border-t border-white/5 text-center text-xs text-gray-500">
-        GEM Z UI BRAND PLATFORM VERIFICATION CORE V5
+      <footer className="max-w-6xl mx-auto mt-12 pt-6 border-t border-white/5 text-center text-xs text-gray-500 font-mono">
+        GEM Z DOCUMENT & BRAND CHECKBOARD MODULE V5
       </footer>
     </div>
   );
