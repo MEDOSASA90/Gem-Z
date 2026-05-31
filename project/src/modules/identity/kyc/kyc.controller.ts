@@ -122,4 +122,17 @@ export class KYCController {
     const submission = await this.kycService.review(id, reviewerId, dto);
     return submission as unknown as KYCSubmissionResponseDto;
   }
+
+  @Get('submissions/:id/document/:docId')
+  @AuthWithPermissions('kyc:review', 'kyc:override')
+  @ApiOperation({ summary: 'الحصول على رابط موقت لوثيقة الهوية الحساسة (120 ثانية)' })
+  @ApiResponse({ status: 200, description: 'تم توليد الرابط بنجاح' })
+  @ApiResponse({ status: 403, description: 'صلاحيات غير كافية' })
+  async getSensitiveDocumentUrl(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('docId') docId: string,
+    @CurrentUser('id') userId: string,
+  ): Promise<{ signedUrl: string; expiresAt: number }> {
+    return this.kycService.getSensitiveDocumentUrl(id, docId, userId);
+  }
 }

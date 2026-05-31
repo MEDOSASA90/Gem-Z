@@ -95,4 +95,28 @@ export class OrderController {
     await this.orderService.cancel(id, reason);
     return { order_id: id, status: 'CANCELLED', reason };
   }
+
+  @Post(':id/confirm-delivery')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'تأكيد استلام الطلب وتحرير الأموال من الضمان (للمشتري)' })
+  @ApiResponse({ status: 200, description: 'تم تأكيد الاستلام بنجاح وتحرير الأموال للبائع' })
+  async confirmDelivery(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('buyer_id', ParseUUIDPipe) buyerId: string, // In real environment, this comes from @CurrentUser()
+  ) {
+    return this.orderService.confirmDelivery(id, buyerId);
+  }
+
+  @Post(':id/dispute')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'رفع نزاع على طلب مستعمل وتجميد الأموال في الضمان' })
+  @ApiResponse({ status: 200, description: 'تم رفع النزاع بنجاح وتجميد الأموال' })
+  async fileDispute(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('buyer_id', ParseUUIDPipe) buyerId: string, // In real environment, this comes from @CurrentUser()
+    @Body('reason') reason: string,
+  ) {
+    await this.orderService.fileDispute(id, buyerId, reason);
+    return { order_id: id, status: 'DISPUTED', reason };
+  }
 }

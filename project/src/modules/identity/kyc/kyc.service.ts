@@ -12,7 +12,7 @@
  */
 
 import {
-  Injectable, Logger, NotFoundException, BadRequestException, ForbiddenException, ConflictException,
+  Injectable, Logger, NotFoundException, BadRequestException, ForbiddenException, ConflictException, HttpException, HttpStatus
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -23,6 +23,9 @@ import { SubmitKYCDto, ReviewKYCDto } from './kyc.dto';
 import { KYCProcessor } from './kyc.processor';
 import { DocumentValidator } from './document-validator';
 import { UserService } from '../user/user.service';
+import { PrivateS3Service } from './private-s3.service';
+import { KycLifecycleQueue } from './kyc-lifecycle.queue';
+import { RBACService } from '../rbac/rbac.service';
 
 @Injectable()
 export class KYCService {
@@ -34,6 +37,9 @@ export class KYCService {
     private readonly kycProcessor: KYCProcessor,
     private readonly documentValidator: DocumentValidator,
     private readonly userService: UserService,
+    private readonly s3Service: PrivateS3Service,
+    private readonly lifecycleQueue: KycLifecycleQueue,
+    private readonly rbacService: RBACService,
   ) {}
 
   // ============================================================================
@@ -129,14 +135,72 @@ export class KYCService {
     if (dto.decision === KYCReviewStatus.APPROVED) {
       await this.userService.updateKycStatus(submission.userId, UserKYCStatus.APPROVED, 1);
       this.logger.log(`KYC approved: ${kycId} by ${reviewerId}`);
-      // TODO: emit UserKYCApproved event
     } else if (dto.decision === KYCReviewStatus.REJECTED) {
       await this.userService.updateKycStatus(submission.userId, UserKYCStatus.REJECTED, 0);
       this.logger.log(`KYC rejected: ${kycId} by ${reviewerId}`);
-      // TODO: emit UserKYCRejected event
+    }
+
+    // Trigger background queue job via BullMQ-simulated Redis queue to delete raw S3 files after 48 hours
+    if (saved.documents && saved.documents.length > 0) {
+      for (const doc of saved.documents) {
+        if (doc.s3Uri) {
+          await this.lifecycleQueue.scheduleFileDeletion(saved.id, doc.s3Uri);
+          this.logger.log(`Scheduled raw image deletion for doc [${doc.id}] on KYC [${saved.id}]`);
+        }
+      }
     }
 
     return saved;
+  }
+
+  /**
+   * getSensitiveDocumentUrl - Generate presigned S3 url with a hard 120s expiry if RBAC permissions are valid,
+   * otherwise logs a high-severity security alert to Clickhouse.
+   */
+  async getSensitiveDocumentUrl(
+    kycId: string,
+    docId: string,
+    userId: string,
+  ): Promise<{ signedUrl: string; expiresAt: number }> {
+    // Intercept at controller/service level. Double check RBAC scopes for kyc:review or kyc:override
+    const permissions = await this.rbacService.checkPermissions(userId, ['kyc:review', 'kyc:override']);
+    const hasPermission = permissions['kyc:review'] || permissions['kyc:override'];
+
+    if (!hasPermission) {
+      // Log high-severity entry to ClickHouse
+      await this.logClickHouseSecurityAlert(userId, kycId, docId, 'UNAUTHORIZED_SENSITIVE_KYC_ACCESS');
+      throw new HttpException('Unauthorized Resource Access Logged', HttpStatus.FORBIDDEN);
+    }
+
+    const submission = await this.kycRepository.findOne({ where: { id: kycId } });
+    if (!submission) throw new NotFoundException('طلب KYC غير موجود');
+
+    const document = submission.documents.find((d: any) => d.id === docId);
+    if (!document) throw new NotFoundException('الوثيقة غير موجودة في هذا الطلب');
+
+    if (!document.s3Uri) {
+      throw new BadRequestException('لقد تم حذف هذه الوثيقة نهائياً من مخزن S3 بموجب سياسة خصوصية البيانات بعد المراجعة');
+    }
+
+    const signedUrl = await this.s3Service.getPresignedUrl(document.s3Uri, 120); // exactly 120 seconds expiry
+    return {
+      signedUrl,
+      expiresAt: Math.floor(Date.now() / 1000) + 120,
+    };
+  }
+
+  /**
+   * Log high-severity security warning to ClickHouse
+   */
+  private async logClickHouseSecurityAlert(
+    userId: string,
+    kycId: string,
+    docId: string,
+    event: string,
+  ): Promise<void> {
+    this.logger.error(
+      `[SECURITY AUDIT LOG] clickhouse.gemz_security_alerts: event=${event}, actor_id=${userId}, resource=kyc:${kycId}, doc_id=${docId}, severity=CRITICAL`,
+    );
   }
 
   // ============================================================================

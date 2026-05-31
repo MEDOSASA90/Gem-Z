@@ -33,6 +33,8 @@ export interface KYCDocument {
   id: string;
   type: string;           // passport, national_id, license, etc.
   url: string;            // رابط الوثيقة (encrypted at rest + signed URL)
+  s3Uri?: string;         // private S3 path
+  deletedFromS3?: boolean;
   status?: 'PENDING' | 'VERIFIED' | 'REJECTED';
   uploadedAt: string;     // ISO 8601
   metadata?: Record<string, unknown>;

@@ -47,6 +47,9 @@ export class Booking {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0, name: 'penalty_amount' })
   penalty_amount: number;
 
+  @Column({ type: 'varchar', length: 100, nullable: true, name: 'correlation_id' })
+  correlation_id?: string;
+
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   created_at: Date;
 

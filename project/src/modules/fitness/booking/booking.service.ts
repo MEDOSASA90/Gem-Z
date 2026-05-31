@@ -9,6 +9,8 @@ import {
   ForbiddenException,
   BadRequestException,
   Logger,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Redis } from 'ioredis';
@@ -124,50 +126,67 @@ export class BookingService {
   ) {}
 
   /**
-   * حجز حصة - مع منع الحجز المزدوج عبر Redis Lock
-   * CRITICAL: Uses lock:slot:{slotId} for atomicity
+   * حجز حصة - مع منع الحجز المزدوج عبر Redis Lock وقائمة انتظار متزامنة في Redis
+   * CRITICAL: Uses lock:slot:{slotId} for atomicity and prevention of overbooking
    */
-  async book(userId: string, dto: BookSlotDto): Promise<Booking> {
+  async book(userId: string, dto: BookSlotDto): Promise<any> {
     const slotId = dto.slot_id;
-
-    // ─── REDIS LOCK ───────────────────────────────────────────────
     const lockKey = `lock:slot:${slotId}`;
     const lockValue = `${Date.now()}:${userId}`;
 
+    // Acquire Redis Distributed Lock instantly
     const acquired = await this.redis.set(
       lockKey,
       lockValue,
-      'PX',                          // expiry بالمللي ثانية
+      'PX', // TTL in milliseconds
       REDIS_LOCK_TTL_MS,
-      'NX',                          // فقط إن لم يكن موجوداً
+      'NX', // Only if not exists
     );
 
     if (!acquired) {
-      throw new ConflictException('Slot is currently being booked by another user. Please try again.');
+      throw new HttpException('Transaction in progress', HttpStatus.TOO_MANY_REQUESTS);
     }
 
     try {
-      // ─── التحقق من عدم وجود حجز مكرر ──────────────────────────
+      // التحقق من عدم وجود حجز مكرر
       const hasExisting = await this.bookingRepo.hasExistingBooking(userId, slotId);
       if (hasExisting) {
         throw new ConflictException('You already have a booking for this slot');
       }
 
-      // ─── جلب الحصة والتحقق من السعة ──────────────────────────
+      // جلب الحصة والتحقق من السعة
       const slot = await this.slotRepo.findOne({ where: { id: slotId } });
       if (!slot) throw new NotFoundException('Slot not found');
       if (slot.status === SlotStatus.CANCELLED) {
         throw new BadRequestException('This slot has been cancelled');
       }
-      if (slot.status === SlotStatus.COMPLETED) {
-        throw new BadRequestException('This slot has already completed');
-      }
+
+      const waitlistKey = `waitlist:class:${slotId}`;
+
+      // IF booked_slots >= max_capacity
       if (slot.booked_count >= slot.max_capacity) {
-        throw new ConflictException('Slot is full. Try joining the waitlist.');
+        // Push user's actor_id into the Redis Waitlist Queue for this class
+        await this.redis.rpush(waitlistKey, userId);
+        const queuePosition = await this.redis.llen(waitlistKey);
+
+        // Update waitlist count in slot
+        slot.waitlist_count = queuePosition;
+        await this.slotRepo.save(slot);
+
+        this.logger.log(`Slot ${slotId} is full. User ${userId} pushed to Redis waitlist queue position ${queuePosition}.`);
+
+        // Return status WAITLIST_ASSIGNED with their exact queue position index number
+        return {
+          status: 'WAITLIST_ASSIGNED',
+          position: queuePosition,
+          userId,
+          slotId,
+        };
       }
 
-      // ─── Atomic: زيادة العداد + إنشاء الحجز ──────────────────
-      await this.slotRepo.incrementBookedCount(slotId);
+      // IF booked_slots < max_capacity => Increment booked_slots by 1
+      slot.booked_count += 1;
+      await this.slotRepo.save(slot);
 
       const booking = this.bookingRepo.create({
         user_id: userId,
@@ -177,14 +196,13 @@ export class BookingService {
         check_in_method: null,
         cancellation_reason: null,
         penalty_amount: 0,
+        correlation_id: crypto.randomUUID(),
       });
 
       const saved = await this.bookingRepo.save(booking);
-
-      // ─── تحديث حالة الحصة إذا امتلأت ─────────────────────────
       await this.slotRepo.syncStatusFromCount(slotId);
 
-      // ─── نشر حدث الحجز ───────────────────────────────────────
+      // Emit BookingCreated event
       const event: BookingCreatedEvent = {
         booking_id: saved.id,
         user_id: saved.user_id,
@@ -196,7 +214,7 @@ export class BookingService {
 
       return saved;
     } finally {
-      // ─── تحرير القفل ──────────────────────────────────────────
+      // Release the Redis lock
       const current = await this.redis.get(lockKey);
       if (current === lockValue) {
         await this.redis.del(lockKey);
@@ -205,7 +223,7 @@ export class BookingService {
   }
 
   /**
-   * إلغاء حجز + معالجة قائمة الانتظار
+   * إلغاء حجز + معالجة قائمة الانتظار الذرية
    */
   async cancel(
     bookingId: string,
@@ -220,39 +238,107 @@ export class BookingService {
       throw new BadRequestException('Only confirmed bookings can be cancelled');
     }
 
-    const slot = await this.slotRepo.findOne({
-      where: { id: booking.slot_id },
-    });
+    const slotId = booking.slot_id;
+    const slot = await this.slotRepo.findOne({ where: { id: slotId } });
+    if (!slot) throw new NotFoundException('Slot not found');
 
-    // حساب غرامة الإلغاء المتأخر (مثال: < 4 ساعات)
+    // حساب غرامة الإلغاء المتأخر
     let penalty = 0;
-    if (slot) {
-      const hoursUntilStart = (slot.start_time.getTime() - Date.now()) / (1000 * 60 * 60);
-      if (hoursUntilStart < 4) {
-        penalty = slot.max_capacity > 10 ? 5 : 10; // غرامة رمزية
-      }
+    const hoursUntilStart = (slot.start_time.getTime() - Date.now()) / (1000 * 60 * 60);
+    if (hoursUntilStart < 4) {
+      penalty = slot.max_capacity > 10 ? 5 : 10;
     }
 
-    // تحديث الحجز
+    // Process cancellation: status to CANCELLED, penalty set
     booking.status = BookingStatus.CANCELLED;
     booking.cancellation_reason = dto.reason || null;
     booking.penalty_amount = penalty;
     const saved = await this.bookingRepo.save(booking);
 
-    // إنقاص العداد
-    await this.slotRepo.decrementBookedCount(booking.slot_id);
-    await this.slotRepo.syncStatusFromCount(booking.slot_id);
+    // Decrement booked_slots by 1
+    slot.booked_count = Math.max(0, slot.booked_count - 1);
+    await this.slotRepo.save(slot);
 
-    // نشر حدث الإلغاء
-    const event: BookingCancelledEvent = {
+    // Emit BookingCancelledEvent
+    const cancelEvent: BookingCancelledEvent = {
       booking_id: saved.id,
       user_id: saved.user_id,
       slot_id: saved.slot_id,
       reason: dto.reason ?? '',
       penalty_amount: penalty,
     };
-    await this.eventBus.publishSimple(EventType.BOOKING_CANCELLED, event, saved.user_id, 'fitness');
+    await this.eventBus.publishSimple(EventType.BOOKING_CANCELLED, cancelEvent, saved.user_id, 'fitness');
 
+    // Evaluate the Redis Waitlist Queue
+    const waitlistKey = `waitlist:class:${slotId}`;
+    const waitlistLength = await this.redis.llen(waitlistKey);
+
+    if (waitlistLength > 0) {
+      // Shift the first user from the queue
+      const nextUserId = await this.redis.lpop(waitlistKey);
+      
+      if (nextUserId) {
+        this.logger.log(`Waitlist candidate [${nextUserId}] found in Redis queue. Upgrading status atomically...`);
+
+        // Open an isolated database transaction to upgrade their status atomically
+        const queryRunner = this.bookingRepo.manager.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+          // Re-fetch slot within transaction to ensure safety
+          const txSlot = await queryRunner.manager.findOne(ClassSlot, {
+            where: { id: slotId },
+            lock: { mode: 'pessimistic_write' },
+          });
+
+          if (txSlot && txSlot.booked_count < txSlot.max_capacity) {
+            txSlot.booked_count += 1;
+            txSlot.waitlist_count = Math.max(0, txSlot.waitlist_count - 1);
+            await queryRunner.manager.save(ClassSlot, txSlot);
+
+            const nextBooking = queryRunner.manager.create(Booking, {
+              user_id: nextUserId,
+              slot_id: slotId,
+              status: BookingStatus.CONFIRMED,
+              check_in_time: null,
+              check_in_method: null,
+              cancellation_reason: null,
+              penalty_amount: 0,
+              correlation_id: crypto.randomUUID(),
+            });
+
+            const savedTxBooking = await queryRunner.manager.save(Booking, nextBooking);
+            await queryRunner.commitTransaction();
+
+            this.logger.log(`Atomically upgraded waitlisted user ${nextUserId} to confirmed booking ${savedTxBooking.id}`);
+
+            // Dispatch a high-priority push notification / Event
+            const upgradedEvent: BookingCreatedEvent = {
+              booking_id: savedTxBooking.id,
+              user_id: savedTxBooking.user_id,
+              slot_id: savedTxBooking.slot_id,
+              gym_id: txSlot.gym_id,
+              booked_at: savedTxBooking.created_at?.toISOString() || new Date().toISOString(),
+            };
+            await this.eventBus.publishSimple(EventType.BOOKING_CREATED, upgradedEvent, nextUserId, 'fitness');
+
+            // Dispatch push notification
+            this.logger.log(`[PUSH NOTIFICATION] High-Priority dispatch: User ${nextUserId} upgraded from Waitlist to Booked Slot ${slotId}`);
+          } else {
+            this.logger.warn(`Could not upgrade user ${nextUserId}: Slot capacity saturated.`);
+            await queryRunner.rollbackTransaction();
+          }
+        } catch (err: any) {
+          await queryRunner.rollbackTransaction();
+          this.logger.error(`Failed atomic waitlist upgrade transaction: ${err.message}`);
+        } finally {
+          await queryRunner.release();
+        }
+      }
+    }
+
+    await this.slotRepo.syncStatusFromCount(slotId);
     return saved;
   }
 
