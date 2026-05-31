@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { PlatformSealService } from './platform-seal.service';
-import { Heading2, BodyText, COLORS } from '../theme/design-tokens';
-import { ShieldCheck, FileText, Calendar, CheckSquare } from 'lucide-react';
+import { Heading2, BodyText } from '../theme/design-tokens';
+import { FileText, Calendar, CheckSquare } from 'lucide-react';
+import { useAuthStore } from '../store/use-store';
 
 interface ContractTemplateProps {
   masterHqName: string;
@@ -22,13 +23,56 @@ export const ContractTemplate: React.FC<ContractTemplateProps> = ({
   tenantId,
   isRtl = true,
 }) => {
-  // توليد الختم الرقمي المتوهج للمنصة بصيغة Base64 وتدويره بـ 45 درجة فوق حقل التوقيع
-  const platformSealBase64 = PlatformSealService.generatePlatformSealBase64(tenantId, effectiveDate);
+  const { lang, theme } = useAuthStore();
+  
+  // Dynamic rotated platform secure seal SVG in Base64
+  const platformSealBase64 = PlatformSealService.generatePlatformSealBase64(tenantId, effectiveDate, lang);
+
+  // Bilingual translation dictionary for B2B Contract Agreement
+  const contractDict = {
+    ar: {
+      badge: 'اتفاقية مستندات جيم زد الموثقة',
+      title: 'عقد اتفاقية تشغيل واستغلال فرع رياضى للفرنشايز',
+      tenantLabel: 'المستأجر الموثق',
+      licensor: 'المقر الرئيسي (المرخِّص)',
+      licensee: 'الفرع الإقليمي (المرخَّص له)',
+      taxId: 'الرقم الضريبي الإقليمي',
+      article1Title: 'البند الأول: موضوع رخصة التشغيل',
+      article1Desc: `بموجب هذا العقد، يمنح المقر الرئيسي [${masterHqName || 'شركة جيم زد العالمية المحدودة'}] للفرع الإقليمي [${branchName || 'فرع القاهرة الرياضي الإقليمي'}] رخصة تشغيل واستخدام التطبيقات التقدمية (PWA) للمنصة، وإحصائيات تتبع الموظفين، وتقاسم الأرباح بنسبة توزيع إيرادات تلقائية تبلغ (20.00% للمقر و 80.00% للفرع).`,
+      article2Title: 'البند الثاني: الامتثال الضريبي والفوترة الإلكترونية',
+      article2Desc: 'يلتزم الطرف الثاني بتطبيق نظام الفوترة الضريبية الإلكترونية للمنصة، وتوثيق المعاملات المالية الموزعة ببصمة تشفيرية رقمية SHA-256 معتمدة محلياً (EG-ETA / SA-ZATCA) ومسجلة في الدفتر المحاسبي المقسم شهرياً.',
+      dateLabel: 'تاريخ النفاذ والتشغيل المعتمد:',
+      sigLicensor: 'توقيع واعتماد المنصة والمقر الرئيسي',
+      sigLicensee: 'توقيع واعتماد مشغل الفرع الإقليمي',
+      licNo: 'رقم ترخيص النظام الموحد: Z-LIC-9092',
+      taxCert: 'الرقم الضريبي الموثق للفرنشايز: ',
+    },
+    en: {
+      badge: 'GEM Z SECURE DIGITAL AGREEMENT',
+      title: 'Franchise & Branch Operations Service Level Agreement',
+      tenantLabel: 'Verified Tenant Account',
+      licensor: 'Master Gym HQ (Licensor)',
+      licensee: 'Regional Gym Branch (Licensee)',
+      taxId: 'Regional Tax Registry ID',
+      article1Title: 'Article 1: Scope of Operational License',
+      article1Desc: `Under this contract, the Master Gym HQ [${masterHqName || 'GEM Z Global Ltd'}] grants the regional branch [${branchName || 'Cairo Regional Gym'}] a strict operational license to deploy GEM Z PWA dashboard services, utilize trainee biometric sensor tracking models, and route automated franchise splits of 80% directly to available merchant assets.`,
+      article2Title: 'Article 2: Fiscal Compliance & Ledger Signatures',
+      article2Desc: 'The Licensee commits to absolute fiscal compliance, validating trainee checkout receipts with Egypt ETA-compliant billing envelopes and signing ledger transactions with SHA-256 cryptographic footprints locked in monthly partitioned database tables.',
+      dateLabel: 'Commencement Effective Date:',
+      sigLicensor: 'Licensor Authorized Seal & Signature',
+      sigLicensee: 'Licensee Authorized Seal & Signature',
+      licNo: 'Unified Ecosystem License ID: Z-LIC-9092',
+      taxCert: 'Tax Registration Certificate: ',
+    }
+  } as const;
+
+  const t = contractDict[lang];
+  const isRtlLayout = lang === 'ar';
 
   return (
     <div
-      dir={isRtl ? 'rtl' : 'ltr'}
-      className="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden max-w-4xl mx-auto shadow-2xl border border-white/10 text-right transition-all duration-300 text-gray-200"
+      dir={isRtlLayout ? 'rtl' : 'ltr'}
+      className={`glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden max-w-4xl mx-auto shadow-2xl border border-border-custom text-gray-200 transition-all duration-300 ${isRtlLayout ? 'text-right' : 'text-left bg-card-dark'}`}
     >
       {/* 1. شعار خلفي مائي خافت جداً */}
       <div className="absolute -right-24 -bottom-24 w-96 h-96 opacity-[0.02] pointer-events-none">
@@ -37,99 +81,97 @@ export const ContractTemplate: React.FC<ContractTemplateProps> = ({
         </svg>
       </div>
 
-      {/* 2. ترويسة العقد الفنية (Volt Green header accent) */}
-      <div className="border-b border-white/10 pb-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* 2. ترويسة العقد الفنية */}
+      <div className="border-b border-border-custom pb-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-neon-cyan">
             <FileText className="w-5 h-5" />
-            <span className="text-xs font-bold uppercase tracking-wider">GEM Z ENTERPRISE CONTRACT</span>
+            <span className="text-xs font-bold uppercase tracking-wider">{t.badge}</span>
           </div>
-          <Heading2 className="text-white text-xl md:text-2xl font-extrabold text-glow-cyan">
-            {isRtl ? 'عقد اتفاقية تشغيل واستغلال فرع رياضى' : 'B2B Franchise & Branch Operations Agreement'}
+          <Heading2 className="text-text-primary text-xl md:text-2xl font-extrabold text-glow-cyan">
+            {t.title}
           </Heading2>
         </div>
         
         <div className="glass-panel px-4 py-2 rounded-xl text-center border-volt-green/20">
-          <p className="text-[10px] text-gray-400 font-semibold">{isRtl ? 'المستأجر النشط' : 'Active Tenant'}</p>
+          <p className="text-[10px] text-text-muted font-semibold">{t.tenantLabel}</p>
           <p className="text-xs font-bold text-volt-green tracking-wide">{tenantId}</p>
         </div>
       </div>
 
       {/* 3. بيانات العقد والمتغيرات الأساسية */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 bg-cyber-dark/40 border border-white/5 rounded-2xl p-4 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 bg-[#0B0B0F]/45 border border-border-custom rounded-2xl p-4 text-xs">
         <div className="space-y-1">
-          <span className="text-gray-500 font-semibold">{isRtl ? 'المقر الرئيسي (المرخِّص)' : 'Master Gym HQ (Licensor)'}</span>
-          <p className="text-white font-bold">{masterHqName || 'شركة جيم زد العالمية المحدودة'}</p>
+          <span className="text-text-muted font-semibold">{t.licensor}</span>
+          <p className="text-text-primary font-bold">{masterHqName || 'شركة جيم زد العالمية المحدودة'}</p>
         </div>
         <div className="space-y-1">
-          <span className="text-gray-500 font-semibold">{isRtl ? 'الفرع الإقليمي (المرخَّص له)' : 'Regional Branch (Licensee)'}</span>
+          <span className="text-text-muted font-semibold">{t.licensee}</span>
           <p className="text-volt-green font-bold">{branchName || 'فرع القاهرة الرياضي الإقليمي'}</p>
         </div>
         <div className="space-y-1">
-          <span className="text-gray-500 font-semibold">{isRtl ? 'الرقم الضريبي الإقليمي' : 'Regional Tax Registration ID'}</span>
+          <span className="text-text-muted font-semibold">{t.taxId}</span>
           <p className="text-neon-cyan font-bold tracking-wider">{regionalTaxId || '300998822100003'}</p>
         </div>
       </div>
 
       {/* 4. البنود القانونية والتشغيلية الموحدة */}
-      <div className="space-y-6 text-sm text-gray-300 leading-relaxed mb-8">
+      <div className="space-y-6 text-sm text-text-secondary leading-relaxed mb-8">
         <div className="space-y-2">
-          <h4 className="text-white font-bold text-xs flex items-center gap-2">
+          <h4 className="text-text-primary font-bold text-xs flex items-center gap-2">
             <CheckSquare className="w-4 h-4 text-neon-cyan" />
-            <span>{isRtl ? 'البند الأول: موضوع الاتفاقية' : 'Article 1: Scope of License'}</span>
+            <span>{t.article1Title}</span>
           </h4>
-          <p className="text-xs text-gray-400">
-            {isRtl 
-              ? `بموجب هذا العقد، يمنح المقر الرئيسي [${masterHqName}] للفرع الإقليمي [${branchName}] رخصة تشغيل واستخدام التطبيقات التقدمية (PWA) للمنصة، وإحصائيات تتبع الموظفين، وتقاسم الأرباح بنسبة توزيع إيرادات تلقائية تبلغ (20.00% للمقر و 80.00% للفرع).`
-              : `Under this contract, the Master Gym HQ [${masterHqName}] grants the regional branch [${branchName}] a strict operational license to deploy GEM Z PWA dashboard services and receive automated revenue splits of 80% directly to withdrawable merchant assets.`}
+          <p className="text-xs text-text-secondary leading-relaxed">
+            {t.article1Desc}
           </p>
         </div>
 
         <div className="space-y-2">
-          <h4 className="text-white font-bold text-xs flex items-center gap-2">
+          <h4 className="text-text-primary font-bold text-xs flex items-center gap-2">
             <CheckSquare className="w-4 h-4 text-volt-green" />
-            <span>{isRtl ? 'البند الثاني: الامتثال الضريبي والفوترة الإلكترونية' : 'Article 2: Fiscal Compliance & Signatures'}</span>
+            <span>{t.article2Title}</span>
           </h4>
-          <p className="text-xs text-gray-400">
-            {isRtl 
-              ? `يلتزم الطرف الثاني بتطبيق نظام الفوترة الضريبية الإلكترونية للمنصة، وتوثيق المعاملات المالية الموزعة ببصمة تشفيرية رقمية SHA-256 معتمدة محلياً (EG-ETA / SA-ZATCA) ومسجلة في الدفتر المحاسبي المقسم شهرياً.`
-              : `The Licensee commits to absolute fiscal compliance, validating checkout receipts with localized digital signatures (SHA-256) locked in monthly range-partitioned ledger tables.`}
+          <p className="text-xs text-text-secondary leading-relaxed">
+            {t.article2Desc}
           </p>
         </div>
       </div>
 
       {/* 5. تواريخ التعاقد */}
-      <div className="flex items-center gap-2 bg-white/5 border border-white/5 rounded-xl px-4 py-2.5 w-fit mb-10 text-xs">
+      <div className="flex items-center gap-2 bg-text-muted/5 border border-border-custom rounded-xl px-4 py-2.5 w-fit mb-10 text-xs">
         <Calendar className="w-4 h-4 text-neon-cyan" />
-        <span>{isRtl ? 'تاريخ النفاذ والتشغيل المعتمد:' : 'Effective Commencement Date:'}</span>
-        <strong className="text-white font-mono tracking-wider">{effectiveDate}</strong>
+        <span>{t.dateLabel}</span>
+        <strong className="text-text-primary font-mono tracking-wider">{effectiveDate}</strong>
       </div>
 
       {/* 6. كتل التوقيع والأختام الرقمية (Digital Signatures & Rotated Stamp Overlay) */}
-      <div className="border-t border-white/10 pt-8 grid grid-cols-2 gap-8 items-end relative">
+      <div className="border-t border-border-custom pt-8 grid grid-cols-2 gap-8 items-end relative" style={{ direction: isRtlLayout ? 'rtl' : 'ltr' }}>
         
         {/* التوقيع الأول: المقر الرئيسي والمنصة */}
-        <div className="space-y-2 text-right">
-          <span className="text-[10px] text-gray-500 font-bold block">{isRtl ? 'توقيع واعتماد المنصة' : 'Licensor Authorized Signature'}</span>
-          <div className="h-16 border-b border-dashed border-white/20 flex items-center justify-center font-serif text-neon-cyan text-sm italic tracking-widest relative">
+        <div className={`space-y-2 ${isRtlLayout ? 'text-right' : 'text-left'}`}>
+          <span className="text-[10px] text-text-muted font-bold block">{t.sigLicensor}</span>
+          <div className="h-16 border-b border-dashed border-border-custom flex items-center justify-center font-serif text-neon-cyan text-[10px] sm:text-xs italic tracking-widest relative">
             GEM Z SECURE DIGITAL SIGNATURE
             
-            {/* ختم التحقق المتوهج والمائل بـ 45 درجة مطبوع فوق حقل التوقيع */}
-            <div className="absolute w-28 h-28 opacity-80 rotate-12 -top-6 -right-6 pointer-events-none transform hover:scale-110 transition-transform">
+            {/* ختم التحقق المتوهج والمائل بـ 12 درجة مطبوع فوق حقل التوقيع */}
+            <div className={`absolute w-24 h-24 opacity-85 pointer-events-none transform hover:scale-110 transition-transform ${
+              isRtlLayout ? 'rotate-12 -top-6 -right-6' : 'rotate-12 -top-6 -left-6'
+            }`}>
               <img src={platformSealBase64} alt="Platform Secure Seal" className="w-full h-full" />
             </div>
           </div>
-          <span className="text-[9px] text-gray-400 font-semibold">{isRtl ? 'رقم ترخيص النظام: Z-LIC-9092' : 'Ecosystem license: Z-LIC-9092'}</span>
+          <span className="text-[8px] text-text-muted font-semibold">{t.licNo}</span>
         </div>
 
         {/* التوقيع الثاني: الفرع الإقليمي */}
-        <div className="space-y-2 text-right">
-          <span className="text-[10px] text-gray-500 font-bold block">{isRtl ? 'توقيع واعتماد مشغل الفرع' : 'Licensee Authorized Signature'}</span>
-          <div className="h-16 border-b border-dashed border-white/20 flex items-center justify-center font-serif text-volt-green text-sm italic tracking-widest">
+        <div className={`space-y-2 ${isRtlLayout ? 'text-right' : 'text-left'}`}>
+          <span className="text-[10px] text-text-muted font-bold block">{t.sigLicensee}</span>
+          <div className="h-16 border-b border-dashed border-border-custom flex items-center justify-center font-serif text-volt-green text-[10px] sm:text-xs italic tracking-widest">
             {branchName.toUpperCase()}
           </div>
-          <span className="text-[9px] text-gray-400 font-semibold">
-            {isRtl ? `الرقم الضريبي الموثق: ${regionalTaxId.substring(0, 7)}...` : `Tax Registration: ${regionalTaxId.substring(0, 7)}...`}
+          <span className="text-[8px] text-text-muted font-semibold">
+            {t.taxCert}{regionalTaxId.substring(0, 7)}...
           </span>
         </div>
       </div>

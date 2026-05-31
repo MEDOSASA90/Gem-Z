@@ -20,14 +20,6 @@ export const COLORS = {
   textLight: '#F3F4F6',
 } as const;
 
-// تدرجات الألوان للنيون السيبراني والوهج الداخلي
-export const GRADIENTS = {
-  cyber: 'bg-gradient-to-r from-neon-cyan to-volt-green',
-  darkGlow: 'bg-[radial-gradient(circle_at_center,_rgba(18,18,26,0.8)_0%,_rgba(11,11,15,1)_100%)]',
-  premium: 'bg-gradient-to-r from-premium-gold to-yellow-500',
-  textCyber: 'bg-gradient-to-r from-neon-cyan to-volt-green bg-clip-text text-transparent',
-} as const;
-
 interface TypographyProps {
   children: ReactNode;
   className?: string;
@@ -41,7 +33,7 @@ export const Heading1: React.FC<TypographyProps> = ({ children, className = '', 
   return (
     <h1
       id={id}
-      className={`text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight md:leading-none ${className}`}
+      className={`text-3xl md:text-5xl font-extrabold tracking-tight text-text-primary leading-tight md:leading-none transition-colors duration-300 ${className}`}
       style={{ fontFamily: 'Arial, sans-serif' }}
     >
       {children}
@@ -56,7 +48,7 @@ export const Heading2: React.FC<TypographyProps> = ({ children, className = '', 
   return (
     <h2
       id={id}
-      className={`text-xl md:text-2xl font-bold tracking-tight text-white leading-snug ${className}`}
+      className={`text-xl md:text-2xl font-bold tracking-tight text-text-primary leading-snug transition-colors duration-300 ${className}`}
       style={{ fontFamily: 'Arial, sans-serif' }}
     >
       {children}
@@ -71,7 +63,7 @@ export const BodyText: React.FC<TypographyProps> = ({ children, className = '', 
   return (
     <p
       id={id}
-      className={`text-sm md:text-base text-gray-400 font-normal leading-relaxed ${className}`}
+      className={`text-sm md:text-base text-text-secondary font-normal leading-relaxed transition-colors duration-300 ${className}`}
       style={{ fontFamily: 'Arial, sans-serif' }}
     >
       {children}
@@ -99,13 +91,13 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
   
   let variantStyles = '';
   if (variant === 'cyan') {
-    variantStyles = 'bg-neon-cyan text-black hover:bg-white hover:text-black ' + (glow ? 'shadow-glow-cyan' : '');
+    variantStyles = 'bg-neon-cyan text-black hover:bg-text-primary hover:text-white ' + (glow ? 'shadow-glow-cyan' : '');
   } else if (variant === 'green') {
-    variantStyles = 'bg-volt-green text-black hover:bg-white hover:text-black ' + (glow ? 'shadow-glow-green' : '');
+    variantStyles = 'bg-volt-green text-black hover:bg-text-primary hover:text-white ' + (glow ? 'shadow-glow-green' : '');
   } else if (variant === 'premium') {
-    variantStyles = 'bg-gradient-to-r from-premium-gold to-yellow-500 text-black hover:from-white hover:to-white hover:text-black shadow-[0_0_15px_rgba(255,215,0,0.35)]';
+    variantStyles = 'bg-gradient-to-r from-premium-gold to-amber-500 text-white hover:from-text-primary hover:to-text-primary shadow-[0_0_15px_rgba(255,215,0,0.35)]';
   } else {
-    variantStyles = 'glass-panel text-white hover:border-neon-cyan/50 hover:text-neon-cyan';
+    variantStyles = 'glass-panel text-text-primary border-border-custom hover:border-neon-cyan/50 hover:text-neon-cyan';
   }
 
   return (
@@ -158,13 +150,13 @@ export const GemZLogo: React.FC<GemZLogoProps> = ({ size = 48, glow = true }) =>
       <polygon
         points="50,5 90,25 90,75 50,95 10,75 10,25"
         stroke="url(#logoGradient)"
-        strokeWidth="3"
+        strokeWidth="3.5"
         fill="rgba(18, 18, 26, 0.4)"
         strokeLinejoin="round"
       />
       <polygon
         points="50,12 84,29 84,71 50,88 16,71 16,29"
-        stroke="#12121A"
+        stroke="rgba(0, 240, 255, 0.1)"
         strokeWidth="1.5"
         fill="none"
         opacity="0.3"

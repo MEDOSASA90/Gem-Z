@@ -11,7 +11,7 @@ export class PlatformSealService {
   /**
    * توليد كود SVG لختم التحقق الرقمي للمنصة
    */
-  static generatePlatformSeal(tenantId: string, verifiedDate: string): string {
+  static generatePlatformSeal(tenantId: string, verifiedDate: string, lang: 'ar' | 'en' = 'ar'): string {
     const formattedDate = verifiedDate || new Date().toLocaleDateString('ar-EG');
     const safeTenant = (tenantId || 'SYSTEM-HQ').toUpperCase();
     
@@ -70,9 +70,8 @@ export class PlatformSealService {
   /**
    * تحويل كود الـ SVG المولد إلى صيغة Base64 Data URI ليتم استخدامه مباشرة كـ Image Source
    */
-  static generatePlatformSealBase64(tenantId: string, verifiedDate: string): string {
-    const svgString = this.generatePlatformSeal(tenantId, verifiedDate);
-    // تشفير الـ SVG بأمان في بيئات المتصفح والخادم Node.js
+  static generatePlatformSealBase64(tenantId: string, verifiedDate: string, lang: 'ar' | 'en' = 'ar'): string {
+    const svgString = this.generatePlatformSeal(tenantId, verifiedDate, lang);
     const base64 = typeof window !== 'undefined'
       ? btoa(unescape(encodeURIComponent(svgString)))
       : Buffer.from(svgString).toString('base64');

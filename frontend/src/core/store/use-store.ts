@@ -10,7 +10,7 @@ export interface UserProfile {
 
 export interface WalletState {
   balance: number;
-  currency: 'EGP'; // قفل العملة على الجنيه المصري حنباً إلى جنب مع السوق المصري
+  currency: 'EGP';
   withdrawableBalance: number;
   heldBalance: number;
 }
@@ -23,6 +23,12 @@ interface AuthState {
   
   // Wallet information
   wallet: WalletState;
+  
+  // Global Translation & Theme Governance
+  lang: 'ar' | 'en';
+  theme: 'dark' | 'light';
+  toggleLang: () => void;
+  toggleTheme: () => void;
   
   // OTP flow state
   loginPhone: string;
@@ -44,12 +50,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   authToken: null,
   
-  // تهيئة المحفظة بأسعار معتمدة بالكامل على الجنيه المصري EGP
+  // Initial wallet state defaulted strictly to Egyptian Pounds (EGP)
   wallet: {
     balance: 8500.00,
     currency: 'EGP',
     withdrawableBalance: 6800.00,
     heldBalance: 1700.00,
+  },
+  
+  // Global Translation & Theme settings
+  lang: 'ar', // Defaulting to Arabic (RTL)
+  theme: 'dark', // Defaulting to Cyber Dark mode
+  
+  toggleLang: () => set((state) => ({ lang: state.lang === 'ar' ? 'en' : 'ar' })),
+  toggleTheme: () => {
+    const nextTheme = get().theme === 'dark' ? 'light' : 'dark';
+    if (typeof window !== 'undefined') {
+      const html = document.documentElement;
+      if (nextTheme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+    }
+    set({ theme: nextTheme });
   },
   
   loginPhone: '',
@@ -60,9 +84,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setLoginPhone: (phone) => set({ loginPhone: phone, verificationError: null }),
 
   triggerOtpSend: async () => {
-    const { loginPhone } = get();
+    const { loginPhone, lang } = get();
     if (!loginPhone || loginPhone.length < 9) {
-      set({ verificationError: 'الرجاء إدخال رقم هاتف مصري صحيح' });
+      set({ 
+        verificationError: lang === 'ar' 
+          ? 'الرجاء إدخال رقم هاتف مصري صحيح (مثال: 1012345678)' 
+          : 'Please enter a valid Egyptian phone number (e.g. 1012345678)' 
+      });
       return false;
     }
     
@@ -74,8 +102,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   verifyOtp: async (code) => {
+    const { lang } = get();
     if (code !== '123456') {
-      set({ verificationError: 'كود التحقق غير صحيح، حاول مرة أخرى (الرمز التجريبي: 123456)' });
+      set({ 
+        verificationError: lang === 'ar'
+          ? 'كود التحقق غير صحيح، حاول مرة أخرى (الرمز التجريبي: 123456)' 
+          : 'Incorrect verification code. Please try again (Demo code: 123456)' 
+      });
       return false;
     }
     
@@ -87,7 +120,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       phone: get().loginPhone,
       role: 'HR_ADMIN',
       tenantId: 'GEMZ-EG-CAIRO-902',
-      name: 'محمود عبد العزيز',
+      name: lang === 'ar' ? 'محمود عبد العزيز' : 'Mahmoud Abdelaziz',
     };
     
     set({

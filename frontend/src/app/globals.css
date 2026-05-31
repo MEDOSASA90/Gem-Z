@@ -1,53 +1,83 @@
 @import "tailwindcss";
 
 :root {
+  --background: #F9FAFB;
+  --foreground: #1F2937;
+  
+  --cyber-bg: #F3F4F6;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+  
+  --neon-cyan: #00B4D8;
+  --volt-green: #0D9488;
+  --premium-gold: #B45309;
+}
+
+.dark {
   --background: #0B0B0F;
   --foreground: #F3F4F6;
   
-  --cyber-dark: #0B0B0F;
-  --card-dark: #12121A;
+  --cyber-bg: #0B0B0F;
+  --card-bg: rgba(18, 18, 26, 0.65);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --text-primary: #FFFFFF;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  
   --neon-cyan: #00F0FF;
   --volt-green: #39FF14;
   --premium-gold: #FFD700;
 }
 
 @theme {
-  --color-cyber-dark: var(--cyber-dark);
-  --color-card-dark: var(--card-dark);
+  --color-cyber-dark: var(--cyber-bg);
+  --color-card-dark: var(--card-bg);
   --color-neon-cyan: var(--neon-cyan);
   --color-volt-green: var(--volt-green);
   --color-premium-gold: var(--premium-gold);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-custom: var(--border-color);
   
-  /* Gradients */
-  --bg-gradient-cyber: linear-gradient(135deg, var(--neon-cyan) 0%, var(--volt-green) 100%);
-  --bg-gradient-dark-glow: radial-gradient(circle at center, rgba(18, 18, 26, 0.8) 0%, rgba(11, 11, 15, 1) 100%);
-  
-  /* Strict Arial Font Binding */
+  /* Strict Arial Font Override */
   --font-sans: Arial, Helvetica, "Helvetica Neue", sans-serif;
+  
+  /* Smooth Transitions */
+  --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 body {
-  background-color: var(--color-cyber-dark);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif; /* القفل الصارم على خط Arial */
+  font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  transition: var(--transition-theme);
   direction: ltr;
+}
+
+/* Base class transitions */
+div, section, header, aside, main, table, tr, td, th, input, select, button {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Glassmorphism custom classes */
 .glass-panel {
-  background-color: rgba(18, 18, 26, 0.6);
+  background-color: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
 }
 
 .glass-panel-glow {
-  background-color: rgba(18, 18, 26, 0.65);
+  background-color: var(--card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 240, 255, 0.15);
-  box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.08);
 }
 
 /* Neon glow animations & utilities */
@@ -67,7 +97,49 @@ body {
   box-shadow: 0 0 15px rgba(57, 255, 20, 0.35);
 }
 
+/* Shimmer animation for Skeleton Card loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
 /* RTL Helpers */
 [dir="rtl"] .rtl-flip {
   transform: scaleX(-1);
+}
+
+/* Smooth Fade in animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
 }
