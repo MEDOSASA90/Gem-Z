@@ -1,0 +1,31 @@
+/**
+ * أنواع معاملات النقاط
+ */
+export enum PointsTransactionType {
+  EARN = 'EARN',
+  SPEND = 'SPEND',
+}
+
+/**
+ * مصادر كسب النقاط
+ */
+export enum PointsSource {
+  WORKOUT = 'WORKOUT',
+  ATTENDANCE = 'ATTENDANCE',
+  CHALLENGE_COMPLETED = 'CHALLENGE_COMPLETED',
+  REFERRAL = 'REFERRAL',
+  NUTRITION_COMPLIANCE = 'NUTRITION_COMPLIANCE',
+  CREATOR_ENGAGEMENT = 'CREATOR_ENGAGEMENT',
+  PURCHASE = 'PURCHASE',
+  MANUAL_ADJUSTMENT = 'MANUAL_ADJUSTMENT',
+}
+
+/**
+ * أغراض إنفاق النقاط
+ */
+export enum PointsSpendPurpose {
+  DISCOUNT = 'DISCOUNT',
+  PREMIUM_FEATURE = 'PREMIUM_FEATURE',
+  CHALLENGE_ENTRY = 'CHALLENGE_ENTRY',
+  CONVERT_TO_WALLET = 'CONVERT_TO_WALLET',
+}
