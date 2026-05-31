@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0B0B0F;
+  --foreground: #F3F4F6;
+  
+  --cyber-dark: #0B0B0F;
+  --card-dark: #12121A;
+  --neon-cyan: #00F0FF;
+  --volt-green: #39FF14;
+  --premium-gold: #FFD700;
+}
+
+@theme {
+  --color-cyber-dark: var(--cyber-dark);
+  --color-card-dark: var(--card-dark);
+  --color-neon-cyan: var(--neon-cyan);
+  --color-volt-green: var(--volt-green);
+  --color-premium-gold: var(--premium-gold);
+  
+  /* Gradients */
+  --bg-gradient-cyber: linear-gradient(135deg, var(--neon-cyan) 0%, var(--volt-green) 100%);
+  --bg-gradient-dark-glow: radial-gradient(circle at center, rgba(18, 18, 26, 0.8) 0%, rgba(11, 11, 15, 1) 100%);
+  
+  /* Typography Scale */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+body {
+  background-color: var(--color-cyber-dark);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  direction: ltr; /* Default LTR, supports RTL by adding dir="rtl" to container */
+}
+
+/* Glassmorphism custom classes */
+.glass-panel {
+  background-color: rgba(18, 18, 26, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-glow {
+  background-color: rgba(18, 18, 26, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.05);
+}
+
+/* Neon glow animations & utilities */
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5), 0 0 20px rgba(57, 255, 20, 0.2);
+}
+
+.shadow-glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.35);
+}
+
+.shadow-glow-green {
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.35);
+}
+
+/* RTL Helpers */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
