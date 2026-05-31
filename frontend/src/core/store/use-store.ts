@@ -10,7 +10,7 @@ export interface UserProfile {
 
 export interface WalletState {
   balance: number;
-  currency: 'EGP' | 'SAR' | 'AED';
+  currency: 'EGP'; // قفل العملة على الجنيه المصري حنباً إلى جنب مع السوق المصري
   withdrawableBalance: number;
   heldBalance: number;
 }
@@ -39,17 +39,17 @@ interface AuthState {
   clearError: () => void;
 }
 
-// Zustand store with complete production-grade implementation
 export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   user: null,
   authToken: null,
   
+  // تهيئة المحفظة بأسعار معتمدة بالكامل على الجنيه المصري EGP
   wallet: {
-    balance: 850.00,
-    currency: 'SAR',
-    withdrawableBalance: 680.00,
-    heldBalance: 170.00,
+    balance: 8500.00,
+    currency: 'EGP',
+    withdrawableBalance: 6800.00,
+    heldBalance: 1700.00,
   },
   
   loginPhone: '',
@@ -62,49 +62,45 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   triggerOtpSend: async () => {
     const { loginPhone } = get();
     if (!loginPhone || loginPhone.length < 9) {
-      set({ verificationError: 'الرجاء إدخال رقم هاتف صحيح' });
+      set({ verificationError: 'الرجاء إدخال رقم هاتف مصري صحيح' });
       return false;
     }
     
     set({ verificationLoading: true, verificationError: null });
-    
-    // محاكاة الاتصال الفعلي مع خادم المصادقة الخلفي
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
     
     set({ otpSent: true, verificationLoading: false });
     return true;
   },
 
   verifyOtp: async (code) => {
-    if (code !== '123456') { // الرمز النموذجي الافتراضي للفحص والتحقق
+    if (code !== '123456') {
       set({ verificationError: 'كود التحقق غير صحيح، حاول مرة أخرى (الرمز التجريبي: 123456)' });
       return false;
     }
     
     set({ verificationLoading: true, verificationError: null });
-    
-    // محاكاة مصافحة المصادقة والـ handshake
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     
     const mockUser: UserProfile = {
-      id: 'usr-uuid-9921',
+      id: 'usr-eg-802',
       phone: get().loginPhone,
       role: 'HR_ADMIN',
-      tenantId: 'tenant-enterprise-inc',
+      tenantId: 'GEMZ-EG-CAIRO-902',
       name: 'محمود عبد العزيز',
     };
     
     set({
       isAuthenticated: true,
       user: mockUser,
-      authToken: 'mock-jwt-token-xyz-10298',
+      authToken: 'mock-jwt-token-egypt-10298',
       otpSent: false,
       verificationLoading: false,
       wallet: {
-        balance: 1450.00,
-        currency: 'SAR',
-        withdrawableBalance: 1200.00,
-        heldBalance: 250.00,
+        balance: 14500.00,
+        currency: 'EGP',
+        withdrawableBalance: 12000.00,
+        heldBalance: 2500.00,
       }
     });
     

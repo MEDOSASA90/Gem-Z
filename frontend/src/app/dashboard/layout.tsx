@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../core/store/use-store';
 import { useRouter, usePathname } from 'next/navigation';
+import { GemZLogo } from '../../core/theme/design-tokens';
 import {
   Dumbbell,
   Users,
@@ -15,6 +16,7 @@ import {
   Menu,
   X,
   Wallet,
+  Tv,
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -29,7 +31,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isRtl, setIsRtl] = useState(true); // افتراضياً باللغة العربية RTL
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // حماية المسار: إعادة التوجيه للرئيسية إذا لم يكن مسجلاً للدخول
+  // حماية المسار
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/');
@@ -44,13 +46,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     );
   }
 
-  // روابط التصفح الجانبية
+  // روابط التصفح الجانبية المحدثة بالسوشيال واللايف
   const navItems = [
     {
       label: isRtl ? 'صالات الفرنشايز (Gym SaaS)' : 'Gym SaaS Manager',
       path: '/dashboard/gym',
       icon: Dumbbell,
       color: 'text-neon-cyan',
+    },
+    {
+      label: isRtl ? 'بوابة السوشيال واللايف (Social Hub)' : 'Social & Live Hub',
+      path: '/dashboard/social',
+      icon: Tv,
+      color: 'text-red-400',
     },
     {
       label: isRtl ? 'تحليلات الشركات (HR B2B)' : 'Corporate HR B2B',
@@ -87,6 +95,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div
       dir={isRtl ? 'rtl' : 'ltr'}
       className="min-h-screen bg-[#0B0B0F] bg-[radial-gradient(circle_at_center,_rgba(18,18,26,0.65)_0%,_rgba(11,11,15,1)_100%)] text-white flex flex-col font-sans transition-all duration-300"
+      style={{ fontFamily: 'Arial, sans-serif' }}
     >
       {/* 1. الترويسة العلوية للمنصة (Top Header) */}
       <header className="border-b border-white/5 bg-[#0B0B0F]/80 backdrop-blur-md sticky top-0 z-40">
@@ -100,28 +109,27 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* الشعار */}
+            {/* الشعار المبتكر الجديد الفاخر */}
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/')}>
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-neon-cyan to-volt-green p-[1px] shadow-glow-cyan">
-                <div className="w-full h-full bg-[#0B0B0F] rounded-xl flex items-center justify-center font-black text-neon-cyan tracking-tighter text-base">
-                  Z
-                </div>
+              <GemZLogo size={36} glow={true} />
+              <div className="text-right">
+                <span className="text-sm font-black tracking-wider text-white block">
+                  GEM <span className="text-neon-cyan">Z</span>
+                </span>
+                <span className="text-[7px] text-gray-500 font-mono tracking-widest block">ENTERPRISE OS</span>
               </div>
-              <span className="text-lg font-black tracking-wider text-white">
-                GEM <span className="text-neon-cyan">Z</span> <span className="text-xs text-gray-500 font-mono">DASHBOARD</span>
-              </span>
             </div>
           </div>
 
-          {/* محتويات الملف والمحفظة */}
+          {/* محتويات الملف والمحفظة بالجنيه المصري */}
           <div className="flex items-center gap-3 sm:gap-6">
-            {/* المحفظة الرقمية المتوهجة الموحدة */}
+            {/* المحفظة الرقمية المتوهجة بالجنيه المصري EGP */}
             <div className="glass-panel px-3 sm:px-4 py-2 rounded-2xl border-neon-cyan/20 flex items-center gap-2 sm:gap-3 shadow-[0_0_15px_rgba(0,240,255,0.05)]">
               <div className="w-8 h-8 rounded-xl bg-neon-cyan/10 border border-neon-cyan/20 flex items-center justify-center text-neon-cyan">
                 <Wallet className="w-4 h-4" />
               </div>
               <div className="text-right">
-                <p className="text-[8px] sm:text-[9px] text-gray-500 font-bold">{isRtl ? 'محفظة PWA النشطة' : 'Active Wallet'}</p>
+                <p className="text-[8px] sm:text-[9px] text-gray-500 font-bold">{isRtl ? 'محفظة الجنيه المصري' : 'Active Wallet'}</p>
                 <p className="text-xs sm:text-sm font-extrabold text-white tracking-wider">
                   {wallet.balance.toFixed(2)} <span className="text-neon-cyan text-[10px]">{wallet.currency}</span>
                 </p>
@@ -134,11 +142,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <span className="text-[9px] text-premium-gold font-bold">{user.role}</span>
             </div>
 
-            {/* زر تبديل اللغة LTR/RTL */}
+            {/* زر تبديل اللغة */}
             <button
               onClick={() => setIsRtl(!isRtl)}
               className="p-2 rounded-xl glass-panel hover:border-neon-cyan/40 text-neon-cyan transition-all cursor-pointer"
-              title={isRtl ? 'English Layout' : 'التخطيط العربي'}
             >
               <Languages className="w-4 h-4" />
             </button>
@@ -147,7 +154,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <button
               onClick={handleLogout}
               className="p-2 rounded-xl glass-panel border-red-500/10 text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all cursor-pointer"
-              title={isRtl ? 'تسجيل الخروج' : 'Log Out'}
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -156,7 +162,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </header>
 
       <div className="flex-1 flex relative">
-        {/* 2. شريط التنقل الجانبي لسطح المكتب (Desktop Sidebar) */}
+        {/* 2. شريط التنقل الجانبي لسطح المكتب */}
         <aside className="hidden lg:block w-72 border-l border-white/5 bg-[#0B0B0F]/60 backdrop-blur-md p-6 space-y-6">
           <div className="text-right px-2 space-y-1">
             <p className="text-[10px] text-gray-500 font-bold tracking-wider">ENTERPRISE PORTALS</p>
@@ -185,13 +191,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
         </aside>
 
-        {/* 3. شريط التنقل الجانبي للهواتف (Mobile Drawer) */}
+        {/* 3. شريط التنقل الجانبي للهواتف */}
         {sidebarOpen && (
           <div className="lg:hidden fixed inset-0 z-30 flex">
-            {/* غطاء خلفي معتم */}
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
             
-            {/* القائمة الجانبية */}
             <aside className="relative w-72 max-w-xs bg-[#0B0B0F] border-l border-white/5 p-6 flex flex-col justify-between z-40 animate-fade-in-right">
               <div className="space-y-6">
                 <div className="flex justify-between items-center pb-4 border-b border-white/5">
@@ -226,7 +230,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </nav>
               </div>
 
-              {/* تذييل الموبايل */}
               <div className="pt-4 border-t border-white/5 space-y-2">
                 <p className="text-[10px] text-gray-500 font-bold">{user.name}</p>
                 <p className="text-[8px] text-premium-gold font-bold">{user.role}</p>
@@ -235,7 +238,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         )}
 
-        {/* 4. لوحة عرض الصفحات الداخلية المتغيرة (Main Dynamic Content Pane) */}
+        {/* 4. لوحة عرض الصفحات الداخلية */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           {children}
         </main>
