@@ -45,7 +45,7 @@ export class AuditLog {
   resource_id: string;
 
   /** التغييرات (JSONB) - before/after values */
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   changes: {
     before?: Record<string, unknown>;
     after?: Record<string, unknown>;
@@ -69,7 +69,7 @@ export class AuditLog {
   correlation_id: string | null;
 
   /** معلومات إضافية */
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   metadata: {
     endpoint?: string;
     method?: string;
@@ -79,6 +79,6 @@ export class AuditLog {
   } | null;
 
   /** تاريخ الإنشاء (partitioned by month) */
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 }

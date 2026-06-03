@@ -12,7 +12,7 @@ import {
 import { Permission } from './permission.entity';
 
 @Entity('roles')
-@Index(['slug'], { unique: true, where: 'deleted_at IS NULL' })
+@Index(['slug'], { unique: true })
 export class Role {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -46,12 +46,12 @@ export class Role {
   })
   permissions: Permission[];
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
   deletedAt: Date | null;
 }

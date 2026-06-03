@@ -63,18 +63,18 @@ export class KYCSubmission {
   @Column({ name: 'user_id', type: 'uuid', nullable: false })
   userId: string;
 
-  @Column({ type: 'enum', enum: KYCType, nullable: false })
+  @Column({ type: 'simple-enum', enum: KYCType, nullable: false })
   type: KYCType;
 
-  @Column({ type: 'enum', enum: KYCReviewStatus, default: KYCReviewStatus.PENDING })
+  @Column({ type: 'simple-enum', enum: KYCReviewStatus, default: KYCReviewStatus.PENDING })
   status: KYCReviewStatus;
 
   /** الوثائق المرفقة (JSONB) */
-  @Column({ type: 'jsonb', default: [] })
+  @Column({ type: 'simple-json', nullable: true })
   documents: KYCDocument[];
 
   /** بيانات OCR المستخرجة */
-  @Column({ name: 'ocr_data', type: 'jsonb', default: {} })
+  @Column({ name: 'ocr_data', type: 'simple-json', nullable: true })
   ocrData: OCRResult;
 
   /** درجة تطابق الوجه (0-100) */
@@ -97,15 +97,15 @@ export class KYCSubmission {
   @Column({ name: 'review_notes', type: 'text', nullable: true })
   reviewNotes: string | null;
 
-  @Column({ name: 'submitted_at', type: 'timestamptz', default: () => 'NOW()' })
+  @Column({ name: 'submitted_at', type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   submittedAt: Date;
 
-  @Column({ name: 'reviewed_at', type: 'timestamptz', nullable: true })
+  @Column({ name: 'reviewed_at', type: 'datetime', nullable: true })
   reviewedAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

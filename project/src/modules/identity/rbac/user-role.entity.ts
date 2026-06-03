@@ -26,13 +26,13 @@ export class UserRole {
   assignedBy: string | null;
 
   /** المناطق المسموح بها (للتحكم الاقليمي) */
-  @Column({ name: 'scope_regions', type: 'text', array: true, default: [] })
+  @Column({ name: 'scope_regions', type: 'simple-array', default: '' })
   scopeRegions: string[];
 
   /** تاريخ انتهاء الدور (اختياري) */
-  @Column({ name: 'expires_at', type: 'timestamptz', nullable: true })
+  @Column({ name: 'expires_at', type: 'datetime', nullable: true })
   expiresAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

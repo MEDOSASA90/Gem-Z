@@ -32,7 +32,7 @@ export class Session {
   deviceFingerprint: string;
 
   /** عنوان IP */
-  @Column({ name: 'ip_address', type: 'inet', nullable: false })
+  @Column({ name: 'ip_address', type: 'varchar', length: 45, nullable: false })
   ipAddress: string;
 
   /** وكيل المستخدم (User-Agent) */
@@ -52,11 +52,11 @@ export class Session {
   refreshTokenHash: string;
 
   /** تاريخ انتهاء الجلسة */
-  @Column({ name: 'expires_at', type: 'timestamptz', nullable: false })
+  @Column({ name: 'expires_at', type: 'datetime', nullable: false })
   expiresAt: Date;
 
   /** آخر نشاط */
-  @Column({ name: 'last_active_at', type: 'timestamptz', default: () => 'NOW()' })
+  @Column({ name: 'last_active_at', type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   lastActiveAt: Date;
 
   /** هل الجلسة نشطة؟ */
@@ -67,6 +67,6 @@ export class Session {
   @Column({ name: 'mfa_verified', type: 'boolean', default: false })
   mfaVerified: boolean;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

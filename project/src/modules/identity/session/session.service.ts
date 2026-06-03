@@ -189,6 +189,11 @@ export class SessionService {
     return this.sessionRepository.findOne({ where: { id: sessionId } });
   }
 
+  /** العثور على جلسة بواسطة Token Hash */
+  async findByTokenHash(tokenHash: string): Promise<Session | null> {
+    return this.sessionRepository.findOne({ where: { tokenHash } });
+  }
+
   /** Hash token لاستخدامه للتخزين */
   hashToken(token: string): string {
     return createHash('sha256').update(token).digest('hex');

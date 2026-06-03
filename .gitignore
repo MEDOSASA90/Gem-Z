@@ -29,3 +29,7 @@ Thumbs.db
 
 # Temp folders
 health-ai-v2-tmp/
+
+# SQLite databases
+*.sqlite
+

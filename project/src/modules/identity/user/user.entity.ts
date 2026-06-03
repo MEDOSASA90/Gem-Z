@@ -35,11 +35,11 @@ export enum KYCStatus {
 
 /** كيان المستخدم الرئيسي */
 @Entity('users')
-@Index(['email'], { unique: true, where: 'deleted_at IS NULL' })
-@Index(['phone'], { unique: true, where: 'deleted_at IS NULL' })
-@Index(['country'], { where: 'deleted_at IS NULL' })
-@Index(['kycStatus'], { where: 'deleted_at IS NULL' })
-@Index(['status'], { where: 'deleted_at IS NULL' })
+@Index(['email'], { unique: true })
+@Index(['phone'], { unique: true })
+@Index(['country'])
+@Index(['kycStatus'])
+@Index(['status'])
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -71,7 +71,7 @@ export class User {
   @Column({ type: 'varchar', length: 10, default: 'en' })
   locale: string;
 
-  @Column({ type: 'enum', enum: UserStatus, default: UserStatus.PENDING })
+  @Column({ type: 'simple-enum', enum: UserStatus, default: UserStatus.PENDING })
   status: UserStatus;
 
   @Column({ name: 'email_verified', type: 'boolean', default: false })
@@ -80,7 +80,7 @@ export class User {
   @Column({ name: 'phone_verified', type: 'boolean', default: false })
   phoneVerified: boolean;
 
-  @Column({ name: 'kyc_status', type: 'enum', enum: KYCStatus, default: KYCStatus.PENDING })
+  @Column({ name: 'kyc_status', type: 'simple-enum', enum: KYCStatus, default: KYCStatus.PENDING })
   kycStatus: KYCStatus;
 
   @Column({ name: 'kyc_level', type: 'int', default: 0 })
@@ -89,7 +89,7 @@ export class User {
   @Column({ name: 'fraud_score', type: 'int', default: 0 })
   fraudScore: number;
 
-  @Column({ name: 'trusted_devices', type: 'jsonb', default: [] })
+  @Column({ name: 'trusted_devices', type: 'simple-json', nullable: true })
   trustedDevices: Array<{
     fingerprint: string;
     name: string;
@@ -97,19 +97,19 @@ export class User {
     lastUsed: string;
   }>;
 
-  @Column({ type: 'jsonb', default: {} })
+  @Column({ type: 'simple-json', nullable: true })
   settings: Record<string, unknown>;
 
-  @Column({ name: 'last_login_at', type: 'timestamptz', nullable: true })
+  @Column({ name: 'last_login_at', type: 'datetime', nullable: true })
   lastLoginAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
   deletedAt: Date | null;
 
   get fullName(): string {

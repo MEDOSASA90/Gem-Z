@@ -12,12 +12,30 @@
  */
 
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { User } from '../modules/identity/user/user.entity';
+import { Session } from '../modules/identity/session/session.entity';
+import { KYCSubmission } from '../modules/identity/kyc/kyc.entity';
+import { Role } from '../modules/identity/rbac/role.entity';
+import { Permission } from '../modules/identity/rbac/permission.entity';
+import { UserRole } from '../modules/identity/rbac/user-role.entity';
+import { AuditLog } from '../core/audit/audit.entity';
 
 /**
  * الحصول على إعدادات قاعدة البيانات
  * @returns TypeOrmModuleOptions
  */
 export function getDatabaseConfig(): TypeOrmModuleOptions {
+  if (process.env.USE_SQLITE === 'true') {
+    return {
+      type: 'sqlite',
+      database: 'gemz.sqlite',
+      entities: [User, Session, KYCSubmission, Role, Permission, UserRole, AuditLog],
+      autoLoadEntities: false,
+      synchronize: true,
+      logging: true,
+    };
+  }
+
   const isDev = process.env.NODE_ENV === 'development';
   const isProd = process.env.NODE_ENV === 'production';
 

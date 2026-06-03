@@ -199,11 +199,32 @@ export class AuthService {
       // الحصول على المستخدم
       const user = await this.userService.findById(payload.sub);
 
+      // الحصول على تفاصيل الجلسة القديمة من قاعدة البيانات
+      const oldSession = await this.sessionService.findById(sessionData.sessionId);
+
+      // انشاء tokens جديدة مع تمرير معلومات الجهاز من الجلسة القديمة للمحافظة عليها
+      const deviceInfo = oldSession ? {
+        fingerprint: oldSession.deviceFingerprint,
+        ip: oldSession.ipAddress,
+        userAgent: oldSession.userAgent ?? undefined,
+        geo: oldSession.geoCountry ? { country: oldSession.geoCountry } : undefined,
+      } : undefined;
+
       // الغاء الجلسة القديمة (Token Rotation)
       await this.sessionService.revoke(sessionData.sessionId);
 
-      // انشاء tokens جديدة
-      const tokens = await this.generateTokens(user, undefined);
+      // انشاء tokens جديدة وجلسة جديدة
+      const tokens = await this.generateTokens(user, deviceInfo);
+
+      // اذا كانت الجلسة القديمة موثقة بـ MFA، نقوم بنقل التوثيق للجلسة الجديدة
+      if (oldSession?.mfaVerified) {
+        const newTokenHash = this.sessionService.hashToken(tokens.accessToken);
+        const newSession = await this.sessionService.findByTokenHash(newTokenHash);
+        if (newSession) {
+          await this.sessionService.setMFAVerified(newSession.id);
+        }
+      }
+
       this.logger.log(`Token refreshed for user: ${user.id}`);
 
       return tokens;
@@ -336,17 +357,13 @@ export class AuthService {
       email: user.email,
       jti: accessTokenJti,
       type: 'access',
-      iat: now,
-      exp: now + this.ACCESS_EXPIRY,
-    }, { expiresIn: this.ACCESS_EXPIRY });
+    });
 
     // Refresh Token (JWT)
     const refreshToken = await this.jwtService.signAsync({
       sub: user.id,
       jti: refreshTokenJti,
       type: 'refresh',
-      iat: now,
-      exp: now + this.REFRESH_EXPIRY,
     }, {
       expiresIn: this.REFRESH_EXPIRY,
       secret: process.env.JWT_REFRESH_SECRET ?? process.env.JWT_SECRET,

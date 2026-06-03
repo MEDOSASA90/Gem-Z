@@ -41,12 +41,12 @@ export class Permission {
 
   /** الفئة */
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: PermissionCategory,
     default: PermissionCategory.SYSTEM,
   })
   category: PermissionCategory;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }
